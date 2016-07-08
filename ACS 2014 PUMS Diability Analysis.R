@@ -1,45 +1,48 @@
-# Analyze PUMS data for West Oakland, PUMAs 102 and 104
+# Analyze 2014 PUMS data for race by disability and household income by disability
 
 # Import Libraries
 
-library(knitr)
-suppressMessages(library(plyr))
 suppressMessages(library(dplyr))
-library(RCurl)
-library(RJSONIO)
-library(reshape2)
-library(httr)
 
-# Input occupied household and person census files
+# Input occupied household and person census files and output location for CSVs
 
 HOUSEHOLD_OCC_RDATA = "M:/Data/Census/PUMS/PUMS14/hbayarea14_occ.Rdata"
 PERSON_RDATA = "M:/Data/Census/PUMS/PUMS14/pbayarea14.Rdata"
+
+SUMMARY_OUT = "M:/Data/Requests/Alix Bockelman/"
 
 load (HOUSEHOLD_OCC_RDATA)
 load (PERSON_RDATA)
 
 # Delete redundant variables for merging
 
-pbayarea14$ADJINC <- pbayarea14$PUMA <- pbayarea14$COUNTY <- pbayarea14$County_Name <- pbayarea14$PUMA_Name <- pbayarea14$RT <- pbayarea14$ST <- NULL
+pbayarea14_1 <- pbayarea14
+
+pbayarea14_1$ADJINC <- pbayarea14_1$PUMA <- pbayarea14_1$COUNTY <- pbayarea14_1$County_Name <- 
+  pbayarea14_1$PUMA_Name <- pbayarea14_1$RT <- pbayarea14_1$ST <- NULL
 
 # Merge person and household databases by serial number and delete row names field
 
-merged <- merge (pbayarea14,hbayarea14_occ, by="SERIALNO")
+merged <- merge (pbayarea14_1,hbayarea14_occ, by="SERIALNO")
 row.names(merged) <- NULL
 
 # Adjust income to constant year 2014 dollars
 
 merged$adjustment=merged$ADJINC/1000000
-merged$adjustedinc=merged$HINCP*merged$adjustment
+merged$Adjustedincome=merged$HINCP*merged$adjustment
 
 # Select important variables
 
 merged1 <- merged %>%
-    select (SERIALNO,PUMA, PUMA_Name, COUNTY, County_Name, PWGTP, adjustedinc, WGTP, DIS, HISP, RAC1P, HINCP, ADJINC)
+    select (SERIALNO,PUMA, PUMA_Name, COUNTY, County_Name, PWGTP, Adjustedincome, 
+            WGTP, DIS, HISP, RAC1P, HINCP, ADJINC)
 
-# Recode race/Hispanic variables and use person weight
+pbayarea14_2 <- pbayarea14 %>%
+    select (SERIALNO, PUMA, PUMA_Name, COUNTY, County_Name, PWGTP, DIS, HISP, RAC1P)
 
-final <- merged1 %>%
+# Recode race/Hispanic variables, income variables, disability, and use person weight for values
+
+total_persons <- pbayarea14_2 %>%
   mutate(White=ifelse((HISP==1 & RAC1P==1),PWGTP,0)) %>%
   mutate(Black=ifelse((HISP==1 & RAC1P==2),PWGTP,0)) %>%
   mutate(Asian=ifelse((HISP==1 & RAC1P==6),PWGTP,0)) %>%
@@ -47,6 +50,53 @@ final <- merged1 %>%
   mutate(NHPI=ifelse((HISP==1 & RAC1P==7),PWGTP,0)) %>%
   mutate(Other=ifelse((HISP==1 & RAC1P>=8),PWGTP,0)) %>%
   mutate(Hispanic=ifelse((HISP>1),PWGTP,0)) %>%
-  mutate(Total=PWGTP)%>%
-  mutate(Disabled=ifelse((DIS==1), "Yes", "No"))
+  mutate(Total=PWGTP) %>%
+  mutate(Disability=ifelse((DIS==1), "Disabled", "Not Disabled")) 
+ 
+household_persons <- merged1 %>%
+  mutate(Less_25=ifelse(Adjustedincome<25000,PWGTP,0)) %>%
+  mutate(GT25_50=ifelse((Adjustedincome>=25000 & Adjustedincome<50000),PWGTP,0)) %>%
+  mutate(GT50_75=ifelse((Adjustedincome>=50000 & Adjustedincome<75000),PWGTP,0)) %>%
+  mutate(GT75_100=ifelse((Adjustedincome>=75000 & Adjustedincome<100000),PWGTP,0)) %>%
+  mutate(GT100_150=ifelse((Adjustedincome>=100000 & Adjustedincome<150000),PWGTP,0)) %>%
+  mutate(GT150=ifelse(Adjustedincome>150000,PWGTP,0)) %>%
+  mutate(Total=PWGTP) %>%
+  mutate(Disability=ifelse((DIS==1), "Disabled", "Not Disabled")) 
   
+# Sum and output summaries, race and income by disability status
+
+sum.race <- total_persons %>%
+  group_by(County_Name, Disability) %>%
+  summarise(freq = n(), White = sum(White), Black = sum(Black), Asian = sum(Asian), AIAN = sum(AIAN),
+            NHPI = sum(NHPI), Other = sum(Other), Hispanic = sum(Hispanic), Total = sum(Total))
+
+write.csv(sum.race, paste0(SUMMARY_OUT, "PUMS2014_Race_Disability.csv"), row.names = FALSE, quote = T)
+
+sum.income <- household_persons %>%
+  group_by(County_Name, Disability) %>%
+  summarise(freq = n(), Less_25 = sum(Less_25), GT25_50 = sum(GT25_50), GT50_75 = sum(GT50_75), 
+            GT75_100 = sum(GT75_100), GT100_150 = sum(GT100_150), GT150 = sum(GT150), Total = sum(Total))
+
+write.csv(sum.income, paste0(SUMMARY_OUT, "PUMS2014_Income_Disability.csv"), row.names = FALSE, quote = T)
+
+# Now sum information on commuters by disability
+
+commuters <- pbayarea14 %>%
+  filter(JWTR>=1) %>%
+  select(SERIALNO, PUMA, PUMA_Name, COUNTY, County_Name, PWGTP, DIS, JWTR, JWRIP) %>%
+  mutate(drivealone=ifelse((JWTR==1 & JWRIP==1),PWGTP,0)) %>%
+  mutate(carpool=ifelse((JWTR==1 & JWRIP>1),PWGTP,0)) %>%
+  mutate(transit=ifelse((JWTR>=2 & JWTR<=6),PWGTP,0)) %>%
+  mutate(walk=ifelse(JWTR==10,PWGTP,0)) %>%
+  mutate(bike=ifelse(JWTR==9,PWGTP,0)) %>%
+  mutate(athome=ifelse(JWTR==11,PWGTP,0)) %>%
+  mutate(other=ifelse((JWTR==7 | JWTR==8 | JWTR==12),PWGTP,0)) %>%
+  mutate(Total=PWGTP) %>%
+  mutate(Disability=ifelse(DIS==1, "Disabled", "Not Disabled")) 
+  
+sum.commuters <- commuters %>%
+  group_by(County_Name, Disability) %>%
+  summarise(freq = n(), drivealone = sum(drivealone), carpool = sum(carpool), transit = sum(transit), 
+            walk = sum(walk), bike = sum(bike), athome = sum(athome), other = sum(other), Total = sum(Total))
+  
+write.csv(sum.commuters, paste0(SUMMARY_OUT, "PUMS2014_Commuters_Disability.csv"), row.names = FALSE, quote = T)
