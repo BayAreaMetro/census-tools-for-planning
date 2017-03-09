@@ -1,4 +1,4 @@
-# Analyze 2014 PUMS data for race by disability and household income by disability
+# Analyze 2014 PUMS data for race by disability and household income by disability. Also a commuter tab.
 
 # Import Libraries
 
@@ -42,26 +42,26 @@ pbayarea14_2 <- pbayarea14 %>%
 
 # Recode race/Hispanic variables, income variables, disability, and use person weight for values
 
-total_persons <- pbayarea14_2 %>%
-  mutate(White=ifelse((HISP==1 & RAC1P==1),PWGTP,0)) %>%
-  mutate(Black=ifelse((HISP==1 & RAC1P==2),PWGTP,0)) %>%
-  mutate(Asian=ifelse((HISP==1 & RAC1P==6),PWGTP,0)) %>%
-  mutate(AIAN=ifelse((HISP==1 & (RAC1P>=3 & RAC1P<=5)),PWGTP,0)) %>%
-  mutate(NHPI=ifelse((HISP==1 & RAC1P==7),PWGTP,0)) %>%
-  mutate(Other=ifelse((HISP==1 & RAC1P>=8),PWGTP,0)) %>%
-  mutate(Hispanic=ifelse((HISP>1),PWGTP,0)) %>%
-  mutate(Total=PWGTP) %>%
-  mutate(Disability=ifelse((DIS==1), "Disabled", "Not Disabled")) 
+total_persons <- pbayarea14_2 %>% mutate(
+  White=ifelse((HISP==1 & RAC1P==1),PWGTP,0),
+  Black=ifelse((HISP==1 & RAC1P==2),PWGTP,0),
+  Asian=ifelse((HISP==1 & RAC1P==6),PWGTP,0),
+  AIAN=ifelse((HISP==1 & (RAC1P>=3 & RAC1P<=5)),PWGTP,0),
+  NHPI=ifelse((HISP==1 & RAC1P==7),PWGTP,0),
+  Other=ifelse((HISP==1 & RAC1P>=8),PWGTP,0),
+  Hispanic=ifelse((HISP>1),PWGTP,0),
+  Total=PWGTP,
+  Disability=ifelse((DIS==1), "Disabled", "Not Disabled")) 
  
-household_persons <- merged1 %>%
-  mutate(Less_25=ifelse(Adjustedincome<25000,PWGTP,0)) %>%
-  mutate(GT25_50=ifelse((Adjustedincome>=25000 & Adjustedincome<50000),PWGTP,0)) %>%
-  mutate(GT50_75=ifelse((Adjustedincome>=50000 & Adjustedincome<75000),PWGTP,0)) %>%
-  mutate(GT75_100=ifelse((Adjustedincome>=75000 & Adjustedincome<100000),PWGTP,0)) %>%
-  mutate(GT100_150=ifelse((Adjustedincome>=100000 & Adjustedincome<150000),PWGTP,0)) %>%
-  mutate(GT150=ifelse(Adjustedincome>150000,PWGTP,0)) %>%
-  mutate(Total=PWGTP) %>%
-  mutate(Disability=ifelse((DIS==1), "Disabled", "Not Disabled")) 
+household_persons <- merged1 %>% mutate(
+  Less_25=ifelse(Adjustedincome<25000,PWGTP,0),
+  GT25_50=ifelse((Adjustedincome>=25000 & Adjustedincome<50000),PWGTP,0),
+  GT50_75=ifelse((Adjustedincome>=50000 & Adjustedincome<75000),PWGTP,0),
+  GT75_100=ifelse((Adjustedincome>=75000 & Adjustedincome<100000),PWGTP,0),
+  GT100_150=ifelse((Adjustedincome>=100000 & Adjustedincome<150000),PWGTP,0),
+  GT150=ifelse(Adjustedincome>150000,PWGTP,0),
+  Total=PWGTP,
+  Disability=ifelse((DIS==1), "Disabled", "Not Disabled")) 
   
 # Sum and output summaries, race and income by disability status
 
@@ -83,16 +83,16 @@ write.csv(sum.income, paste0(SUMMARY_OUT, "PUMS2014_Income_Disability.csv"), row
 
 commuters <- pbayarea14 %>%
   filter(JWTR>=1) %>%
-  select(SERIALNO, PUMA, PUMA_Name, COUNTY, County_Name, PWGTP, DIS, JWTR, JWRIP) %>%
-  mutate(drivealone=ifelse((JWTR==1 & JWRIP==1),PWGTP,0)) %>%
-  mutate(carpool=ifelse((JWTR==1 & JWRIP>1),PWGTP,0)) %>%
-  mutate(transit=ifelse((JWTR>=2 & JWTR<=6),PWGTP,0)) %>%
-  mutate(walk=ifelse(JWTR==10,PWGTP,0)) %>%
-  mutate(bike=ifelse(JWTR==9,PWGTP,0)) %>%
-  mutate(athome=ifelse(JWTR==11,PWGTP,0)) %>%
-  mutate(other=ifelse((JWTR==7 | JWTR==8 | JWTR==12),PWGTP,0)) %>%
-  mutate(Total=PWGTP) %>%
-  mutate(Disability=ifelse(DIS==1, "Disabled", "Not Disabled")) 
+  select(SERIALNO, PUMA, PUMA_Name, COUNTY, County_Name, PWGTP, DIS, JWTR, JWRIP) %>% mutate(
+  drivealone=ifelse((JWTR==1 & JWRIP==1),PWGTP,0),
+  carpool=ifelse((JWTR==1 & JWRIP>1),PWGTP,0),
+  transit=ifelse((JWTR>=2 & JWTR<=6),PWGTP,0),
+  walk=ifelse(JWTR==10,PWGTP,0),
+  bike=ifelse(JWTR==9,PWGTP,0),
+  athome=ifelse(JWTR==11,PWGTP,0),
+  other=ifelse((JWTR==7 | JWTR==8 | JWTR==12),PWGTP,0),
+  Total=PWGTP,
+  Disability=ifelse(DIS==1, "Disabled", "Not Disabled")) 
   
 sum.commuters <- commuters %>%
   group_by(County_Name, Disability) %>%

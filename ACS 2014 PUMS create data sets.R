@@ -3,13 +3,7 @@
 
 # Import Libraries
 
-library(knitr)
-suppressMessages(library(plyr))
 suppressMessages(library(dplyr))
-library(RCurl)
-library(RJSONIO)
-library(reshape2)
-library(httr)
 
 # Set up directories with csv files for PUMS data
 
