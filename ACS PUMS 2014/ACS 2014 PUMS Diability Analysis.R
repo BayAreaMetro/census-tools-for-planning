@@ -6,8 +6,8 @@ suppressMessages(library(dplyr))
 
 # Input occupied household and person census files and output location for CSVs
 
-HOUSEHOLD_OCC_RDATA = "M:/Data/Census/PUMS/PUMS14/hbayarea14_occ.Rdata"
-PERSON_RDATA = "M:/Data/Census/PUMS/PUMS14/pbayarea14.Rdata"
+HOUSEHOLD_OCC_RDATA = "M:/Data/Census/PUMS/PUMS 2014/hbayarea14_occ.Rdata"
+PERSON_RDATA = "M:/Data/Census/PUMS/PUMS 2014/pbayarea14.Rdata"
 
 SUMMARY_OUT = "M:/Data/Requests/Alix Bockelman/"
 
