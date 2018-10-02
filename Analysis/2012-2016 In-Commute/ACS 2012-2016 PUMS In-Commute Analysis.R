@@ -20,7 +20,7 @@ pbayarea1216$JWTR[is.na(pbayarea1216$JWTR)] <- -999999
 commuters1216 <- pbayarea1216 %>%
   select (SERIALNO, PUMA, PUMA_Name, COUNTY, County_Name, PWGTP, POWPUMA, JWTR) %>%
   filter (JWTR!=-999999) %>% mutate(
-    bayworkers=ifelse(POWPUMA %in% baypowpuma,PWGTP,0)
+    bayworkers=ifelse(POWPUMA %in% baypowpuma,PWGTP,0) # Add person weight to column if POWPUMA within the Bay Area.
   )
 
 # Sum and output summaries of total resident workers and workers who both live/work in Bay Area
