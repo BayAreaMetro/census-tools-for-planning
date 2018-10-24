@@ -5,7 +5,6 @@
 suppressMessages(library(dplyr))
 SUMMARY_OUT="M:/Data/Requests/Lisa Zorn/Median Income 75-100k/"  # work directory
 
-
 # Input person census files
 
 HOUSEHOLD_RDATA = "M:/Data/Census/PUMS/PUMS 2012-16/hbayarea1216_occ.Rdata"
@@ -13,7 +12,6 @@ HOUSEHOLD_RDATA = "M:/Data/Census/PUMS/PUMS 2012-16/hbayarea1216_occ.Rdata"
 load (HOUSEHOLD_RDATA)
 
 # Keep only needed variables
-
 
 household <- hbayarea1216_occ %>%
   select(PUMA, HINCP, ADJINC, WGTP) %>%
@@ -27,6 +25,5 @@ household <- hbayarea1216_occ %>%
 sum_household <- household %>%
   summarize(above=sum(above88681), below=sum(below88681), total=sum(WGTP)) %>% 
   mutate(shareabove=above/total)
-
 
 print(sum_household$shareabove)
