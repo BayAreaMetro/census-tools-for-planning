@@ -3,7 +3,6 @@
 # Analyze 2012-2016 Bay Area PUMS data for share of households above and below $88,681 within $75-100k
 
 suppressMessages(library(dplyr))
-SUMMARY_OUT="M:/Data/Requests/Lisa Zorn/Median Income 75-100k/"  # work directory
 
 # Input person census files
 
