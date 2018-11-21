@@ -39,9 +39,9 @@ person <- left_join(pbayarea1216,hbayarea1216_occ,by=c("SERIALNO","PUMA","COUNTY
     intersection_gt50=if_else((race=="minority" & povshare=="lt200" & (rentshare=="gt50")),
                               PWGTP,0L))
 
-# Summarize greater than 30, greater than 50, and totals
+# Summarize PUMAs greater than 30, greater than 50, and totals
 
-sum.person <- person %>%
+sum.person.PUMA <- person %>%
   mutate(
     intersection_gt30=if_else(is.na(intersection_gt30),0L,intersection_gt30),    # Change NA values to 0, as these PUMA
     intersection_gt50=if_else(is.na(intersection_gt50),0L,intersection_gt50)     # records should be included for totals
@@ -54,7 +54,22 @@ sum.person <- person %>%
 
 # Output csv
 
-write.csv(sum.person, paste0(OUTPUT, "ACSPUMS2012-2016_Persons_Minority_Rent_Poverty_Expense.csv"), row.names = FALSE, quote = T)
+write.csv(sum.person.PUMA, paste0(OUTPUT, "ACSPUMS2012-2016_PUMAs_Persons_Minority_Rent_Poverty_Expense.csv"), row.names = FALSE, quote = T)
+
+# Summarize region greater than 30, greater than 50, and totals
+
+sum.person.region <- person %>%
+  mutate(
+    intersection_gt30=if_else(is.na(intersection_gt30),0L,intersection_gt30),    # Change NA values to 0, as these PUMA
+    intersection_gt50=if_else(is.na(intersection_gt50),0L,intersection_gt50)     # records should be included for totals
+  ) %>%
+  summarize(freq = n(), intersection_gt30=sum(intersection_gt30), intersection_gt50=sum(intersection_gt50),
+            total=sum(total)) %>%
+  mutate(sharegt30=intersection_gt30/total,sharegt50=intersection_gt50/total)
+
+# Output csv
+
+write.csv(sum.person.region, paste0(OUTPUT, "ACSPUMS2012-2016_Region_Persons_Minority_Rent_Poverty_Expense.csv"), row.names = FALSE, quote = T)
 
 
  
