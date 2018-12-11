@@ -7,7 +7,7 @@ suppressMessages(library(dplyr))
 # Input person PUMS file
 
 PERSON_RDATA = "M:/Data/Census/PUMS/PUMS 2017/pbayarea17.Rdata"
-OUTPUT = "M:/Data/Requests/Maureen Wetter/"
+OUTPUT = "M:/Data/Requests/BART/"
 load (PERSON_RDATA)
 
 # Set up four counties in BART service area for reference
