@@ -17,7 +17,6 @@ BART_counties <- c("Alameda",
                    "San Francisco",
                    "San Mateo")
 
-
 # Set ESR codes of interest - basically anyone employed or unemployed, but in the labor force
 # People excluded are those under 16 and/or not in the labor force (codes "NA" and "6" for ESR)
 
@@ -31,7 +30,7 @@ person <- pbayarea17 %>%
   select(PUMA,County_Name,PWGTP,HISP,RAC1P,ESR) %>%
   filter(ESR %in% ESR_codes & County_Name %in% BART_counties) %>% 
     mutate(
-    White=if_else((HISP==1 & RAC1P==1),PWGTP,0L),
+  White=if_else((HISP==1 & RAC1P==1),PWGTP,0L),
   Black=if_else((HISP==1 & RAC1P==2),PWGTP,0L),
   All_others=if_else((HISP==1 & RAC1P>=3),PWGTP,0L),       # Includes "some other race alone" and "two or more races"
   Hispanic=if_else((HISP>1),PWGTP,0L),
