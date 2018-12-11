@@ -1,6 +1,8 @@
 # ACS 2017 PUMS Labor Force by County and Race.R
-# Analyze PUMS data for TIP Person Income Categories and By Mode, Minority and Age Status, 2016 1-year PUMS data
-# Import Libraries
+# Analyze PUMS data for labor force within BART service area by county and race 
+# 2017 1-year PUMS data
+
+# Import Library
 
 suppressMessages(library(dplyr))
 
