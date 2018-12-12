@@ -46,5 +46,4 @@ sum.total <- person %>%
 write.csv(sum.total, paste0(OUTPUT, "ACS PUMS 2017 Labor Force by County and Race.csv"), row.names = FALSE, quote = T)
 
 
-
  
