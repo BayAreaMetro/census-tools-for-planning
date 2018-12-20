@@ -1,5 +1,5 @@
 # ACS 2012-2016 PUMS HH and Person Worker Research.R
-# Analyze PUMS data for poverty status by minority and housing expense, 2016 5-year PUMS data
+# Analyze PUMS data for total workers and households by number of workers, 2016 5-year PUMS data
 # Import Libraries
 
 suppressMessages(library(dplyr))
