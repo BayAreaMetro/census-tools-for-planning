@@ -23,13 +23,13 @@ combined <- left_join(pbayarea1216,hbayarea1216, by=c("PUMA", "SERIALNO", "ST", 
                                                       "County_Name", "PUMA_Name")) %>%
   select(SERIALNO,PUMA,COUNTY,County_Name,PUMA_Name,PWGTP,WGTP,TYPE,ESR,NP,AGEP) %>% mutate(
     p_workers=case_when(
-      is.na(ESR) ~ 0L,
-      ESR==1     ~ PWGTP,                                  # Create a column of weighted workers
-      ESR==2     ~ PWGTP,
-      ESR==3     ~ 0L,
-      ESR==4     ~ PWGTP,
-      ESR==5     ~ PWGTP,
-      ESR==6     ~ 0L
+      is.na(ESR) ~ 0L,                                     # Create a column of weighted workers, NA is under 16
+      ESR==1     ~ PWGTP,                                  # Workers at work
+      ESR==2     ~ PWGTP,                                  # Job, but not at work
+      ESR==3     ~ 0L,                                     # Unemployed
+      ESR==4     ~ PWGTP,                                  # Armed forces at work
+      ESR==5     ~ PWGTP,                                  # Armed forces not at work
+      ESR==6     ~ 0L                                      # Not in labor force
     ),
     worker_or_not = if_else(p_workers>0L,1L,0L)            # Create a column of workers (1) or not (0)
     )
