@@ -29,3 +29,5 @@ gqbay15 <- pbayarea15 %>%
 
 print(gq15)
 print(gqbay15)
+
+
