@@ -10,7 +10,7 @@ suppressMessages(library(dplyr))
 
 PERSON_RDATA = "M:/Data/Census/PUMS/PUMS 2017/pbayarea17.Rdata"
 HH_RDATA = "M:/Data/Census/PUMS/PUMS 2017/hbayarea17.Rdata"
-OUTPUT = "M:/Data/Requests/Alex Ghenis (WID)/"
+OUTPUT = "M:/Data/Requests/Alex Ghenis (WID)/PUMS2017/"
 load (PERSON_RDATA)
 load (HH_RDATA)
 
