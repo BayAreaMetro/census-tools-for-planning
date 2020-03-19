@@ -2,151 +2,52 @@
 # Analyze PUMS data for Bay Area commuters by industry 2017 5-year PUMS data
 # Import Libraries
 
-suppressMessages(library(dplyr))
+suppressMessages(library(tidyverse))
 
 # Set working directory
 
 wd <- "C:/Users/sisrael/Documents/GitHub/petrale/applications/travel_model_lu_inputs/2015/Employment/"
 setwd(wd)
 
-# Input person census files for workers working in the Bay Area
+# Input person census files for workers working in the Bay, read in industry equivalency
 
 PERSON_RDATA = "M:/Data/Census/PUMS/PUMS 2013-17/pbayarea1317.Rdata"
+eq           = "M:/Crosswalks/Census/Industry/NAICS to MTC Sectors.csv"
 baypowpuma = c(100,1300,4100,5500,7500,8100,8500,9500,9700)
 
 load (PERSON_RDATA)
 
+equivalency <- read.csv(eq,header=TRUE) %>%    # Convert to character for later joining
+  mutate(NAICS.2=as.character(NAICS.2))
+
 workers <- pbayarea1317 %>% 
-  filter(POWPUMA %in% baypowpuma)
+  filter(POWPUMA %in% baypowpuma) %>% 
+  mutate(NAICS.2=substr(as.character(NAICSP),1,2)) %>%  # Convert NAICSP factor to character, extract left 2 characters
+  mutate(NAICS.2=case_when(
+    NAICS.2=="3M"   ~"33",                              # Recode industry codes with characters to numeric
+    NAICS.2=="4M"   ~"45",
+    TRUE            ~NAICS.2
+  ))
 
-# Summarize total workers
+combined <- left_join(workers,equivalency,by="NAICS.2") %>% 
+  mutate(work_county=case_when(
+    POWPUMA==100    ~"Alameda",
+    POWPUMA==1300   ~"Contra Costa",
+    POWPUMA==4100   ~"Marin",
+    POWPUMA==5500   ~"Napa",
+    POWPUMA==7500   ~"San Francisco",
+    POWPUMA==8100   ~"San Mateo",
+    POWPUMA==8500   ~"Santa Clara",
+    POWPUMA==9500   ~"Solano",
+    POWPUMA==9700   ~"Sonoma"
+  )) 
 
-person_worker_summary <- combined %>%
-  group_by(County_Name) %>%
-  summarize(person_worker_total=sum(p_workers)) %>%
-  ungroup()
+# Summarize total workers by industry, reformat using spread function, and export
 
-# Now stratify by HH and GQ workers and summarize
+worker_summary <- combined %>%
+  group_by(work_county,MTCname) %>%
+  summarize(worker_total=sum(PWGTP)) %>% 
+  spread(.,MTCname,worker_total,fill=0)
 
-combined_HH_GQ <- combined %>% mutate(
-  household=if_else(TYPE==1,p_workers,0L),
-  gq=if_else(TYPE==3,p_workers,0L),
-  total=p_workers
-) %>%
-  group_by(County_Name) %>%
-  summarize(household_worker_total=sum(household),gq_worker_total=sum(gq),worker_total=sum(total)) %>%
-  ungroup()
-      
-# Find average number of workers in 3+ worker HHs
-
-HH_summary_1 <- combined %>%
-  group_by(SERIALNO) %>%
-  summarize(worker_total=sum(worker_or_not)) %>%
-  ungroup
-
-HH_summary3p <- HH_summary_1 %>%
-  filter(worker_total>=3) %>%
-  left_join(.,hbayarea1317,by="SERIALNO") %>%
-  select(SERIALNO,WGTP,worker_total) %>% 
-  summarize(avg3p=weighted.mean(worker_total,WGTP))
-
-mean_workers3P <- as.numeric(HH_summary3p[1,1])              # Save this value in a variable
-
-# Recode number of weighted workers
-
-HH_summary_2 <- left_join(HH_summary_1,hbayarea1317,by="SERIALNO") %>%
-  select(SERIALNO,WGTP,worker_total,County_Name) %>% mutate(
-    hhworker_weighted = case_when(
-      worker_total==0 ~ as.numeric(0*WGTP),                  # Weight adjustment for 0 worker households
-      worker_total==1 ~ as.numeric(1*WGTP),                  # Weight adjustment for 1 worker households
-      worker_total==2 ~ as.numeric(2*WGTP),                  # Weight adjustment for 2 worker households
-      worker_total>=3 ~ as.numeric(mean_workers3P*WGTP)      # Weight adjustment for 3+ worker households
-    )
-  )
-
-# Summarize workers using household weights, using
-
-HH_worker_summary <- HH_summary_2 %>%
-  group_by(County_Name) %>%
-  summarize(HH_worker_total=sum(hhworker_weighted))
-
-# Summarize number of households by county and number of HH workers
-
-HH_worker_cat <- HH_summary_2 %>% mutate(
-  worker_total_rc=case_when(
-    worker_total==0 ~ "0_workers",
-    worker_total==1 ~ "1_worker",
-    worker_total==2 ~ "2_workers",
-    worker_total>=3 ~ "3p_workers"
-  )) %>%
-  group_by(County_Name,worker_total_rc) %>%
-  summarize(total_hhs=sum(WGTP))
-
-# Join person and HH summaries for export
-
-final <- left_join(person_worker_summary,HH_worker_summary, by="County_Name")
-
-# Output csv
-
-write.csv(final, "ACSPUMS2013-2017_Person_Household_Worker_Totals.csv",row.names = FALSE, quote = T)
-write.csv(HH_worker_cat, "ACSPUMS2013-2017_Person_Household_Worker_Category.csv",row.names = FALSE, quote = T)
-write.csv(combined_HH_GQ, "ACSPUMS2013-2017_Stratified_Person_Worker_Totals.csv",row.names = FALSE, quote = T)
-
-
-
-# Now summarize HH workers with a job, but not at work ("commuters")
-
-combined_commuters <- left_join(pbayarea1317,hbayarea1317, by=c("PUMA", "SERIALNO", "ST", "ADJINC", "COUNTY", 
-                                                      "County_Name", "PUMA_Name")) %>%
-  select(SERIALNO,PUMA,COUNTY,County_Name,PUMA_Name,PWGTP,WGTP,TYPE,ESR,NP,AGEP) %>% mutate(
-    p_workers=case_when(
-      is.na(ESR) ~ 0L,                                     # Create a column of weighted workers, NA is under 16
-      ESR==1     ~ PWGTP,                                  # Workers at work
-      ESR==2     ~ 0L,                                     # Job, but not at work
-      ESR==3     ~ 0L,                                     # Unemployed
-      ESR==4     ~ PWGTP,                                  # Armed forces at work
-      ESR==5     ~ 0L,                                     # Armed forces not at work
-      ESR==6     ~ 0L                                      # Not in labor force
-    ),
-    worker_or_not = if_else(p_workers>0L,1L,0L)            # Create a column of workers (1) or not (0)
-  )
-
-HH_summary_commuters_1 <- combined_commuters %>%
-  group_by(SERIALNO) %>%
-  summarize(worker_total=sum(worker_or_not)) %>%
-  ungroup
-
-HH_summary_commuters_2 <- left_join(HH_summary_commuters_1,hbayarea1317,by="SERIALNO") %>%
-  select(SERIALNO,WGTP,worker_total,County_Name,TYPE) %>% mutate(
-  worker_total_rc=case_when(
-    worker_total==0 ~ "0_workers",
-    worker_total==1 ~ "1_worker",
-    worker_total==2 ~ "2_workers",
-    worker_total>=3 ~ "3p_workers"
-    ),
-  household=if_else(TYPE==1,WGTP,0L),
-  gq=if_else(TYPE>1,WGTP,0L))%>%
-  group_by(County_Name,worker_total_rc) %>%
-  summarize(total_hhs=sum(household),total_gq=sum(gq),total_total=sum(WGTP))
-
-# Output csv
-
-write.csv(HH_summary_commuters_2, "ACSPUMS2013-2017_Household_Commuter_Category.csv",row.names = FALSE, quote = T)
-
-# Create a table of households by number of workers, using the PUMS person weight
-
-person_HH_worker_summary <- combined %>%
-  filter(worker_or_not==1) %>%
-  left_join(.,HH_summary_1,by="SERIALNO") %>%
-  select(SERIALNO,PWGTP,worker_total,County_Name,PUMA) %>% mutate(
-  worker_total_rc=case_when(
-    worker_total==0 ~ "0_workers",
-    worker_total==1 ~ "1_worker",
-    worker_total==2 ~ "2_workers",
-    worker_total>=3 ~ "3p_workers"
-  )) %>%
-  group_by(County_Name,worker_total_rc) %>%
-  summarize(total=sum(PWGTP))
-  
-write.csv(person_HH_worker_summary, "ACSPUMS2013-2017_HHs_Workers_PWeight.csv",row.names = FALSE, quote = T)
+write.csv(worker_summary, "ACS PUMS 2013-2017 regional commuters by industry.csv", row.names = FALSE, quote = T)
 
