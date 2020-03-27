@@ -62,7 +62,7 @@ adults <- pbayarea18 %>%
       NP==4                ~"4 Person HH",
       NP>=5                ~"5+ Person HH"
     )
-    )%>%
+  )%>%
   select(SERIALNO,SPORDER,PUMA,PUMA_Name,County_Name,PWGTP,AGEP,JWTR,HINCP,adjustedinc, agerc,incomerc,racerc,nprc,RELP)
 
 # Summarize income
@@ -97,5 +97,3 @@ write.csv(incomesum, "PUMS2018 Adults by Income.csv", row.names = FALSE, quote =
 write.csv(racesum, "PUMS2018 Adults by Race.csv", row.names = FALSE, quote = T)
 write.csv(agesum, "PUMS2018 Adults by Age.csv", row.names = FALSE, quote = T)
 write.csv(npsum, "PUMS2018 Adults by HH Size.csv", row.names = FALSE, quote = T)
-
-
