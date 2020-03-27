@@ -29,6 +29,8 @@ workers <- pbayarea1317 %>%
     TRUE            ~NAICS.2
   ))
 
+# Combine file of workers living/working in the Bay Area with an industry equivalence file, name work counties
+
 combined <- left_join(workers,equivalency,by="NAICS.2") %>% 
   mutate(work_county=case_when(
     POWPUMA==100    ~"Alameda",
