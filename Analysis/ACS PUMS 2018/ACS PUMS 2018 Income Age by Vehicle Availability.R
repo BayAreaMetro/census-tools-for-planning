@@ -1,13 +1,14 @@
 # ACS PUMS 2018 Income Age by Vehicle Availability.R
-
 # Analyze 2018 Bay Area PUMS data for Bay Area HH vehicles availability by income and age of householder
+# March 26, 2020
+# SI
 
 suppressMessages(library(tidyverse))
-library(writexl)
+
 wd <- "M:/Data/Requests/Rebecca Long/PUMS 2018 Vehicle Summaries/"  # work directory
 setwd(wd)
 
-# Input person census files
+# Input person and HH census files
 
 PERSON_RDATA = "M:/Data/Census/PUMS/PUMS 2018/pbayarea18.Rdata"
 HH_RDATA     = "M:/Data/Census/PUMS/PUMS 2018/hbayarea18.Rdata"
@@ -15,14 +16,18 @@ HH_RDATA     = "M:/Data/Census/PUMS/PUMS 2018/hbayarea18.Rdata"
 load (PERSON_RDATA)
 load(HH_RDATA) 
 
+# Merge HH and person files
+
 hbayarea18 <- hbayarea18 %>% 
   mutate(SERIALNO=as.character(SERIALNO)) %>% 
-  filter(NP!=0 & TYPE==1)                               # Remove vacant units, GQ from households
+  filter(NP!=0 & TYPE==1)                              # Remove vacant units, GQ from households
 
 pbayarea18 <- pbayarea18 %>% 
-  select(-ADJINC,-County_Name) %>%       # Remove from person file, use HH version upon join
+  select(-ADJINC,-County_Name) %>%                     # Remove from person file, use HH version upon join
   mutate(SERIALNO=as.character(SERIALNO)) %>% 
-  filter(SPORDER==1 & RELP<16)           # Extract only householder and remove GQ
+  filter(SPORDER==1 & RELP<16)                         # Extract only householder and remove GQ
+
+# Recode income and age into categories
 
 combined <- left_join(hbayarea18,pbayarea18, by="SERIALNO") %>% 
   select(SERIALNO,HINCP,ADJINC,SPORDER,County_Name,VEH,AGEP, WGTP) %>% mutate(
@@ -47,9 +52,10 @@ combined <- left_join(hbayarea18,pbayarea18, by="SERIALNO") %>%
       VEH==2                ~"2 car HH",
       VEH==3                ~"3 car HH",
       VEH>=4                ~"4+ car HH"
+      TRUE                  ~"Uncoded"
     ))
 
-# Summarize income
+# Summarize income by county and Bay Area
 
 incomesum <- combined %>% 
   group_by(County_Name,incomerc,vehrc) %>% 
@@ -62,7 +68,7 @@ incomesum_bay <- combined %>%
   spread (., incomerc, total, fill=0)
 
 
-# Summarize age
+# Summarize age by county and Bay Area
 
 agesum <- combined %>% 
   group_by(County_Name,agerc,vehrc) %>% 
