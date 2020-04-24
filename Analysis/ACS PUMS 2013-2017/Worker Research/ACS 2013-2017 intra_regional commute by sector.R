@@ -6,7 +6,7 @@ suppressMessages(library(tidyverse))
 
 # Set working directory
 
-wd <- "C:/Users/sisrael/Documents/GitHub/petrale/applications/travel_model_lu_inputs/2015/Employment/"
+wd <- "C:/Users/sisrael/Documents/GitHub/petrale/applications/travel_model_lu_inputs/2015/Employment/Incommute/"
 setwd(wd)
 
 # Input person census files for workers working in the Bay, read in industry equivalency
@@ -21,7 +21,7 @@ equivalency <- read.csv(eq,header=TRUE) %>%    # Convert to character for later 
   mutate(NAICS.2=as.character(NAICS.2))
 
 workers <- pbayarea1317 %>% 
-  filter(POWPUMA %in% baypowpuma) %>% 
+  filter(POWPUMA %in% baypowpuma & POWSP==6) %>% 
   mutate(NAICS.2=substr(as.character(NAICSP),1,2)) %>%  # Convert NAICSP factor to character, extract left 2 characters
   mutate(NAICS.2=case_when(
     NAICS.2=="3M"   ~"33",                              # Recode industry codes with characters to numeric
