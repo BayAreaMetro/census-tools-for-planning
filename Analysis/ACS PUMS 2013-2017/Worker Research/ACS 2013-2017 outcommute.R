@@ -9,7 +9,7 @@ suppressMessages(library(tidyverse))
 wd <- "C:/Users/sisrael/Documents/GitHub/petrale/applications/travel_model_lu_inputs/2015/Employment/Incommute/"
 setwd(wd)
 
-# Input person census files for workers working in the Bay, read in industry equivalency
+# Input Bay Area person PUMS file, process for workers working outside the Bay Area and/or California
 
 PERSON_RDATA = "M:/Data/Census/PUMS/PUMS 2013-17/pbayarea1317.Rdata"
 baypowpuma = c(100,1300,4100,5500,7500,8100,8500,9500,9700) # Bay Area counties
