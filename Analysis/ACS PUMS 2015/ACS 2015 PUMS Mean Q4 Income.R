@@ -42,17 +42,17 @@ Q4 <- hbayarea15 %>% mutate(
 
 Q4_tenure <- Q4 %>% 
   group_by(tenure) %>% 
-  summarize(mean_income=weighted.mean(adjustedinc,WGTP))
+  summarize(mean_income_2015dollars=weighted.mean(adjustedinc,WGTP))
 
 Q4_total <- Q4 %>% 
-  summarize(mean_income=weighted.mean(adjustedinc,WGTP))
+  summarize(mean_income_2015dollars=weighted.mean(adjustedinc,WGTP))
 
 temp <- data.frame("tenure"="Total")
 temp_join <- cbind(temp,Q4_total)  
-final <- rbind(Q4_tenure,temp_join)
+final <- rbind(Q4_tenure,temp_join) %>% mutate(
+  mean_income_2000dollars=mean_income_2015dollars/CPI_ratio
+)
 
 # Export
 
 write.csv(final,file="ACS PUMS 2015 Q4 Mean Income by Tenure.csv",row.names = FALSE,quote=TRUE)
-
-
