@@ -17,7 +17,7 @@ household <- hbayarea18 %>%
   filter(!is.na(TEN)) %>% 
   mutate(SERIALNO = as.character(SERIALNO))             # Imports as factor; fixing this
 
-# Extract adults, join with household file for income values
+# Extract adults, join with household file for number of vehicles
 
 persons <- pbayarea18 %>%
   mutate(SERIALNO = as.character(SERIALNO)) %>%         # Imports as factor; fixing this
@@ -25,12 +25,12 @@ persons <- pbayarea18 %>%
   select(-ADJINC) %>%                                   # Remove this variable and use joined version
   left_join(.,household,by="SERIALNO") %>% 
   mutate(
-    vehrc=case_when(
+    vehrc=case_when(                                    # Recode number of vehicles
       VEH==0             ~ "0_Vehicle",
       VEH>=1             ~ "1p_Vehicle",
       TRUE               ~ "Not coded"
     ),
-    racerc=case_when(
+    racerc=case_when(                                   # Recode race
       HISP>1               ~"5_Hispanic",
       HISP==1 & RAC1P==1   ~"1_White",
       HISP==1 & RAC1P==2   ~"2_Black",
@@ -42,7 +42,7 @@ persons <- pbayarea18 %>%
       TRUE                 ~"Uncoded")) %>%
   select(SERIALNO,SPORDER,PUMA,PUMA_Name,County_Name,PWGTP,WGTP,racerc,RELP,vehrc)
 
-# Vehicles by county and race of householder
+# Vehicles by county and race of householder, output file
 
 final <- persons %>% 
   group_by(County_Name,racerc,vehrc) %>% 
