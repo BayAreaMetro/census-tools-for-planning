@@ -1,7 +1,5 @@
 # ACS PUMS 2018 HH Vehicles by Race of Householder.R
 
-# Analyze 2018 Bay Area PUMS data for Bay Area adults by race
-
 suppressMessages(library(tidyverse))
 wd <- "M:/Data/Requests/Raleigh McCoy"  # work directory
 setwd(wd)
