@@ -1,11 +1,11 @@
-# ACS 2015 PUMS Mean Q4 Income.R
-# Analyze PUMS data for mean Q4 income in inflated 2000$ to 2015$
+# ACS 2015 PUMS AMI for 2015 and 2000$.R
+# Analyze PUMS data for area median income
 # 2015 1-year PUMS data
 
 # Import Libraries
 
 suppressMessages(library(tidyverse))
-# library(reldist)   # Keeping as a placeholder in case weighted median is also needed
+library(reldist)   # Needed for weighted median
 
 # Input HH PUMS file and set working directory
 
@@ -18,11 +18,31 @@ setwd(WD)
 CPI2000      <- 180.20
 CPI2015      <- 258.57
 CPI_ratio    <- CPI2015/CPI2000 # 2015 CPI/2000 CPI
-Q4_threshold <- CPI_ratio*100000
 
 # Bring in HH data
 
 load (HH_RDATA) 
+
+household <- hbayarea15 %>% 
+  filter(!is.na(TEN) & TEN!=4) %>% 
+  mutate(
+    adjustedinc=HINCP*(ADJINC/1000000), 
+    persons=case_when(
+      NP>8L   ~8L,
+      TRUE   ~NP
+    )
+  ) %>% 
+#  group_by(persons) %>% 
+  summarize(median_2015=wtd.quantile(adjustedinc,q=0.5,weight=WGTP)) %>% mutate(
+    median_2010=median_2015/CPI_ratio,
+    ELI_2015=(0.3*median_2015), 
+    VLI_2015=(0.5*median_2015),
+    ELI_2000=(0.3*median_2015)/CPI_ratio, 
+    VLI_2000=(0.5*median_2015)/CPI_ratio
+    ) %>% 
+  mutate_if(is.numeric,round,0)
+
+print(household)
 
 # Recode data
 

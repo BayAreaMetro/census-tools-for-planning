@@ -27,13 +27,13 @@ load (HH_RDATA)
 
 # Recode data
 
-household <- hbayarea15 %>% mutate(
+household <- hbayarea15 %>% 
+  filter(TEN!=4) %>% mutate(                          # Remove occupied without payment of rent
   adjustedinc=HINCP*(ADJINC/1000000),                 # Adjusted income to constant 2015$ 
   tenure=case_when(
     TEN==1     ~ "Owner",                             # Owned with a mortgage
     TEN==2     ~ "Owner",                             # Owned free and clear
-    TEN==3     ~ "Renter",                            # Rented
-    TEN==4     ~ "Renter"                             # Occupied without payment of rent
+    TEN==3     ~ "Renter"                             # Rented
   ),
   quartile=case_when(
     adjustedinc <  break1                         ~ "Quartile1",  # Income below 30k in 2000$
@@ -57,18 +57,9 @@ tenure_sum <- household %>%
   summarize(aggregate_income=sum(WGTP*adjustedinc/12),aggregate_rent=sum(WGTP*rent_cost),aggregate_owncosts=sum(WGTP*own_cost),aggregate_costs=sum(WGTP*total_cost)) %>% 
   mutate(
     share_income=case_when(
-    aggregate_rent>0   ~aggregate_rent/(aggregate_income),           # Share income for renters
+    aggregate_rent >0        ~aggregate_rent/(aggregate_income),              # Share income for renters
     aggregate_owncosts >0   ~aggregate_owncosts/(aggregate_income),            # Share income for owners
   ))
-
-tenure_sum <- household %>% 
-  group_by(quartile,tenure) %>% 
-  summarize(aggregate_income=sum(WGTP*adjustedinc/12),aggregate_rent=sum(WGTP*rent_cost),aggregate_owncosts=sum(WGTP*own_cost),aggregate_costs=sum(WGTP*total_cost)) %>% 
-  mutate(
-    share_income=case_when(
-      aggregate_rent>0   ~aggregate_rent/(aggregate_income),           # Share income for renters
-      aggregate_owncosts >0   ~aggregate_owncosts/(aggregate_income),            # Share income for owners
-    ))
 
 total_sum <- household %>% 
   group_by(quartile) %>% 
