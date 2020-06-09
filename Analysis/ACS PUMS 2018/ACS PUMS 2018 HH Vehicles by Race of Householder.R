@@ -17,11 +17,11 @@ household <- hbayarea18 %>%
   filter(!is.na(TEN)) %>% 
   mutate(SERIALNO = as.character(SERIALNO))             # Imports as factor; fixing this
 
-# Extract adults, join with household file for number of vehicles
+# Join person file with household file for number of vehicles
 
 persons <- pbayarea18 %>%
   mutate(SERIALNO = as.character(SERIALNO)) %>%         # Imports as factor; fixing this
-  filter(RELP==0) %>%                                   # Householder only
+  filter(RELP==0) %>%                                   # Retain householder only
   select(-ADJINC) %>%                                   # Remove this variable and use joined version
   left_join(.,household,by="SERIALNO") %>% 
   mutate(
@@ -30,7 +30,7 @@ persons <- pbayarea18 %>%
       VEH>=1             ~ "1p_Vehicle",
       TRUE               ~ "Not coded"
     ),
-    racerc=case_when(                                   # Recode race
+    racerc=case_when(                                   # Recode race of householder
       HISP>1               ~"5_Hispanic",
       HISP==1 & RAC1P==1   ~"1_White",
       HISP==1 & RAC1P==2   ~"2_Black",
