@@ -54,7 +54,7 @@ household <- hbayarea15 %>%
 
 tenure_sum <- household %>% 
   group_by(quartile,tenure) %>% 
-  summarize(aggregate_income=sum(WGTP*adjustedinc/12),aggregate_rent=sum(WGTP*rent_cost),aggregate_owncosts=sum(WGTP*own_cost),aggregate_costs=sum(WGTP*total_cost)) %>% 
+  summarize(aggregate_income=sum(WGTP*adjustedinc/12),aggregate_rent=sum(WGTP*rent_cost),aggregate_owncosts=sum(WGTP*own_cost),aggregate_costs=sum(WGTP*total_cost),households=sum(WGTP)) %>% 
   mutate(
     share_income=case_when(
     aggregate_rent >0        ~aggregate_rent/(aggregate_income),              # Share income for renters
@@ -64,13 +64,24 @@ tenure_sum <- household %>%
 total_sum <- household %>% 
   group_by(quartile) %>% 
   summarize(tenure="Total",aggregate_income=sum(WGTP*adjustedinc/12),aggregate_rent=sum(WGTP*rent_cost),aggregate_owncosts=sum(WGTP*own_cost),
-            aggregate_costs=sum(WGTP*total_cost)) %>% 
+            aggregate_costs=sum(WGTP*total_cost),households=sum(WGTP)) %>% 
   mutate(
     share_income=aggregate_costs/(aggregate_income)       # Share income for sum of renters and owners
   )
 
 final <- rbind(tenure_sum,total_sum) %>%          # Concatenate and sort
-  arrange(quartile,tenure)
+  arrange(quartile,tenure) %>% mutate(            
+    short_name=case_when(                         # Add short name of cell for later use 
+      quartile=="Quartile1" & tenure=="Renter" ~ "q1r",
+      quartile=="Quartile2" & tenure=="Renter" ~ "q2r",
+      quartile=="Quartile3" & tenure=="Renter" ~ "q3r",
+      quartile=="Quartile4" & tenure=="Renter" ~ "q4r",
+      quartile=="Quartile1" & tenure=="Owner" ~  "q1o",
+      quartile=="Quartile2" & tenure=="Owner" ~  "q2o",
+      quartile=="Quartile3" & tenure=="Owner" ~  "q3o",
+      quartile=="Quartile4" & tenure=="Owner" ~  "q4o"
+    )
+  )
 
 # Export
 
