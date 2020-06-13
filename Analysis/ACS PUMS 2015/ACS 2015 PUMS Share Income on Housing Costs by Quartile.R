@@ -79,7 +79,12 @@ final <- rbind(tenure_sum,total_sum) %>%          # Concatenate and sort
       quartile=="Quartile1" & tenure=="Owner" ~  "q1o",
       quartile=="Quartile2" & tenure=="Owner" ~  "q2o",
       quartile=="Quartile3" & tenure=="Owner" ~  "q3o",
-      quartile=="Quartile4" & tenure=="Owner" ~  "q4o"
+      quartile=="Quartile4" & tenure=="Owner" ~  "q4o",
+      quartile=="Quartile1" & tenure=="Total" ~  "q1t",
+      quartile=="Quartile2" & tenure=="Total" ~  "q2t",
+      quartile=="Quartile3" & tenure=="Total" ~  "q3t",
+      quartile=="Quartile4" & tenure=="Total" ~  "q4t",
+      
     )
   )
 
