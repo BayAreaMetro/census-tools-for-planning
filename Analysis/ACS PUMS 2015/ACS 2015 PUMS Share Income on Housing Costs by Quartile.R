@@ -91,3 +91,4 @@ final <- rbind(tenure_sum,total_sum) %>%          # Concatenate and sort
 # Export
 
 write.csv(final,file="ACS PUMS 2015 Share Income Spent on Housing by Quartile.csv",row.names = FALSE,quote=TRUE)
+
