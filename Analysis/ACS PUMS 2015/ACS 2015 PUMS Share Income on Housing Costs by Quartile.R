@@ -69,7 +69,7 @@ total_sum <- household %>%
     share_income=aggregate_costs/(aggregate_income)       # Share income for sum of renters and owners
   )
 
-final <- rbind(tenure_sum,total_sum) %>%          # Concatenate and sort
+final <- rbind(as.data.frame(tenure_sum),as.data.frame(total_sum)) %>%          # Concatenate and sort
   arrange(quartile,tenure) %>% mutate(            
     short_name=case_when(                         # Add short name of cell for later use 
       quartile=="Quartile1" & tenure=="Renter" ~ "q1r",
