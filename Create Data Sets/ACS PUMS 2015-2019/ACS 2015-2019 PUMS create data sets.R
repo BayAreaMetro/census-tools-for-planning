@@ -17,9 +17,9 @@ CAPER_OUTPUT_RDATA = "M:/Data/Census/PUMS/PUMS 2015-19/pcalif1519.Rdata"
 BAYHH_OUTPUT_RDATA   = "M:/Data/Census/PUMS/PUMS 2015-19/hbayarea1519.Rdata"
 BAYPER_OUTPUT_RDATA = "M:/Data/Census/PUMS/PUMS 2015-19/pbayarea1519.Rdata"
 
-hcalif1519 <- read.csv(CA_HOUSEHOLDS, header=TRUE)
-pcalif1519 <- read.csv(CA_PERSONS, header=TRUE)
-equivalence <- read.csv(EQUIVALENCE, header=TRUE)
+hcalif1519 <- read.csv(CA_HOUSEHOLDS, header=TRUE, as.is=TRUE)
+pcalif1519 <- read.csv(CA_PERSONS, header=TRUE, as.is=TRUE)
+equivalence <- read.csv(EQUIVALENCE, header=TRUE, as.is=TRUE)
 
 hbayarea1519 <- merge (hcalif1519,equivalence, by.x="PUMA", by.y="PUMARC")
 pbayarea1519 <- merge (pcalif1519,equivalence, by.x="PUMA", by.y="PUMARC")
