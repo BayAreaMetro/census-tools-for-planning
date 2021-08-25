@@ -42,7 +42,7 @@ PUMA_households <- hbayarea1317 %>%
   group_by(PUMA) %>% 
   summarize(Total_HHs=sum(WGTP))
             
-# Summarize total workers using person weight 
+# Summarize total workers at the household level, using person weights 
 
 HH_workers_pweight <- combined %>%
   group_by(SERIALNO,PUMA,PUMA_Name,COUNTY,County_Name) %>%
@@ -79,9 +79,9 @@ Interim1 <- left_join(HH_workers_pweight,HH_wrks,by=c("PUMA","PUMA_Name","COUNTY
   spread(.,worker_total,person_worker_total) %>% 
   ungroup()
 
-# Join file to include average number of workers in 3-plus worker households (by PUMA)
+# Join file to include average number of workers in 3-plus worker households by PUMA
 # Join total HHs by PUMA
-# Create variables for number of household workers (as placeholders for next-step calculation)
+# Create variables for number of household workers (as placeholder ordering for next-step calculation)
 
 Interim2 <- left_join(Interim1,HH_summary3p,by=c("PUMA","PUMA_Name","COUNTY","County_Name")) %>% 
   left_join(.,PUMA_households,by="PUMA") %>% 
@@ -91,7 +91,7 @@ Interim2 <- left_join(Interim1,HH_summary3p,by=c("PUMA","PUMA_Name","COUNTY","Co
          hh_wrks_3_plus=0)
 
 # Calculate households by number of household workers, rounding as necessary
-# Start with 1-worker HHs (implied division by 1), 2-worker HHs (divided by 2), 
+# Start with 1-worker HHs (implied division by 1 worker), 2-worker HHs (divided by 2 workers), 
 # 3-plus-worker HHs are divided by PUMA average for 3+-worker households
 # Subtract the 1-,2-,and 3+-worker households from total HHs to yield 0-worker HHs.
 
