@@ -113,20 +113,22 @@ dvrpc_NJ <- get_pums(
   year = 2019)
 
 active_DVRPC <- rbind(dvrpc_PA,dvrpc_NJ) %>% 
-  mutate(AGE_GROUP=case_when(
+  mutate(Age_Group=case_when(
     AGEP %in% 16:19                 ~ "16-19",
     AGEP %in% 20:24                 ~ "20-24",
     AGEP %in% 25:44                 ~ "25-44",
     AGEP %in% 45:54                 ~ "45-54",
     AGEP %in% 55:59                 ~ "55-59",
-    TRUE                            ~ "60+"
+    AGEP %in% 60:64                 ~ "60-64",
+    TRUE                            ~ "65+"
   )) %>% 
-  group_by(AGE_GROUP,SEX_label) %>% 
-  summarize(ACTIVE_COMMUTERS=sum(PWGTP))
+  group_by(Age_Group,SEX_label) %>% 
+  summarize(Active_Commuters=sum(PWGTP)) %>% 
+  rename(Sex_Label=SEX_label)
    
-ggplot(data=active_DVRPC, aes(x=AGE_GROUP, y=ACTIVE_COMMUTERS, fill=SEX_label)) +
+ggplot(data=active_DVRPC, aes(x=Age_Group, y=Active_Commuters, fill=Sex_Label)) +
   geom_bar(stat="identity", position=position_dodge())+
-  geom_text(aes(label=ACTIVE_COMMUTERS), vjust=1.6, color="white",
+  geom_text(aes(label=Active_Commuters), vjust=1.6, color="white",
             position = position_dodge(0.9), size=3.5)+
   scale_fill_brewer(palette="Paired")+
   theme_minimal()
