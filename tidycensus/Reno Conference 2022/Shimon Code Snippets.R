@@ -24,6 +24,8 @@ library(tidycensus)
 library(survey)
 library(srvyr)
 
+View(pums_variables)
+
 # Bay Area PUMAs
 
 baypuma    <- c("00101", "00102", "00103", "00104", "00105", "00106", "00107", "00108", "00109", "00110", 
@@ -35,7 +37,7 @@ baypuma    <- c("00101", "00102", "00103", "00104", "00105", "00106", "00107", "
 
 # Place-of-work PUMAs(POWPUMA) in the Bay Area
 
-baypowpuma = c("00100","01300","04100","05500","07500","08100","08500","09500","09700") 
+baypowpuma <-  c("00100","01300","04100","05500","07500","08100","08500","09500","09700") 
 
 bay_incommute <- get_pums(
   variables = c("PUMA","POWPUMA", "POWSP","JWTRNS"),
@@ -46,7 +48,7 @@ bay_incommute <- get_pums(
                 rep_weights = "person"
                 ) %>%
 
-  mutate(POW_NAME=recode(POWPUMA,
+   mutate(POW_NAME=recode(POWPUMA,
                         "00100"="Alameda",
                         "01300"="Contra Costa",
                         "04100"="Marin",
@@ -56,7 +58,7 @@ bay_incommute <- get_pums(
                         "08500"="Santa Clara",
                         "09500"="Solano",
                         "09700"="Sonoma")) %>% 
-
+  
   filter(!(PUMA %in% baypuma), 
          POWPUMA %in% baypowpuma,
          POWSP_label=="California/CA",
@@ -69,14 +71,14 @@ bay_incommute_survey <- to_survey(bay_incommute)
 sum_database <- bay_incommute_survey %>% 
   survey_count(POW_NAME, JWTRNS_label)
 
-incommute_final <- final_database %>% select(-n_se) %>% 
-  pivot_wider(.,names_from = JWTRNS_label,values_from = n,values_fill = 0) %>% 
+CA_to_bay_incommute_final <- sum_database %>% select(-n_se) %>% 
+  pivot_wider(names_from = JWTRNS_label,values_from = n,values_fill = 0) %>% 
   rename(County_of_Work=POW_NAME)
 
 # For 90% confidence interval = estimate +/- 1.65*SE
-# For 90% confidence interval = estimate +/- 1.96*SE
+# For 95% confidence interval = estimate +/- 1.96*SE
 
-## DVRPC
+## DVRPC Active Commute Modes
                                                 
 dvrpc_PA_pumas <- c(
   "03001","03002","03003","03004",                 # Bucks County
@@ -99,7 +101,7 @@ dvrpc_PA <- get_pums(
   survey = "acs1",
   state = "PA",
   puma = dvrpc_PA_pumas,
-  variables_filter = list(JWTRNS=09:10),              # Only people who bike to work
+  variables_filter = list(JWTRNS=09:10),           # Only people who bike to work
   recode = TRUE,
   year = 2019)
 
@@ -125,13 +127,16 @@ active_DVRPC <- rbind(dvrpc_PA,dvrpc_NJ) %>%
   group_by(Age_Group,SEX_label) %>% 
   summarize(Active_Commuters=sum(PWGTP)) %>% 
   rename(Sex_Label=SEX_label)
+
+# Plot DVRPC active modes by age and sex using GGPLOT2 package
    
 ggplot(data=active_DVRPC, aes(x=Age_Group, y=Active_Commuters, fill=Sex_Label)) +
   geom_bar(stat="identity", position=position_dodge())+
-  geom_text(aes(label=Active_Commuters), vjust=1.6, color="white",
+  geom_text(aes(label=scales::comma(Active_Commuters)), vjust=1.6, color="white",
             position = position_dodge(0.9), size=3.5)+
-  scale_fill_brewer(palette="Paired")+
-  theme_minimal()
+  scale_fill_brewer(palette="Paired")+theme_minimal()+
+  ggtitle("ACS 2019 PUMS: DVRPC Walk/Bike to Work by Age and Gender")+
+  theme(plot.title = element_text(hjust = 0.5))
   
   
   bay <- get_pums(
