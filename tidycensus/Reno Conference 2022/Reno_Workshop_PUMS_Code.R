@@ -18,7 +18,7 @@ library(srvyr)
 
 View(pums_variables)
 
-## Example script to look at California-to-Bay Area incommute
+### Example script to look at California-to-Bay Area incommute
 
 # Create vector of Bay Area PUMAs
 
@@ -33,7 +33,7 @@ baypuma    <- c("00101", "00102", "00103", "00104", "00105", "00106", "00107", "
 
 baypowpuma <-  c("00100","01300","04100","05500","07500","08100","08500","09500","09700") 
 
-# Script to extract california commuters by mode, 
+# Script to extract 2019 california commuters by mode, 
 # including recoded variable names and replicate weights for standard error calculation
 
 bay_incommute <- get_pums(
@@ -44,6 +44,9 @@ bay_incommute <- get_pums(
                 recode = TRUE,
                 rep_weights = "person"
                 ) %>%
+  
+# Still working within the same script, continued with the pipe ("%>%") operator
+# Recode place-of-work PUMAs with Bay Area county names
 
    mutate(POW_NAME=recode(POWPUMA,
                         "00100"="Alameda",
@@ -56,6 +59,11 @@ bay_incommute <- get_pums(
                         "09500"="Solano",
                         "09700"="Sonoma")) %>% 
   
+# Filter records to people residing in CA outside the Bay Area and commuting to Bay Area counties
+# Filter out non-commuters ("bb")
+# Move one variable (POW_NAME) in the dataset
+# Select out unneeded variables to tidy up dataset
+  
   filter(!(PUMA %in% baypuma), 
          POWPUMA %in% baypowpuma,
          POWSP_label=="California/CA",
@@ -63,19 +71,28 @@ bay_incommute <- get_pums(
   relocate(POW_NAME,.before = PWGTP) %>% 
   select(-WGTP, -ST,-JWTRNS, -POWPUMA_label, -POWSP) 
 
+# Create survey object from above dataframe 
+# Summarize by POW PUMA and means of transportation to work
+# Take a look at sum_database
+
 bay_incommute_survey <- to_survey(bay_incommute)
 
 sum_database <- bay_incommute_survey %>% 
   survey_count(POW_NAME, JWTRNS_label)
 
+View (sum_database)
+
+# Remove standard error variable
+# Pivot from long to wide data format, using 0s to fill missing cells
+# Rename variable for case consistency
+
 CA_to_bay_incommute_final <- sum_database %>% select(-n_se) %>% 
   pivot_wider(names_from = JWTRNS_label,values_from = n,values_fill = 0) %>% 
   rename(County_of_Work=POW_NAME)
 
-# For 90% confidence interval = estimate +/- 1.65*SE
-# For 95% confidence interval = estimate +/- 1.96*SE
+### Example script to summarize DVRPC active mode commuters by age and sex
 
-## DVRPC Active Commute Modes
+# Get two vectors of PUMAs, one for the PA portion of DVRPC and one for the NJ portion
                                                 
 dvrpc_PA_pumas <- c(
   "03001","03002","03003","03004",                 # Bucks County
@@ -92,6 +109,10 @@ dvrpc_NJ_pumas <- c(
   "02201","02202",                                 # Gloucester County
   "02301","02302","02303"                          # Mercer County
                 )
+# Call PUMS API to get means of transportation, age, and sex variables
+# Two calls required, one for each state's PUMAs
+# Use variables_filter command to subset just bike/walk modes for JWTRNS variable
+# Include recode = TRUE command to append a metadata labels column in dataset
 
 dvrpc_PA <- get_pums(
   variables = c("JWTRNS","AGEP","SEX"),
@@ -110,6 +131,10 @@ dvrpc_NJ <- get_pums(
   variables_filter = list(JWTRNS=09:10),              # Only people who bike/walk to work
   recode = TRUE,
   year = 2019)
+
+# Concatenate ("rbind") two datasets and recode age variable to group bins
+# Group records by age group and sex and summarize person weight
+# Rename variable for case consistency
 
 active_DVRPC <- rbind(dvrpc_PA,dvrpc_NJ) %>% 
   mutate(Age_Group=case_when(
@@ -136,12 +161,3 @@ ggplot(data=active_DVRPC, aes(x=Age_Group, y=Active_Commuters, fill=Sex_Label)) 
   theme(plot.title = element_text(hjust = 0.5))
   
   
-  bay <- get_pums(
-    variables = c("JWTRNS"),
-    survey = "acs1",
-    state = "CA",
-    puma = baypuma,
-    year = 2019
-  )
-
-trial <- dvrpc_NJ %>% filter(JWTRNS=="09")
