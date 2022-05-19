@@ -1,32 +1,26 @@
-library(tidyverse)
-library(tidycensus)
+# Reno_Workshop_PUMS_Code.R
+# Work through a few examples for using the R package Tidycensus to extract PUMS data
+# Presentation for Census Data for Transportation Planning Conference in Reno, June 2022
 
-myvars <- c(total_worker_ = "B08006_001",
-            transit_ = "B08006_008",
-            bicycle_ = "B08006_014",
-            walked_ =  "B08006_015",
-            at_home_ = "B08006_017")
-             
-years <- 2006:2019   
-# or years5 <- c(2010,2015,2020) for 5-year ACS or c(2006:2019,2021)
-names(years) <- years
-### Pull US States for Selected Journey-to-Work Variables
-state1 <- purrr::map_dfr(years, ~get_acs(survey = "acs1",
-                 geography = "place", 
-                 state = "CA",
-                 variables = myvars, output='wide',
-                 year = .x), .id = "year") %>% 
-             dplyr::arrange(GEOID,year)
 
+# Include libraries for Census data extraction and working with tidyverse tools
 
 library(tidyverse)
 library(tidycensus)
+
+# Include Survey Package for survey tools (applied for developing standard error values)
+# The Srvyr Package is a wrapper around the Survey Package that allows use of Tidyverse-like tools
+
 library(survey)
 library(srvyr)
 
+# View PUMS data dictionary in R
+
 View(pums_variables)
 
-# Bay Area PUMAs
+## Example script to look at California-to-Bay Area incommute
+
+# Create vector of Bay Area PUMAs
 
 baypuma    <- c("00101", "00102", "00103", "00104", "00105", "00106", "00107", "00108", "00109", "00110", 
                 "01301", "01302", "01303", "01304", "01305", "01306", "01307", "01308", "01309", "04101", 
@@ -35,9 +29,12 @@ baypuma    <- c("00101", "00102", "00103", "00104", "00105", "00106", "00107", "
                 "08506", "08507", "08508", "08509", "08510", "08511", "08512", "08513", "08514", "09501", 
                 "09502", "09503", "09701", "09702", "09703")
 
-# Place-of-work PUMAs(POWPUMA) in the Bay Area
+# Create vector of Bay Area place-of-work PUMAs(POWPUMA), which in the Bay Area are coextensive with county geographies
 
 baypowpuma <-  c("00100","01300","04100","05500","07500","08100","08500","09500","09700") 
+
+# Script to extract california commuters by mode, 
+# including recoded variable names and replicate weights for standard error calculation
 
 bay_incommute <- get_pums(
   variables = c("PUMA","POWPUMA", "POWSP","JWTRNS"),
