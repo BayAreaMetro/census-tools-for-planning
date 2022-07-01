@@ -45,11 +45,3 @@ bay_transit <- get_pums(
 # Export the data
 
 write.csv(bay_transit,file = "M:/Data/Requests/Lysa Hale/Clipper Start/Poverty and Race for Transit Commuters.csv",row.names = F)
-  
-transit <- get_pums(
-  variables = c("PUMA","JWTRNS", "RAC1P", "HISP", "POVPIP"),
-  survey = "acs5",
-  state = "CA",
-  year = 2019,
-  variables_filter = list(JWTRNS=02:06),           # Only people who take transit
-  recode = TRUE)
