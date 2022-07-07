@@ -1,6 +1,5 @@
 # ACS 2015-2019 PUMS Clipper Start Eligibility by County.R
 
-
 # Include libraries for Census data extraction and working with tidyverse tools
 
 library(tidyverse)
@@ -49,7 +48,7 @@ bay_transit <- get_pums(
     TRUE                                ~ "Miscoded"
   ))
 
-final %>% 
+final <- bay_transit %>% 
   mutate(
     poverty_recoded=case_when(
       POVPIP<200              ~ "Less than 200",
@@ -63,7 +62,7 @@ final %>%
       HISP=="01" & RAC1P=="6"                             ~ "3_Asian",
       TRUE                                                ~ "Miscoded")
     ) %>% 
-  group_by(poverty_recoded,race_recoded) %>% 
+  group_by(county, poverty_recoded,race_recoded) %>% 
   summarize(total=sum(PWGTP))
   
 # Export the data
