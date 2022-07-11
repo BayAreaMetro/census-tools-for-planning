@@ -39,11 +39,11 @@ pbayarea19_exp <- left_join(pbayarea19,pums2019_experimental,by=c("SERIALNO"="se
 
 relshipp <- pbayarea19_exp %>% 
   filter(RELSHIPP==20) %>% 
-  select(SERIALNO,PWGTP_exp)
+  select(SERIALNO,PWGTP_2019_exp)
 
 hbayarea19_exp <- left_join(hbayarea19,relshipp,by="SERIALNO") %>% 
   filter(NP>=1,TYPE==1) %>% 
-  rename(WGTP_2019_exp=PWGTP_exp,WGTP_2019=WGTP) %>% 
+  rename(WGTP_2019_exp=PWGTP_2019_exp,WGTP_2019=WGTP) %>% 
   mutate(YEAR=2019)
 
 hbayarea20_exp <- hbayarea20 %>% 
@@ -74,6 +74,3 @@ write.csv(hbayarea20_exp,file.path(BOX_TM,"hbayarea20_exp.csv"), row.names = F)
 
 write.csv(pbayarea19_20_exp,file.path(BOX_TM,"pbayarea19_20_exp.csv"), row.names = F)
 write.csv(hbayarea19_20_exp,file.path(BOX_TM,"hbayarea19_20_exp.csv"), row.names = F)
-
-
-
