@@ -1,7 +1,5 @@
-# RMWG_PUMS_Code_0822.R
+# Census 2020 Data for Experimental Weights Comparisons.R
 # Work through a few examples for using the R package Tidycensus to extract PUMS data
-# Presentation for Bay Area Regional Modeling Working Group on August 3, 2022
-
 
 # Include libraries for Census data extraction and working with tidyverse tools
 
@@ -10,7 +8,21 @@ library(tidycensus)
 
 # View PUMS data dictionary in R
 
-View(pums_variables)
+varlist20 <- load_variables(2020,"pl",cache=FALSE)
+
+# Race/ethnicity variables
+
+race20       <- c(TotalPop20 = "P2_001N",  # Total Population
+                Hispanic20 = "P2_002N",    # Hispanic or Latino
+                NH_White20 = "P2_005N",    # Non-Hispanic, White alone
+                NH_Black20 = "P2_006N")    # Non-Hispanic, Black alone
+
+us_counties2020 <- tidycensus::get_decennial(year=2020,  sumfile="pl", 
+                                             geography = "county", # state="Nevada",
+                                             #   geometry=TRUE, keep_geo_vars=TRUE,
+                                             show_call = TRUE, output="wide", variables = selvars20) %>%
+  dplyr::arrange(GEOID)
+
 
 ### Example script to look at California-to-Bay Area incommute
 
