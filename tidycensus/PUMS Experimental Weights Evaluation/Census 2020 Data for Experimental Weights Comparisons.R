@@ -9,19 +9,28 @@ library(tidycensus)
 # View PUMS data dictionary in R
 
 varlist20 <- load_variables(2020,"pl",cache=FALSE)
+county <- c("Alameda", "Contra Costa", "Marin", "Napa", "San Francisco", "San Mateo", "Santa Clara",
+            "Solano", "Sonoma")
 
 # Race/ethnicity variables
 
 race20       <- c(TotalPop20 = "P2_001N",  # Total Population
                 Hispanic20 = "P2_002N",    # Hispanic or Latino
                 NH_White20 = "P2_005N",    # Non-Hispanic, White alone
-                NH_Black20 = "P2_006N")    # Non-Hispanic, Black alone
+                NH_Black20 = "P2_006N",    # Non-Hispanic, Black alone
+                NH_AIAN20 = "P2_007N",     # Non-Hispanic, AIAN
+                NH_Asian20 = "P2_008N",    # Non-Hispanic, Asian
+                NH_NHPI20 = "P2_009N",     # Non-Hispanic, NHPI
+                NH_Other20 = "P2_010N",    # Non-Hispanic, Some other race alone
+                NH_Two20 = "P2_011N"       # Non-Hispanic, Two or more races
+                )    
 
-us_counties2020 <- tidycensus::get_decennial(year=2020,  sumfile="pl", 
-                                             geography = "county", # state="Nevada",
-                                             #   geometry=TRUE, keep_geo_vars=TRUE,
-                                             show_call = TRUE, output="wide", variables = selvars20) %>%
-  dplyr::arrange(GEOID)
+bay_counties2020 <- get_decennial(year=2020, sumfile="pl", 
+                                geography = "county", state="California",
+                                show_call = TRUE, output="wide", variables = race20) %>%
+  arrange(GEOID) %>% 
+  mutate(NAME=gsub(" County, California","",NAME)) %>% 
+  filter(NAME %in% county)
 
 
 ### Example script to look at California-to-Bay Area incommute
