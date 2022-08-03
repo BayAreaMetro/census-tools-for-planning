@@ -1,5 +1,6 @@
 # ACS PUMS 2019 and 2020 Experimental Weights Comparison.r
-# Summarize trip lengths for weeklong travel
+# Create a single file with 2019 standard, 2019 experimental, and 2020 experimental weights
+# Do the analysis in Tableau
 
 # Import Libraries
 
@@ -57,7 +58,6 @@ pbayarea20_exp <- pbayarea20 %>%
   rename(PWGTP_2020=PWGTP)
 
 # Concatenate person and then household files for 2019 and 2020 into single files, respectively
-# 
 
 pbayarea19_20_exp <- bind_rows(pbayarea19_exp,pbayarea20_exp) %>% 
   mutate_at(vars(PWGTP_2019,PWGTP_2019_exp,PWGTP_2020),~ifelse(is.na(.),0,.))
