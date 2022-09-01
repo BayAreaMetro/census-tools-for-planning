@@ -13,7 +13,7 @@ load (HH_RDATA)
 bay_income <- hbayarea1519 %>% 
   mutate(adjustment = ADJINC/1000000,
     income=HINCP*adjustment) %>% 
-  filter(!is.na(income))
+  filter(!is.na(income))               # Remove group quarters and vacant housing
 
 discrete_income <- function(income_imputed){
   temp <- bay_income %>% 
