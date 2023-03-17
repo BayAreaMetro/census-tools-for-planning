@@ -16,13 +16,15 @@ load (PERSON_RDATA)
 
 # Set ESR codes of interest - basically anyone employed or unemployed, but in the labor force
 # People excluded are those under 16 and/or not in the labor force (codes "NA" and "6" for ESR)
+# ESR==3 is unemployed and ESR==6 is not in labor force and both omitted from this universe
 
 ESR_codes <- c("1", #Civilian employed, at work
                "2", #Civilian employed, with a job but not at work 
                "4", #Armed forces, at work
                "5")  #Armed forces, with a job but not at work 
 
-# ESR==3 is unemployed and ESR==6 is not in labor force and both omitted from this universe
+# Recode industry and occupation as well as county of work (COW)
+# Use first two digits of industry and occupation (3M is grouped in 33 and 4M is grouped in 45)
 
 person <- pbayarea1721 %>% 
   select(PUMA,County_Name,POWPUMA, POWSP, PWGTP,NAICSP,SOCP,ESR) %>%
@@ -31,7 +33,7 @@ person <- pbayarea1721 %>%
       NAICS2=substr(NAICSP,1,2),
       SOC2=substr(SOCP,1,2),
       NAICS_description=case_when(
-        NAICS2==11	     ~         "Agriculture, Forestry, Fishing and Hunting",
+        NAICS2==11	     ~         "Agriculture, Forestry, Fishing and Hunting", 
         NAICS2==21	     ~         "Mining, Quarrying, and Oil and Gas Extraction",
         NAICS2==22	     ~         "Utilities",
         NAICS2==23	     ~         "Construction",
