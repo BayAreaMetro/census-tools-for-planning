@@ -6,7 +6,7 @@ censuskey            <- readLines("M:/Data/Census/API/api-key.txt")
 place_eq_in          <- "M:/Data/Census/corrlib/Census2010/Census 2010_Places_65k_Over.csv"
 place_eq             <- read.csv(place_eq_in,header = T)
 
-acs_variables <- c(total_pop_              ="B01003_001",          # Total transit users
+acs_variables <- c(total_pop_              ="B01003_001",          # Total area population
                    transit_tot_            ="C08301_008",          # Total transit users
                    transit_wnh_            ="B08105H_004",         # White, not Hispanic transit use
                    transit_native_         ="C08111_017",          # Native public transit user
@@ -28,8 +28,7 @@ places_19 <- get_acs(geography = "place", variables = acs_variables,
                      survey = "acs1",
                      key = censuskey) %>% 
   arrange(NAME) %>% 
-  left_join(place_eq,.,by="NAME")  %>%  
-  slice_max(.$total_pop_E,n=20)
+  left_join(place_eq,.,by="NAME")  
 
 counties_19 <- get_acs(geography = "county", variables = acs_variables,
                        state = "06", county = baycounties,
@@ -72,8 +71,15 @@ bay_21 <- counties_21 %>%
 
 # Combine and remove margin of error field
 combined_19 <- rbind(counties_19,places_19,bay_19) %>% 
-  select(!(ends_with("_M")))
-
+  select(!(ends_with("_M"))) %>% 
+  rename_with(~str_remove(., '_E')) %>% 
+  rename_with(~paste0(.,"_2019"),3:ncol(.)) %>% 
+  filter(!(is.na(GEOID)))
+  
 combined_21 <- rbind(counties_21,places_21,bay_21) %>% 
-  select(!(ends_with("_M")))
+  select(!(ends_with("_M"))) %>% 
+  rename_with(~str_remove(., '_E')) %>% 
+  rename_with(~paste0(.,"_2021"),3:ncol(.)) 
+
+final <- left_join(combined_19,combined_21,by=c("GEOID","NAME"))
 
