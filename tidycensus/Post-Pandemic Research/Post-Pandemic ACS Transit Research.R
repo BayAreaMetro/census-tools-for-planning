@@ -11,8 +11,7 @@ place_eq_in          <- "M:/Data/Census/corrlib/Census2010/Census 2010_Places_65
 place_eq             <- read.csv(place_eq_in,header = T)
 
 USERPROFILE          <- gsub("\\\\","/", Sys.getenv("USERPROFILE"))
-BOX_TM               <- file.path(USERPROFILE, "Box", "Modeling and Surveys")
-PBA_TAZ_2010         <- file.path(BOX_TM, "Share Data",   "plan-bay-area-2040", "2010_06_003","tazData.csv")
+BOX_PPR              <- file.path(USERPROFILE, "Box", "Modeling and Surveys","Census","Post Pandemic Research")
 
 
 acs_variables <- c(total_pop_              ="B01003_001",          # Total area population
