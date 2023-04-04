@@ -1,7 +1,7 @@
 # ACS 2017-2021 PUMS LEP for Travel Diary Survey.R
 # Analyze ACS 2017-2021 Bay Area PUMS for LEP populations by Chinese, Spanish, and Tagalog spoken at home
 
-suppressMessages(library(dplyr))
+suppressMessages(library(tidyverse))
 
 # Locations
 USERPROFILE     <- gsub("\\\\","/", Sys.getenv("USERPROFILE"))
@@ -10,6 +10,7 @@ BOX_Lanugage    <- file.path(BOX_int,"Biennial Travel Diary Survey","2023 Survey
 
 
 Chinese    = c(1970,2000,2050) # Chinese, Mandarin, and Cantonese, respectively
+Spanish    = 1200
 Tagalog    = 2920
 Vietnamese = 1960
 
@@ -21,23 +22,27 @@ load (PERSON_RDATA)
 # Recode variables for Chinese, Spanish, and Tagalog
 
 pums <- pbayarea1721 %>% 
-  mutate(LEP=if_else(ENG %in% c(2,3,4),1,0)) %>%        # Speaks English less than very well
-  filter (LANP %in% c(Chinese,Tagalog,Vietnamese))      # Languages spoken at home are Chinese, Mandarin, and Cantonese
-
-
-# Summarize by language then do median age by dialect
+  mutate(English_Ability=if_else(ENG %in% c(2,3,4),"LEP","Very Well or Underage")) %>%        # Speaks English less than very well
+  mutate(Language=case_when(
+           LANP=="1970"    ~"Chinese",
+           LANP=="2000"    ~"Chinese",
+           LANP=="2050"    ~"Chinese",
+           LANP=="1200"    ~"Spanish",
+           LANP=="2920"    ~"Tagalog",
+           LANP=="1960"    ~"Vietnamese",
+           TRUE            ~"All_Others")) %>% 
+  select(County_Name,PWGTP,Language,English_Ability)
 
 final <- pums %>% 
-  group_by(Dialect) %>% 
-  summarize(Total=sum(PWGTP))
+  group_by(County_Name,Language,English_Ability) %>% 
+  summarize(total=sum(PWGTP)) %>% 
+  pivot_wider(.,names_from=Language,values_from=total) %>% 
+  ungroup() %>% 
+  relocate(All_Others,.after = Vietnamese)
 
-median_age <- pbayarea1519 %>% 
-  filter((LANP %in% languages) & (PUMA %in% pumas)) %>% 
-  mutate(Dialect=recode(LANP,"1970"="3_Chinese","2000"="2_Mandarin","2050"="1_Cantonese")) %>% 
-  group_by(Dialect) %>% 
-  summarize(med_age=wtd.quantile(AGEP, q=0.5, na.rm = FALSE, weight=PWGTP))
+write.csv(final, file.path(BOX_Lanugage,"PUMS 2017-2021 Bay Area Limited-English Speakers.csv"), row.names = FALSE, quote = T)
 
-write.csv(final, "PUMS2015-2019 Chinese LEP Commuters.csv", row.names = FALSE, quote = T)
-write.csv(median_age, "PUMS2015-2019 Chinese Median Age.csv", row.names = FALSE, quote = T)
+
+
 
 
