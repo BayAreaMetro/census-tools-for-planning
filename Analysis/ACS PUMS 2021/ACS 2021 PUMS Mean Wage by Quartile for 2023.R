@@ -31,6 +31,7 @@ ESR_codes <- c("1", #Civilian employed, at work
                "5")  #Armed forces, with a job but not at work 
 
 # Filter for people in the above universe and have earnings greater than zero
+# Filter workers working more than 30 hours per week and more than 40 weeks per year
 
 person <- pbayarea21 %>% 
   select(ESR,PERNP,PWGTP,ADJINC,WKHP,WKWN) %>% 
@@ -60,10 +61,5 @@ final <- person %>%
 
 write.csv(final, paste0(OUTPUT, "ACS PUMS 2021 Mean Wage by Quartile.csv"), row.names = FALSE, quote = T)
 
-trial <- TPS %>% 
-  group_by(operator,route) %>% 
-  summarize(dummy=1) %>% 
-  select(-dummy)
 
-write.csv(trial,file.path(output,"Routes Sorted.csv"),row.names = F)
  
