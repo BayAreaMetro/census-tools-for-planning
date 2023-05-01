@@ -2,6 +2,8 @@
 # Analyze PUMS data for mean wages by quartile
 # 2021 1-year PUMS data
 
+options(scipen = 999)
+
 # Import Library
 
 suppressMessages(library(dplyr))
@@ -20,19 +22,19 @@ cpi2021        <- 309.721
 cpi2023        <- 337.173
 cpi_correction = cpi2023/cpi2021
 
-# Set ESR codes of interest - basically anyone employed or unemployed, but in the labor force
-# People excluded are those under 16 and/or not in the labor force (codes "NA" and "6" for ESR)
+# Set ESR codes of interest - basically anyone employed 
+# People excluded are those under 16, unemployed, and/or not in the labor force (codes "NA" and "3,6" for ESR)
 
 ESR_codes <- c("1", #Civilian employed, at work
                "2", #Civilian employed, with a job but not at work 
                "4", #Armed forces, at work
                "5")  #Armed forces, with a job but not at work 
 
-# ESR==3 is unemployed and ESR==6 is not in labor force and omitted from this universe
+# Filter for people in the above universe and have earnings greater than zero
 
 person <- pbayarea21 %>% 
-  select(ESR,PERNP,PWGTP,ADJINC) %>% 
-  filter(ESR %in% ESR_codes) %>% 
+  select(ESR,PERNP,PWGTP,ADJINC,WKHP,WKWN) %>% 
+  filter(ESR %in% ESR_codes, PERNP>0,WKHP>30,WKWN>40) %>% 
   mutate(wage2021=PERNP*(ADJINC/1000000), wage2023=wage2021*cpi_correction)
 
 # Calculate quartile thresholds
@@ -53,10 +55,15 @@ final <- person %>%
   )) %>% 
   group_by(quartile) %>% 
   summarize(total_persons=sum(PWGTP),lower_bound=min(wage2023),upper_bound=max(wage2023),
-            mean_wage=weighted.mean(wage2023,PWGTP)) %>% 
-  mutate(mean_hourly=mean_wage/2080)
+            mean_annual_earnings=weighted.mean(wage2023,PWGTP)) %>% 
+  mutate(mean_hourly_wage=mean_annual_earnings/2080)
 
 write.csv(final, paste0(OUTPUT, "ACS PUMS 2021 Mean Wage by Quartile.csv"), row.names = FALSE, quote = T)
 
+trial <- TPS %>% 
+  group_by(operator,route) %>% 
+  summarize(dummy=1) %>% 
+  select(-dummy)
 
+write.csv(trial,file.path(output,"Routes Sorted.csv"),row.names = F)
  
