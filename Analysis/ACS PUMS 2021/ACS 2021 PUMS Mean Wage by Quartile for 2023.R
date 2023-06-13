@@ -31,35 +31,34 @@ ESR_codes <- c("1", #Civilian employed, at work
                "5")  #Armed forces, with a job but not at work 
 
 # Filter for people in the above universe and have earnings greater than zero
-# Filter workers working more than 30 hours per week and more than 40 weeks per year
 
 person <- pbayarea21 %>% 
   select(ESR,PERNP,PWGTP,ADJINC,WKHP,WKWN) %>% 
-  filter(ESR %in% ESR_codes, PERNP>0,WKHP>30,WKWN>40) %>% 
-  mutate(wage2021=PERNP*(ADJINC/1000000), wage2023=wage2021*cpi_correction)
+  mutate(WKHP=as.numeric(WKHP)) %>% 
+  filter(ESR %in% ESR_codes,PERNP>0) %>% 
+  mutate(earnings2021=PERNP*(ADJINC/1000000), earnings2023=earnings2021*cpi_correction,
+         hrs_year=(if_else(WKHP>40,40,WKHP)*WKWN),hrly_wage=earnings2023/hrs_year)
 
 # Calculate quartile thresholds
 
-q1_threshold = wtd.quantile (person$wage2023, q=0.25, na.rm = FALSE, weight=person$PWGTP) 
-q2_threshold = wtd.quantile (person$wage2023, q=0.5, na.rm = FALSE, weight=person$PWGTP) 
-q3_threshold = wtd.quantile (person$wage2023, q=0.75, na.rm = FALSE, weight=person$PWGTP) 
+q1_threshold = wtd.quantile (person$hrly_wage, q=0.25, na.rm = FALSE, weight=person$PWGTP) 
+q2_threshold = wtd.quantile (person$hrly_wage, q=0.5, na.rm = FALSE, weight=person$PWGTP) 
+q3_threshold = wtd.quantile (person$hrly_wage, q=0.75, na.rm = FALSE, weight=person$PWGTP) 
 
 # Calculate average wages by hour (assuming 2080 hours per year)
 
 final <- person %>% 
   mutate(quartile=case_when(
-    wage2023<q1_threshold                                   ~ "Q1",
-    wage2023>=q1_threshold & wage2023<q2_threshold          ~ "Q2",
-    wage2023>=q2_threshold & wage2023<q3_threshold          ~ "Q3",
-    wage2023>=q3_threshold                                  ~ "Q4",
+    hrly_wage<q1_threshold                           ~ paste0("Q1, $0 - $",round(q1_threshold,2)-.01),
+    hrly_wage>=q1_threshold & hrly_wage<q2_threshold ~ paste0("Q2, $",round(q1_threshold,2)," - $",round(q2_threshold,2)-.01),
+    hrly_wage>=q2_threshold & hrly_wage<q3_threshold ~ paste0("Q3, $",round(q2_threshold,2)," - $",round(q3_threshold,2)-.01),
+    hrly_wage>=q3_threshold                          ~ paste0("Q4, $",round(q3_threshold,2),"+"),
     TRUE                                                    ~ "miscoded"
   )) %>% 
   group_by(quartile) %>% 
-  summarize(total_persons=sum(PWGTP),lower_bound=min(wage2023),upper_bound=max(wage2023),
-            mean_annual_earnings=weighted.mean(wage2023,PWGTP)) %>% 
-  mutate(mean_hourly_wage=mean_annual_earnings/2080)
+  summarize(total_persons=sum(PWGTP),med_qrtile_wage=wtd.quantile(hrly_wage,q=0.5,na.rm=false,PWGTP)) 
 
-write.csv(final, paste0(OUTPUT, "ACS PUMS 2021 Mean Wage by Quartile.csv"), row.names = FALSE, quote = T)
+write.csv(final, paste0(OUTPUT, "ACS PUMS 2021 Mean 2023 Wage by Quartile.csv"), row.names = FALSE, quote = T)
 
 
  
