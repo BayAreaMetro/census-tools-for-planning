@@ -56,7 +56,8 @@ final <- person %>%
     TRUE                                                    ~ "miscoded"
   )) %>% 
   group_by(quartile) %>% 
-  summarize(total_persons=sum(PWGTP),med_qrtile_wage=wtd.quantile(hrly_wage,q=0.5,na.rm=false,PWGTP)) 
+  summarize(total_persons=sum(PWGTP),med_qrtile_wage=wtd.quantile(hrly_wage,q=0.5,na.rm=false,PWGTP),
+            mean_qrtile_wage=weighted.mean(hrly_wage,PWGTP))
 
 write.csv(final, paste0(OUTPUT, "ACS PUMS 2021 Mean 2023 Wage by Quartile.csv"), row.names = FALSE, quote = T)
 
