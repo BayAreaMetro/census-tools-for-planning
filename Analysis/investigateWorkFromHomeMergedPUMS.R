@@ -119,4 +119,77 @@ pbayarea_combined <- left_join(
 save(pbayarea_combined,
      file = file.path(PUMS_DIR, "WorkFromHomeInvestigation", "pbayarea_workers.Rdata"))
 
-                          
+# Households now
+# Read PUMS 2013-2017 & keep subset of variables
+load(file.path(PUMS_DIR, "PUMS 2013-17", "hbayarea1317.Rdata"))
+hbayarea1317 = select(
+  hbayarea1317,
+  SERIALNO, # Housing unit/GQ person serial number
+  WGTP,     # Housing weight
+  PUMA,     # Public use microdata area code (PUMA) based on 2010 Census definition
+  ST,       # State code based on 2010 Census definitions
+  NP,       # Number of person records associated with this housing record
+  TYPE,     # Type of unit
+  BLD,      # Units in structure
+  HHT,      # Household/family type (Note: there's also HHT2)
+  HINCP,    # Household income (past 12 months, use ADJINC to adjust HINCP to constant dollars))
+  ADJINC,   # Adjustment factor for income and earnings dollar amounts
+  HUPAC,    # HH presence and age of children
+  NPF,      # Number of persons in family (unweighted)
+  TEN,      # Tenure
+  VEH,      # Vehicles (1 ton or less) available
+)
+
+# Read PUMS 2021 & keep subset of variables
+load(file.path(PUMS_DIR, "PUMS 2021", "hbayarea21.Rdata"))
+hbayarea21 = select(
+  hbayarea21,
+  SERIALNO, # Housing unit/GQ person serial number
+  WGTP,     # Housing weight
+  PUMA,     # Public use microdata area code (PUMA) based on 2010 Census definition
+  ST,       # State code based on 2010 Census definitions
+  NP,       # Number of person records associated with this housing record
+  TYPEHUGQ, # Type of unit
+  BLD,      # Units in structure
+  HHT,      # Household/family type (Note: there's also HHT2)
+  HINCP,    # Household income (past 12 months, use ADJINC to adjust HINCP to constant dollars))
+  ADJINC,   # Adjustment factor for income and earnings dollar amounts
+  HUPAC,    # HH presence and age of children
+  NPF,      # Number of persons in family (unweighted)
+  TEN,      # Tenure
+  VEH,      # Vehicles (1 ton or less) available
+)
+
+hbayarea1317 <- rename(hbayarea1317, TYPEHUGQ=TYPE)
+hbayarea1317 <- mutate(
+  hbayarea1317, 
+  source = "PUMS2013-2017",
+  SERIALNO = as.character(SERIALNO),
+  HINCP_2017dollars = HINCP*(ADJINC/ONE_MILLION),
+  HINCP_2000dollars = HINCP_2017dollars*DOLLARS_2017_TO_2000
+) %>% select(-HINCP, -ADJINC, -HINCP_2017dollars)
+
+hbayarea21 <- mutate(
+  hbayarea21,
+  source = "PUMS2021",
+  HINCP_2021dollars = HINCP*(ADJINC/ONE_MILLION),
+  HINCP_2000dollars = HINCP_2021dollars*DOLLARS_2021_TO_2000
+) %>% select(-HINCP, -ADJINC, -HINCP_2021dollars)
+
+hbayarea_combined <- rbind(hbayarea1317, hbayarea21)
+
+# Add PUMA name
+hbayarea_combined <- mutate(
+  hbayarea_combined,
+  PUMACE10 = as.factor(sprintf('%03d%05d', ST, PUMA)),
+)
+
+# join for PUMA of residence
+hbayarea_combined <- left_join(
+  hbayarea_combined,
+  select(PUMA_COUNTY, -PUMACE10) %>% rename(PUMACE10 = GEOID10)
+)
+
+# write it
+save(hbayarea_combined,
+     file = file.path(PUMS_DIR, "WorkFromHomeInvestigation", "hbayarea_workers.Rdata"))
