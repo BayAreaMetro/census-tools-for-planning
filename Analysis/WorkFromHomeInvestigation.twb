@@ -8,15 +8,17 @@
     <AutoCreateAndUpdateDSDPhoneLayouts />
     <_.fcp.MarkAnimation.true...MarkAnimation />
     <_.fcp.ObjectModelEncapsulateLegacy.true...ObjectModelEncapsulateLegacy />
+    <_.fcp.ObjectModelExtractV2.true...ObjectModelExtractV2 />
     <_.fcp.ObjectModelTableType.true...ObjectModelTableType />
     <_.fcp.SchemaViewerObjectModel.true...SchemaViewerObjectModel />
     <SetMembershipControl />
     <SheetIdentifierTracking />
     <SortTagCleanup />
+    <_.fcp.VConnDownstreamExtractsWithWarnings.true...VConnDownstreamExtractsWithWarnings />
     <WindowsPersistSimpleIdentifiers />
     <ZoneBackgroundTransparency />
   </document-format-change-manifest>
-  <repository-location id='WorkFromHomeInvestigation' path='/t/metropolitantransportationcommission/workbooks' revision='2.3' site='metropolitantransportationcommission' />
+  <repository-location id='WorkFromHomeInvestigation' path='/t/metropolitantransportationcommission/workbooks' revision='2.5' site='metropolitantransportationcommission' />
   <preferences>
     <preference name='ui.encoding.shelf.height' value='24' />
     <preference name='ui.shelf.height' value='26' />
@@ -27,431 +29,6 @@
     </_.fcp.AnimationOnByDefault.false..._.fcp.MarkAnimation.true...style-rule>
   </_.fcp.AnimationOnByDefault.false...style>
   <datasources>
-    <datasource caption='hbayarea_combined' inline='true' name='federated.171wprz0kgu30z1by5u261ywvwtd' version='18.1'>
-      <connection class='federated'>
-        <named-connections>
-          <named-connection caption='hbayarea_combined' name='stat-direct.0p7etv61c6uknr1e4hh4t06s51d1'>
-            <connection batch-size='' class='stat-direct' directory='M:/Data/Census/PUMS/WorkFromHomeInvestigation' encoding-error-limit='' filename='hbayarea_workers.Rdata' password='' server='' source-charset='' workgroup-auth-mode='as-is' />
-          </named-connection>
-        </named-connections>
-        <_.fcp.ObjectModelEncapsulateLegacy.false...relation connection='stat-direct.0p7etv61c6uknr1e4hh4t06s51d1' name='hbayarea_combined.Rdata' table='[hbayarea_combined.Rdata]' type='table' />
-        <_.fcp.ObjectModelEncapsulateLegacy.true...relation connection='stat-direct.0p7etv61c6uknr1e4hh4t06s51d1' name='hbayarea_combined.Rdata' table='[hbayarea_combined.Rdata]' type='table' />
-        <cols>
-          <map key='[BLD (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[BLD]' />
-          <map key='[COUNTY (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[COUNTY]' />
-          <map key='[COUNTYNAME (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[COUNTYNAME]' />
-          <map key='[HHT (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[HHT]' />
-          <map key='[HINCP_2000dollars (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[HINCP_2000dollars]' />
-          <map key='[HUPAC (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[HUPAC]' />
-          <map key='[NAMELSAD10 (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[NAMELSAD10]' />
-          <map key='[NP (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[NP]' />
-          <map key='[NPF (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[NPF]' />
-          <map key='[PUMA (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[PUMA]' />
-          <map key='[PUMACE10 (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[PUMACE10]' />
-          <map key='[SERIALNO (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[SERIALNO]' />
-          <map key='[ST (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[ST]' />
-          <map key='[TEN (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[TEN]' />
-          <map key='[TYPEHUGQ (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[TYPEHUGQ]' />
-          <map key='[VEH (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[VEH]' />
-          <map key='[WGTP (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[WGTP]' />
-          <map key='[rownames (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[rownames]' />
-          <map key='[source (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[source]' />
-        </cols>
-        <metadata-records>
-          <metadata-record class='column'>
-            <remote-name>rownames</remote-name>
-            <remote-type>20</remote-type>
-            <local-name>[rownames (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>rownames</remote-alias>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>SERIALNO</remote-name>
-            <remote-type>129</remote-type>
-            <local-name>[SERIALNO (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>SERIALNO</remote-alias>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <contains-null>true</contains-null>
-            <collation flag='0' name='binary' />
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>WGTP</remote-name>
-            <remote-type>20</remote-type>
-            <local-name>[WGTP (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>WGTP</remote-alias>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>PUMA</remote-name>
-            <remote-type>20</remote-type>
-            <local-name>[PUMA (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>PUMA</remote-alias>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>ST</remote-name>
-            <remote-type>20</remote-type>
-            <local-name>[ST (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>ST</remote-alias>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>NP</remote-name>
-            <remote-type>20</remote-type>
-            <local-name>[NP (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>NP</remote-alias>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>TYPEHUGQ</remote-name>
-            <remote-type>20</remote-type>
-            <local-name>[TYPEHUGQ (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>TYPEHUGQ</remote-alias>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>BLD</remote-name>
-            <remote-type>20</remote-type>
-            <local-name>[BLD (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>BLD</remote-alias>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>HHT</remote-name>
-            <remote-type>20</remote-type>
-            <local-name>[HHT (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>HHT</remote-alias>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>HUPAC</remote-name>
-            <remote-type>20</remote-type>
-            <local-name>[HUPAC (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>HUPAC</remote-alias>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>NPF</remote-name>
-            <remote-type>20</remote-type>
-            <local-name>[NPF (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>NPF</remote-alias>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>TEN</remote-name>
-            <remote-type>20</remote-type>
-            <local-name>[TEN (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>TEN</remote-alias>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>VEH</remote-name>
-            <remote-type>20</remote-type>
-            <local-name>[VEH (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>VEH</remote-alias>
-            <local-type>integer</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>source</remote-name>
-            <remote-type>129</remote-type>
-            <local-name>[source (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>source</remote-alias>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <contains-null>true</contains-null>
-            <collation flag='0' name='binary' />
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>HINCP_2000dollars</remote-name>
-            <remote-type>5</remote-type>
-            <local-name>[HINCP_2000dollars (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>HINCP_2000dollars</remote-alias>
-            <local-type>real</local-type>
-            <aggregation>Sum</aggregation>
-            <contains-null>true</contains-null>
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>PUMACE10</remote-name>
-            <remote-type>129</remote-type>
-            <local-name>[PUMACE10 (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>PUMACE10</remote-alias>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <contains-null>true</contains-null>
-            <collation flag='0' name='binary' />
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>NAMELSAD10</remote-name>
-            <remote-type>129</remote-type>
-            <local-name>[NAMELSAD10 (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>NAMELSAD10</remote-alias>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <contains-null>true</contains-null>
-            <collation flag='0' name='binary' />
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>COUNTY</remote-name>
-            <remote-type>129</remote-type>
-            <local-name>[COUNTY (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>COUNTY</remote-alias>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <contains-null>true</contains-null>
-            <collation flag='0' name='binary' />
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>COUNTYNAME</remote-name>
-            <remote-type>129</remote-type>
-            <local-name>[COUNTYNAME (hbayarea_combined.Rdata)]</local-name>
-            <parent-name>[hbayarea_combined.Rdata]</parent-name>
-            <remote-alias>COUNTYNAME</remote-alias>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <contains-null>true</contains-null>
-            <collation flag='0' name='binary' />
-            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
-          </metadata-record>
-        </metadata-records>
-      </connection>
-      <aliases enabled='yes' />
-      <column datatype='string' name='[:Measure Names]' role='dimension' type='nominal'>
-        <aliases>
-          <alias key='&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcdf:sum:WGTP:qk:2]&quot;' value='% Change' />
-        </aliases>
-      </column>
-      <column aggregation='Sum' caption='BLD (hbayarea combined.Rdata)' datatype='integer' name='[BLD (hbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
-      <column caption='COUNTY (hbayarea combined.Rdata)' datatype='string' name='[COUNTY (hbayarea_combined.Rdata)]' role='dimension' semantic-role='[County].[Name]' type='nominal' />
-      <column caption='County Name' datatype='string' name='[COUNTYNAME (hbayarea_combined.Rdata)]' role='dimension' semantic-role='[County].[Name]' type='nominal' />
-      <column caption='Average number of household vehicles' datatype='real' default-format='n#,##0.00;-#,##0.00' name='[Calculation_2955205837170397184]' role='measure' type='quantitative'>
-        <calculation class='tableau' formula='SUM([VEH (hbayarea_combined.Rdata)]*[WGTP (hbayarea_combined.Rdata)])/sum([WGTP (hbayarea_combined.Rdata)])' />
-      </column>
-      <column caption='Total number of household vehicles' datatype='integer' name='[Calculation_2955205837171744769]' role='measure' type='quantitative'>
-        <calculation class='tableau' formula='[VEH (hbayarea_combined.Rdata)]*[WGTP (hbayarea_combined.Rdata)]' />
-      </column>
-      <column caption='Carfree' datatype='boolean' name='[Calculation_2955205837173338115]' role='dimension' type='nominal'>
-        <calculation class='tableau' formula='[VEH (hbayarea_combined.Rdata)]==0' />
-      </column>
-      <column aggregation='Sum' caption='HHT (hbayarea combined.Rdata)' datatype='integer' name='[HHT (hbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
-      <column caption='HINCP 2000dollars (hbayarea combined.Rdata)' datatype='real' name='[HINCP_2000dollars (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
-      <column caption='HUPAC (hbayarea combined.Rdata)' datatype='integer' name='[HUPAC (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
-      <column caption='NAMELSAD10 (hbayarea combined.Rdata)' datatype='string' name='[NAMELSAD10 (hbayarea_combined.Rdata)]' role='dimension' type='nominal' />
-      <column aggregation='Sum' caption='Number of Persons' datatype='integer' name='[NP (hbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
-      <column caption='NPF (hbayarea combined.Rdata)' datatype='integer' name='[NPF (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
-      <column caption='PUMA (hbayarea combined.Rdata)' datatype='integer' name='[PUMA (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
-      <column caption='PUMACE10 (hbayarea combined.Rdata)' datatype='string' name='[PUMACE10 (hbayarea_combined.Rdata)]' role='dimension' type='nominal' />
-      <column caption='SERIALNO (hbayarea combined.Rdata)' datatype='string' name='[SERIALNO (hbayarea_combined.Rdata)]' role='dimension' type='nominal' />
-      <column caption='ST (hbayarea combined.Rdata)' datatype='integer' name='[ST (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
-      <column aggregation='Sum' caption='TEN (hbayarea combined.Rdata)' datatype='integer' name='[TEN (hbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
-      <column aggregation='Sum' caption='Type of unit' datatype='integer' name='[TYPEHUGQ (hbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
-      <column aggregation='Sum' caption='Number of Household Vehicles' datatype='integer' name='[VEH (hbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
-      <column caption='Wgtp' datatype='integer' name='[WGTP (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
-      <_.fcp.ObjectModelTableType.true...column caption='hbayarea_combined.Rdata' datatype='table' name='[__tableau_internal_object_id__].[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]' role='measure' type='quantitative' />
-      <column aggregation='Sum' caption='rownames (hbayarea combined.Rdata)' datatype='integer' name='[rownames (hbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
-      <column caption='Source' datatype='string' name='[source (hbayarea_combined.Rdata)]' role='dimension' type='nominal'>
-        <aliases>
-          <alias key='&quot;PUMS2013-2017&quot;' value='PUMS 2013-2017' />
-          <alias key='&quot;PUMS2021&quot;' value='PUMS 2021' />
-        </aliases>
-      </column>
-      <column-instance column='[Calculation_2955205837173338115]' derivation='None' name='[none:Calculation_2955205837173338115:nk]' pivot='key' type='nominal' />
-      <column-instance column='[VEH (hbayarea_combined.Rdata)]' derivation='None' name='[none:VEH (hbayarea_combined.Rdata):ok]' pivot='key' type='ordinal' />
-      <column-instance column='[Calculation_2955205837170397184]' derivation='User' name='[usr:Calculation_2955205837170397184:qk]' pivot='key' type='quantitative' />
-      <layout _.fcp.SchemaViewerObjectModel.false...dim-percentage='0.5' _.fcp.SchemaViewerObjectModel.false...measure-percentage='0.4' dim-ordering='alphabetic' measure-ordering='alphabetic' show-aliased-fields='true' show-structure='true' />
-      <style>
-        <style-rule element='mark'>
-          <encoding attr='color' field='[:Measure Names]' type='palette'>
-            <map to='#4e79a7'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[usr:Calculation_2955205837170397184:qk]&quot;</bucket>
-            </map>
-            <map to='#f28e2b'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[diff:sum:WGTP:qk]&quot;</bucket>
-            </map>
-            <map to='#f28e2b'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcdf:sum:WGTP:qk:1]&quot;</bucket>
-            </map>
-            <map to='#f28e2b'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcdf:sum:WGTP:qk:2]&quot;</bucket>
-            </map>
-            <map to='#f28e2b'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcdf:sum:WGTP:qk]&quot;</bucket>
-            </map>
-            <map to='#f28e2b'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:1]&quot;</bucket>
-            </map>
-            <map to='#f28e2b'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:10]&quot;</bucket>
-            </map>
-            <map to='#f28e2b'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:2]&quot;</bucket>
-            </map>
-            <map to='#f28e2b'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:3]&quot;</bucket>
-            </map>
-            <map to='#f28e2b'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:4]&quot;</bucket>
-            </map>
-            <map to='#f28e2b'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:5]&quot;</bucket>
-            </map>
-            <map to='#f28e2b'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:6]&quot;</bucket>
-            </map>
-            <map to='#f28e2b'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:7]&quot;</bucket>
-            </map>
-            <map to='#f28e2b'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:8]&quot;</bucket>
-            </map>
-            <map to='#f28e2b'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:9]&quot;</bucket>
-            </map>
-            <map to='#f28e2b'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk]&quot;</bucket>
-            </map>
-            <map to='#f28e2b'>
-              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[sum:WGTP:qk]&quot;</bucket>
-            </map>
-          </encoding>
-          <encoding attr='color' field='[none:Calculation_2955205837173338115:nk]' type='palette'>
-            <map to='#59a14f'>
-              <bucket>true</bucket>
-            </map>
-            <map to='#bab0ac'>
-              <bucket>false</bucket>
-            </map>
-          </encoding>
-          <encoding attr='color' field='[none:VEH (hbayarea_combined.Rdata):ok]' palette='red_gold_10_0' type='palette'>
-            <map to='#b71d3e'>
-              <bucket>6</bucket>
-            </map>
-            <map to='#c83842'>
-              <bucket>5</bucket>
-            </map>
-            <map to='#d94f46'>
-              <bucket>4</bucket>
-            </map>
-            <map to='#e76649'>
-              <bucket>3</bucket>
-            </map>
-            <map to='#f37e4a'>
-              <bucket>2</bucket>
-            </map>
-            <map to='#f4d166'>
-              <bucket>%null%</bucket>
-            </map>
-            <map to='#f7b555'>
-              <bucket>0</bucket>
-            </map>
-            <map to='#fb984e'>
-              <bucket>1</bucket>
-            </map>
-          </encoding>
-        </style-rule>
-      </style>
-      <semantic-values>
-        <semantic-value key='[Country].[Name]' value='&quot;United States&quot;' />
-      </semantic-values>
-      <field-sort-info field-sort-order-type='custom-order'>
-        <field-sort-custom-order field='rownames' />
-        <field-sort-custom-order field='SERIALNO' />
-        <field-sort-custom-order field='WGTP' />
-        <field-sort-custom-order field='PUMA' />
-        <field-sort-custom-order field='ST' />
-        <field-sort-custom-order field='NP' />
-        <field-sort-custom-order field='TYPEHUGQ' />
-        <field-sort-custom-order field='BLD' />
-        <field-sort-custom-order field='HHT' />
-        <field-sort-custom-order field='HUPAC' />
-        <field-sort-custom-order field='NPF' />
-        <field-sort-custom-order field='TEN' />
-        <field-sort-custom-order field='VEH' />
-        <field-sort-custom-order field='Calculation_2955205837173338115' />
-        <field-sort-custom-order field='Calculation_2955205837170397184' />
-        <field-sort-custom-order field='Calculation_2955205837171744769' />
-        <field-sort-custom-order field='source' />
-        <field-sort-custom-order field='HINCP_2000dollars' />
-        <field-sort-custom-order field='PUMACE10' />
-        <field-sort-custom-order field='NAMELSAD10' />
-        <field-sort-custom-order field='COUNTY' />
-        <field-sort-custom-order field='COUNTYNAME' />
-        <field-sort-custom-order field='Geometry (generated)' />
-        <field-sort-custom-order field='Latitude (generated)' />
-        <field-sort-custom-order field='Longitude (generated)' />
-        <field-sort-custom-order field=':Measure Names' />
-        <field-sort-custom-order field='Multiple Values' />
-      </field-sort-info>
-      <_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
-        <objects>
-          <object caption='hbayarea_combined.Rdata' id='hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2'>
-            <properties context=''>
-              <relation connection='stat-direct.0p7etv61c6uknr1e4hh4t06s51d1' name='hbayarea_combined.Rdata' table='[hbayarea_combined.Rdata]' type='table' />
-            </properties>
-          </object>
-        </objects>
-      </_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
-    </datasource>
     <datasource caption='pbayarea_combined' inline='true' name='federated.0ejlp7v1jsg3v217quixw11ntaz4' version='18.1'>
       <connection class='federated'>
         <named-connections>
@@ -505,6 +82,7 @@
           <map key='[source (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata].[source]' />
           <map key='[source]' value='[hbayarea_combined.Rdata].[source]' />
         </cols>
+        <refresh increment-key='' incremental-updates='false' />
         <metadata-records>
           <metadata-record class='column'>
             <remote-name>rownames</remote-name>
@@ -1194,6 +772,582 @@
           </address>
         </table-calc>
       </column-instance>
+      <extract _.fcp.ObjectModelExtractV2.true...object-id='' _.fcp.VConnDownstreamExtractsWithWarnings.true...user-specific='false' count='-1' enabled='true' units='records'>
+        <connection access_mode='readonly' authentication='auth-none' author-locale='en_US' class='hyper' dbname='M:/Data/Census/PUMS/WorkFromHomeInvestigation/pbayarea_combined.hyper' default-settings='yes' schema='Extract' sslmode='' tablename='Extract' update-time='08/09/2023 07:32:55 PM' username='tableau_internal_user'>
+          <_.fcp.ObjectModelEncapsulateLegacy.false...relation name='hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279' table='[Extract].[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]' type='table' />
+          <_.fcp.ObjectModelEncapsulateLegacy.true...relation type='collection'>
+            <relation name='pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82' table='[Extract].[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]' type='table' />
+            <relation name='hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279' table='[Extract].[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]' type='table' />
+          </_.fcp.ObjectModelEncapsulateLegacy.true...relation>
+          <cols>
+            <map key='[BLD (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[BLD]' />
+            <map key='[COUNTY (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[COUNTY]' />
+            <map key='[COUNTYNAME (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[COUNTYNAME]' />
+            <map key='[COUNTYNAME]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[COUNTYNAME]' />
+            <map key='[COUNTY]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[COUNTY]' />
+            <map key='[ESR (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[ESR]' />
+            <map key='[HHT (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[HHT]' />
+            <map key='[HINCP_2000dollars (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[HINCP_2000dollars]' />
+            <map key='[HUPAC (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[HUPAC]' />
+            <map key='[JWMNP (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[JWMNP]' />
+            <map key='[JWTRNS (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[JWTRNS]' />
+            <map key='[NAMELSAD10 (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[NAMELSAD10]' />
+            <map key='[NAMELSAD10]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[NAMELSAD10]' />
+            <map key='[NP (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[NP]' />
+            <map key='[NPF (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[NPF]' />
+            <map key='[NWAB (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[NWAB]' />
+            <map key='[PINCP_2000dollars (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[PINCP_2000dollars]' />
+            <map key='[POWCOUNTYNAME (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[POWCOUNTYNAME]' />
+            <map key='[POWPUMA (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[POWPUMA]' />
+            <map key='[POWPUMACE10 (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[POWPUMACE10]' />
+            <map key='[POWSP (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[POWSP]' />
+            <map key='[PUMA (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[PUMA]' />
+            <map key='[PUMACE10 (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[PUMACE10]' />
+            <map key='[PUMACE10]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[PUMACE10]' />
+            <map key='[PUMA]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[PUMA]' />
+            <map key='[PWGTP (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[PWGTP]' />
+            <map key='[SERIALNO (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[SERIALNO]' />
+            <map key='[SERIALNO]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[SERIALNO]' />
+            <map key='[SPORDER (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[SPORDER]' />
+            <map key='[ST (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[ST]' />
+            <map key='[ST]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[ST]' />
+            <map key='[TEN (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[TEN]' />
+            <map key='[TYPEHUGQ (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[TYPEHUGQ]' />
+            <map key='[VEH (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[VEH]' />
+            <map key='[WGTP (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[WGTP]' />
+            <map key='[rownames (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[rownames]' />
+            <map key='[rownames]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[rownames]' />
+            <map key='[source (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[source]' />
+            <map key='[source]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[source]' />
+          </cols>
+          <refresh increment-key='' incremental-updates='false'>
+            <refresh-event add-from-file-path='pbayarea_combined' increment-value='%null%' refresh-type='create' rows-inserted='642330' timestamp-start='2023-08-09 19:32:42.752' />
+          </refresh>
+          <metadata-records>
+            <metadata-record class='column'>
+              <remote-name>rownames</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[rownames (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>rownames</remote-alias>
+              <ordinal>0</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>452317</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>SERIALNO</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[SERIALNO (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>SERIALNO</remote-alias>
+              <ordinal>1</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>322934</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>SPORDER</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[SPORDER (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>SPORDER</remote-alias>
+              <ordinal>2</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>27</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>PWGTP</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[PWGTP (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>PWGTP</remote-alias>
+              <ordinal>3</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>737</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>PUMA</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[PUMA (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>PUMA</remote-alias>
+              <ordinal>4</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>55</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>ST</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[ST (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>ST</remote-alias>
+              <ordinal>5</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>1</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>POWPUMA</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[POWPUMA (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>POWPUMA</remote-alias>
+              <ordinal>6</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>47</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>POWSP</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[POWSP (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>POWSP</remote-alias>
+              <ordinal>7</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>44</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>JWMNP</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[JWMNP (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>JWMNP</remote-alias>
+              <ordinal>8</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>138</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>JWTRNS</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[JWTRNS (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>JWTRNS</remote-alias>
+              <ordinal>9</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>25</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>ESR</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[ESR (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>ESR</remote-alias>
+              <ordinal>10</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>8</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>NWAB</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[NWAB (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>NWAB</remote-alias>
+              <ordinal>11</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>4</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>source</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[source (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>source</remote-alias>
+              <ordinal>12</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>2</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>PINCP_2000dollars</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[PINCP_2000dollars (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>PINCP_2000dollars</remote-alias>
+              <ordinal>13</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>16723</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>PUMACE10</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[PUMACE10 (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>PUMACE10</remote-alias>
+              <ordinal>14</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>55</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>POWPUMACE10</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[POWPUMACE10 (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>POWPUMACE10</remote-alias>
+              <ordinal>15</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>53</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>NAMELSAD10</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[NAMELSAD10 (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>NAMELSAD10</remote-alias>
+              <ordinal>16</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>55</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>COUNTY</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[COUNTY (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>COUNTY</remote-alias>
+              <ordinal>17</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>9</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>COUNTYNAME</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[COUNTYNAME (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>COUNTYNAME</remote-alias>
+              <ordinal>18</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>9</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>POWCOUNTYNAME</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[POWCOUNTYNAME (pbayarea_combined.Rdata)]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>POWCOUNTYNAME</remote-alias>
+              <ordinal>19</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>34</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>rownames</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[rownames]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>rownames</remote-alias>
+              <ordinal>20</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>190013</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>SERIALNO</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[SERIALNO]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>SERIALNO</remote-alias>
+              <ordinal>21</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>190013</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>WGTP</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[WGTP (hbayarea_combined.Rdata)]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>WGTP</remote-alias>
+              <ordinal>22</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>869</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>PUMA</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[PUMA]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>PUMA</remote-alias>
+              <ordinal>23</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>55</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>ST</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[ST]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>ST</remote-alias>
+              <ordinal>24</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>1</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>NP</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[NP (hbayarea_combined.Rdata)]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>NP</remote-alias>
+              <ordinal>25</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>28</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>TYPEHUGQ</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[TYPEHUGQ (hbayarea_combined.Rdata)]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>TYPEHUGQ</remote-alias>
+              <ordinal>26</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>3</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>BLD</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[BLD (hbayarea_combined.Rdata)]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>BLD</remote-alias>
+              <ordinal>27</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>11</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>HHT</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[HHT (hbayarea_combined.Rdata)]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>HHT</remote-alias>
+              <ordinal>28</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>8</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>HUPAC</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[HUPAC (hbayarea_combined.Rdata)]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>HUPAC</remote-alias>
+              <ordinal>29</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>5</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>NPF</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[NPF (hbayarea_combined.Rdata)]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>NPF</remote-alias>
+              <ordinal>30</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>43</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>TEN</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[TEN (hbayarea_combined.Rdata)]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>TEN</remote-alias>
+              <ordinal>31</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>5</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>VEH</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[VEH (hbayarea_combined.Rdata)]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>VEH</remote-alias>
+              <ordinal>32</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>8</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>source</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[source]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>source</remote-alias>
+              <ordinal>33</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>2</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>HINCP_2000dollars</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[HINCP_2000dollars (hbayarea_combined.Rdata)]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>HINCP_2000dollars</remote-alias>
+              <ordinal>34</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>26935</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>PUMACE10</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[PUMACE10]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>PUMACE10</remote-alias>
+              <ordinal>35</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>55</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>NAMELSAD10</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[NAMELSAD10]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>NAMELSAD10</remote-alias>
+              <ordinal>36</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>55</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>COUNTY</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[COUNTY]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>COUNTY</remote-alias>
+              <ordinal>37</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>9</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>COUNTYNAME</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[COUNTYNAME]</local-name>
+              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
+              <remote-alias>COUNTYNAME</remote-alias>
+              <ordinal>38</ordinal>
+              <family>hbayarea_combined.Rdata</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>9</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+          </metadata-records>
+        </connection>
+      </extract>
       <layout _.fcp.SchemaViewerObjectModel.false...dim-percentage='0.5' _.fcp.SchemaViewerObjectModel.false...measure-percentage='0.4' dim-ordering='alphabetic' measure-ordering='alphabetic' show-aliased-fields='true' show-structure='true' />
       <style>
         <style-rule element='mark'>
@@ -1226,17 +1380,6 @@
               <bucket>%null%</bucket>
             </map>
           </encoding>
-          <encoding attr='color' field='[ESR (Employment Status) (group)]' palette='nuriel_stone_10_0' type='palette'>
-            <map to='#31a1b3'>
-              <bucket>&quot;Workers who worked&quot;</bucket>
-            </map>
-            <map to='#6fb899'>
-              <bucket>&quot;Workers who didn&apos;t work&quot;</bucket>
-            </map>
-            <map to='#8175aa'>
-              <bucket>&quot;Nonworkers&quot;</bucket>
-            </map>
-          </encoding>
           <encoding attr='color' field='[Means of transportation to work (group) 1]' palette='miller_stone_10_0' type='palette'>
             <map to='#638b66'>
               <bucket>&quot;Did not work&quot;</bucket>
@@ -1249,6 +1392,17 @@
             </map>
             <map to='#bfbb60'>
               <bucket>&quot;Worked at home&quot;</bucket>
+            </map>
+          </encoding>
+          <encoding attr='color' field='[ESR (Employment Status) (group)]' palette='nuriel_stone_10_0' type='palette'>
+            <map to='#31a1b3'>
+              <bucket>&quot;Workers who worked&quot;</bucket>
+            </map>
+            <map to='#6fb899'>
+              <bucket>&quot;Workers who didn&apos;t work&quot;</bucket>
+            </map>
+            <map to='#8175aa'>
+              <bucket>&quot;Nonworkers&quot;</bucket>
             </map>
           </encoding>
         </style-rule>
@@ -1321,10 +1475,16 @@
             <properties context=''>
               <relation connection='stat-direct.1trehdl102jmex168d30718zw4lo' name='hbayarea_combined.Rdata' table='[hbayarea_combined.Rdata]' type='table' />
             </properties>
+            <properties context='extract'>
+              <relation name='hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279' table='[Extract].[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]' type='table' />
+            </properties>
           </object>
           <object caption='pbayarea_combined.Rdata' id='pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82'>
             <properties context=''>
               <relation connection='stat-direct.1trehdl102jmex168d30718zw4lo' name='pbayarea_combined.Rdata' table='[pbayarea_combined.Rdata]' type='table' />
+            </properties>
+            <properties context='extract'>
+              <relation name='pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82' table='[Extract].[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]' type='table' />
             </properties>
           </object>
         </objects>
@@ -1338,6 +1498,431 @@
             <second-end-point object-id='hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279' unique-key='true' />
           </relationship>
         </relationships>
+      </_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
+    </datasource>
+    <datasource caption='hbayarea_combined' inline='true' name='federated.171wprz0kgu30z1by5u261ywvwtd' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='hbayarea_combined' name='stat-direct.0p7etv61c6uknr1e4hh4t06s51d1'>
+            <connection batch-size='' class='stat-direct' directory='M:/Data/Census/PUMS/WorkFromHomeInvestigation' encoding-error-limit='' filename='hbayarea_workers.Rdata' password='' server='' source-charset='' workgroup-auth-mode='as-is' />
+          </named-connection>
+        </named-connections>
+        <_.fcp.ObjectModelEncapsulateLegacy.false...relation connection='stat-direct.0p7etv61c6uknr1e4hh4t06s51d1' name='hbayarea_combined.Rdata' table='[hbayarea_combined.Rdata]' type='table' />
+        <_.fcp.ObjectModelEncapsulateLegacy.true...relation connection='stat-direct.0p7etv61c6uknr1e4hh4t06s51d1' name='hbayarea_combined.Rdata' table='[hbayarea_combined.Rdata]' type='table' />
+        <cols>
+          <map key='[BLD (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[BLD]' />
+          <map key='[COUNTY (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[COUNTY]' />
+          <map key='[COUNTYNAME (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[COUNTYNAME]' />
+          <map key='[HHT (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[HHT]' />
+          <map key='[HINCP_2000dollars (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[HINCP_2000dollars]' />
+          <map key='[HUPAC (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[HUPAC]' />
+          <map key='[NAMELSAD10 (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[NAMELSAD10]' />
+          <map key='[NP (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[NP]' />
+          <map key='[NPF (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[NPF]' />
+          <map key='[PUMA (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[PUMA]' />
+          <map key='[PUMACE10 (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[PUMACE10]' />
+          <map key='[SERIALNO (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[SERIALNO]' />
+          <map key='[ST (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[ST]' />
+          <map key='[TEN (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[TEN]' />
+          <map key='[TYPEHUGQ (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[TYPEHUGQ]' />
+          <map key='[VEH (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[VEH]' />
+          <map key='[WGTP (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[WGTP]' />
+          <map key='[rownames (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[rownames]' />
+          <map key='[source (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[source]' />
+        </cols>
+        <metadata-records>
+          <metadata-record class='column'>
+            <remote-name>rownames</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[rownames (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>rownames</remote-alias>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>SERIALNO</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[SERIALNO (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>SERIALNO</remote-alias>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>WGTP</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[WGTP (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>WGTP</remote-alias>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>PUMA</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[PUMA (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>PUMA</remote-alias>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>ST</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[ST (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>ST</remote-alias>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>NP</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[NP (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>NP</remote-alias>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>TYPEHUGQ</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[TYPEHUGQ (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>TYPEHUGQ</remote-alias>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>BLD</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[BLD (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>BLD</remote-alias>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>HHT</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[HHT (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>HHT</remote-alias>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>HUPAC</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[HUPAC (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>HUPAC</remote-alias>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>NPF</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[NPF (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>NPF</remote-alias>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>TEN</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[TEN (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>TEN</remote-alias>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>VEH</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[VEH (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>VEH</remote-alias>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>source</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[source (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>source</remote-alias>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>HINCP_2000dollars</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[HINCP_2000dollars (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>HINCP_2000dollars</remote-alias>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>PUMACE10</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[PUMACE10 (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>PUMACE10</remote-alias>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>NAMELSAD10</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[NAMELSAD10 (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>NAMELSAD10</remote-alias>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>COUNTY</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[COUNTY (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>COUNTY</remote-alias>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>COUNTYNAME</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[COUNTYNAME (hbayarea_combined.Rdata)]</local-name>
+            <parent-name>[hbayarea_combined.Rdata]</parent-name>
+            <remote-alias>COUNTYNAME</remote-alias>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled='yes' />
+      <column datatype='string' name='[:Measure Names]' role='dimension' type='nominal'>
+        <aliases>
+          <alias key='&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcdf:sum:WGTP:qk:2]&quot;' value='% Change' />
+        </aliases>
+      </column>
+      <column aggregation='Sum' caption='BLD (hbayarea combined.Rdata)' datatype='integer' name='[BLD (hbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
+      <column caption='COUNTY (hbayarea combined.Rdata)' datatype='string' name='[COUNTY (hbayarea_combined.Rdata)]' role='dimension' semantic-role='[County].[Name]' type='nominal' />
+      <column caption='County Name' datatype='string' name='[COUNTYNAME (hbayarea_combined.Rdata)]' role='dimension' semantic-role='[County].[Name]' type='nominal' />
+      <column caption='Average number of household vehicles' datatype='real' default-format='n#,##0.00;-#,##0.00' name='[Calculation_2955205837170397184]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='SUM([VEH (hbayarea_combined.Rdata)]*[WGTP (hbayarea_combined.Rdata)])/sum([WGTP (hbayarea_combined.Rdata)])' />
+      </column>
+      <column caption='Total number of household vehicles' datatype='integer' name='[Calculation_2955205837171744769]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='[VEH (hbayarea_combined.Rdata)]*[WGTP (hbayarea_combined.Rdata)]' />
+      </column>
+      <column caption='Carfree' datatype='boolean' name='[Calculation_2955205837173338115]' role='dimension' type='nominal'>
+        <calculation class='tableau' formula='[VEH (hbayarea_combined.Rdata)]==0' />
+      </column>
+      <column aggregation='Sum' caption='HHT (hbayarea combined.Rdata)' datatype='integer' name='[HHT (hbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
+      <column caption='HINCP 2000dollars (hbayarea combined.Rdata)' datatype='real' name='[HINCP_2000dollars (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+      <column caption='HUPAC (hbayarea combined.Rdata)' datatype='integer' name='[HUPAC (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+      <column caption='NAMELSAD10 (hbayarea combined.Rdata)' datatype='string' name='[NAMELSAD10 (hbayarea_combined.Rdata)]' role='dimension' type='nominal' />
+      <column aggregation='Sum' caption='Number of Persons' datatype='integer' name='[NP (hbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
+      <column caption='NPF (hbayarea combined.Rdata)' datatype='integer' name='[NPF (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+      <column caption='PUMA (hbayarea combined.Rdata)' datatype='integer' name='[PUMA (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+      <column caption='PUMACE10 (hbayarea combined.Rdata)' datatype='string' name='[PUMACE10 (hbayarea_combined.Rdata)]' role='dimension' type='nominal' />
+      <column caption='SERIALNO (hbayarea combined.Rdata)' datatype='string' name='[SERIALNO (hbayarea_combined.Rdata)]' role='dimension' type='nominal' />
+      <column caption='ST (hbayarea combined.Rdata)' datatype='integer' name='[ST (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+      <column aggregation='Sum' caption='TEN (hbayarea combined.Rdata)' datatype='integer' name='[TEN (hbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
+      <column aggregation='Sum' caption='Type of unit' datatype='integer' name='[TYPEHUGQ (hbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
+      <column aggregation='Sum' caption='Number of Household Vehicles' datatype='integer' name='[VEH (hbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
+      <column caption='Wgtp' datatype='integer' name='[WGTP (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+      <_.fcp.ObjectModelTableType.true...column caption='hbayarea_combined.Rdata' datatype='table' name='[__tableau_internal_object_id__].[hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2]' role='measure' type='quantitative' />
+      <column aggregation='Sum' caption='rownames (hbayarea combined.Rdata)' datatype='integer' name='[rownames (hbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
+      <column caption='Source' datatype='string' name='[source (hbayarea_combined.Rdata)]' role='dimension' type='nominal'>
+        <aliases>
+          <alias key='&quot;PUMS2013-2017&quot;' value='PUMS 2013-2017' />
+          <alias key='&quot;PUMS2021&quot;' value='PUMS 2021' />
+        </aliases>
+      </column>
+      <column-instance column='[Calculation_2955205837173338115]' derivation='None' name='[none:Calculation_2955205837173338115:nk]' pivot='key' type='nominal' />
+      <column-instance column='[VEH (hbayarea_combined.Rdata)]' derivation='None' name='[none:VEH (hbayarea_combined.Rdata):ok]' pivot='key' type='ordinal' />
+      <column-instance column='[Calculation_2955205837170397184]' derivation='User' name='[usr:Calculation_2955205837170397184:qk]' pivot='key' type='quantitative' />
+      <layout _.fcp.SchemaViewerObjectModel.false...dim-percentage='0.5' _.fcp.SchemaViewerObjectModel.false...measure-percentage='0.4' dim-ordering='alphabetic' measure-ordering='alphabetic' show-aliased-fields='true' show-structure='true' />
+      <style>
+        <style-rule element='mark'>
+          <encoding attr='color' field='[:Measure Names]' type='palette'>
+            <map to='#4e79a7'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[usr:Calculation_2955205837170397184:qk]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[diff:sum:WGTP:qk]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcdf:sum:WGTP:qk:1]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcdf:sum:WGTP:qk:2]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcdf:sum:WGTP:qk]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:1]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:10]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:2]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:3]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:4]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:5]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:6]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:7]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:8]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk:9]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[pcto:sum:WGTP:qk]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.171wprz0kgu30z1by5u261ywvwtd].[sum:WGTP:qk]&quot;</bucket>
+            </map>
+          </encoding>
+          <encoding attr='color' field='[none:Calculation_2955205837173338115:nk]' type='palette'>
+            <map to='#59a14f'>
+              <bucket>true</bucket>
+            </map>
+            <map to='#bab0ac'>
+              <bucket>false</bucket>
+            </map>
+          </encoding>
+          <encoding attr='color' field='[none:VEH (hbayarea_combined.Rdata):ok]' palette='red_gold_10_0' type='palette'>
+            <map to='#b71d3e'>
+              <bucket>6</bucket>
+            </map>
+            <map to='#c83842'>
+              <bucket>5</bucket>
+            </map>
+            <map to='#d94f46'>
+              <bucket>4</bucket>
+            </map>
+            <map to='#e76649'>
+              <bucket>3</bucket>
+            </map>
+            <map to='#f37e4a'>
+              <bucket>2</bucket>
+            </map>
+            <map to='#f4d166'>
+              <bucket>%null%</bucket>
+            </map>
+            <map to='#f7b555'>
+              <bucket>0</bucket>
+            </map>
+            <map to='#fb984e'>
+              <bucket>1</bucket>
+            </map>
+          </encoding>
+        </style-rule>
+      </style>
+      <semantic-values>
+        <semantic-value key='[Country].[Name]' value='&quot;United States&quot;' />
+      </semantic-values>
+      <field-sort-info field-sort-order-type='custom-order'>
+        <field-sort-custom-order field='rownames' />
+        <field-sort-custom-order field='SERIALNO' />
+        <field-sort-custom-order field='WGTP' />
+        <field-sort-custom-order field='PUMA' />
+        <field-sort-custom-order field='ST' />
+        <field-sort-custom-order field='NP' />
+        <field-sort-custom-order field='TYPEHUGQ' />
+        <field-sort-custom-order field='BLD' />
+        <field-sort-custom-order field='HHT' />
+        <field-sort-custom-order field='HUPAC' />
+        <field-sort-custom-order field='NPF' />
+        <field-sort-custom-order field='TEN' />
+        <field-sort-custom-order field='VEH' />
+        <field-sort-custom-order field='Calculation_2955205837173338115' />
+        <field-sort-custom-order field='Calculation_2955205837170397184' />
+        <field-sort-custom-order field='Calculation_2955205837171744769' />
+        <field-sort-custom-order field='source' />
+        <field-sort-custom-order field='HINCP_2000dollars' />
+        <field-sort-custom-order field='PUMACE10' />
+        <field-sort-custom-order field='NAMELSAD10' />
+        <field-sort-custom-order field='COUNTY' />
+        <field-sort-custom-order field='COUNTYNAME' />
+        <field-sort-custom-order field='Geometry (generated)' />
+        <field-sort-custom-order field='Latitude (generated)' />
+        <field-sort-custom-order field='Longitude (generated)' />
+        <field-sort-custom-order field=':Measure Names' />
+        <field-sort-custom-order field='Multiple Values' />
+      </field-sort-info>
+      <_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
+        <objects>
+          <object caption='hbayarea_combined.Rdata' id='hbayarea_combined.Rdata_C083598EBEE24F088BE68A1E9DC292E2'>
+            <properties context=''>
+              <relation connection='stat-direct.0p7etv61c6uknr1e4hh4t06s51d1' name='hbayarea_combined.Rdata' table='[hbayarea_combined.Rdata]' type='table' />
+            </properties>
+          </object>
+        </objects>
       </_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
     </datasource>
   </datasources>
@@ -2128,6 +2713,9 @@
           </style-rule>
           <style-rule element='label'>
             <format attr='text-orientation' field='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:source:nk]' value='-90' />
+          </style-rule>
+          <style-rule element='legend'>
+            <format attr='col-width' field='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[Means of transportation to work (group) 1]' value='160' />
           </style-rule>
         </style>
         <panes>
@@ -3587,8 +4175,8 @@
         <devicelayout auto-generated='true' name='Phone'>
           <size maxheight='1450' minheight='1450' sizing-mode='vscroll' />
           <zones>
-            <zone h='100000' id='107' type-v2='layout-basic' w='100000' x='0' y='0'>
-              <zone h='98000' id='106' param='vert' type-v2='layout-flow' w='98858' x='571' y='1000'>
+            <zone h='100000' id='119' type-v2='layout-basic' w='100000' x='0' y='0'>
+              <zone h='98000' id='118' param='vert' type-v2='layout-flow' w='98858' x='571' y='1000'>
                 <zone h='27750' id='6' mode='dropdown' name='ResTable' param='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:COUNTYNAME:nk]' type-v2='filter' w='10214' x='43500' y='1000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -3787,8 +4375,8 @@
         <devicelayout auto-generated='true' name='Phone'>
           <size maxheight='800' minheight='800' sizing-mode='vscroll' />
           <zones>
-            <zone h='100000' id='114' type-v2='layout-basic' w='100000' x='0' y='0'>
-              <zone h='98476' id='113' param='vert' type-v2='layout-flow' w='99200' x='400' y='762'>
+            <zone h='100000' id='126' type-v2='layout-basic' w='100000' x='0' y='0'>
+              <zone h='98476' id='125' param='vert' type-v2='layout-flow' w='99200' x='400' y='762'>
                 <zone fixed-size='937' h='18476' id='8' mode='dropdown' name=' Worker Flow by Mode' param='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[Means of transportation to work (group)]' type-v2='filter' w='50150' x='49450' y='80762'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -4160,7 +4748,6 @@
             <card type='pages' />
             <card type='filters' />
             <card type='marks' />
-            <card pane-specification-id='0' param='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[Means of transportation to work (group) 1]' type='color' />
           </strip>
         </edge>
         <edge name='top'>
@@ -4174,11 +4761,15 @@
             <card type='title' />
           </strip>
         </edge>
+        <edge name='bottom'>
+          <strip size='64'>
+            <card pane-specification-id='0' param='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[Means of transportation to work (group) 1]' type='color' />
+          </strip>
+        </edge>
       </cards>
       <viewpoint>
         <highlight>
           <color-one-way>
-            <field>[federated.0ejlp7v1jsg3v217quixw11ntaz4].[Means of transportation to work (group) 1]</field>
             <field>[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:ESR (pbayarea_combined.Rdata):ok]</field>
             <field>[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:source:nk]</field>
           </color-one-way>
@@ -5921,248 +6512,232 @@
     </thumbnail>
     <thumbnail height='192' name='Remote Work and Hinc' width='192'>
       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
-      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
-      Qm40/z9+lxeChlgqBQAAAABJRU5ErkJggg==
+      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
     </thumbnail>
     <thumbnail height='192' name='RemoteWork and Pinc' width='192'>
       iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAACXBIWXMAAA7DAAAOwwHHb6hk
