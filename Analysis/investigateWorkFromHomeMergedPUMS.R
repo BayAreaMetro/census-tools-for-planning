@@ -16,6 +16,7 @@ pbayarea1317 = select(
   ST,       # State code based on 2010 Census definitions
   POWPUMA,  # Place of work PUMA based on 2010 Census
   POWSP,    # Place of work - State or foreign country recode
+  JWMNP,    # Travel time to work
   JWTR,     # Means of transportation to work
   PINCP,    # Total person's income (signed, use ADJINC to adjust to constant dollars)
   ADJINC,   # Adjustment factor for income and earnings dollar amounts
@@ -34,6 +35,7 @@ pbayarea21 = select(
   ST,       # State code based on 2010 Census definitions
   POWPUMA,  # Place of work PUMA based on 2010 Census
   POWSP,    # Place of work - State or foreign country recode
+  JWMNP,    # Travel time to work
   JWTRNS,   # Means of transportation to work
   PINCP,    # Total person's income (signed, use ADJINC to adjust to constant dollars)
   ADJINC,   # Adjustment factor for income and earnings dollar amounts
