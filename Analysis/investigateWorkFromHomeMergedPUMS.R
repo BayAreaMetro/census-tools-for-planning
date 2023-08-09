@@ -72,9 +72,7 @@ pbayarea21 <- mutate(
 
 pbayarea_combined <- rbind(pbayarea1317, pbayarea21)
 
-# drop NA POWPUMA; these are not workers
-pbayarea_combined <- filter(pbayarea_combined, 
-                            !is.na(POWPUMA))
+# don't drop folks without POWPUMA -- universe == all residents
 
 # country/state = 3 characters
 # PUMA = 5 characters
@@ -117,7 +115,7 @@ pbayarea_combined <- left_join(
 
 # write it
 save(pbayarea_combined,
-     file = file.path(PUMS_DIR, "WorkFromHomeInvestigation", "pbayarea_workers.Rdata"))
+     file = file.path(PUMS_DIR, "WorkFromHomeInvestigation", "pbayarea_combined.Rdata"))
 
 # Households now
 # Read PUMS 2013-2017 & keep subset of variables
@@ -192,4 +190,4 @@ hbayarea_combined <- left_join(
 
 # write it
 save(hbayarea_combined,
-     file = file.path(PUMS_DIR, "WorkFromHomeInvestigation", "hbayarea_workers.Rdata"))
+     file = file.path(PUMS_DIR, "WorkFromHomeInvestigation", "hbayarea_combined.Rdata"))
