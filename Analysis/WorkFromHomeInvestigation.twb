@@ -18,7 +18,7 @@
     <WindowsPersistSimpleIdentifiers />
     <ZoneBackgroundTransparency />
   </document-format-change-manifest>
-  <repository-location id='WorkFromHomeInvestigation' path='/t/metropolitantransportationcommission/workbooks' revision='2.5' site='metropolitantransportationcommission' />
+  <repository-location id='WorkFromHomeInvestigation' path='/t/metropolitantransportationcommission/workbooks' revision='2.8' site='metropolitantransportationcommission' />
   <preferences>
     <preference name='ui.encoding.shelf.height' value='24' />
     <preference name='ui.shelf.height' value='26' />
@@ -42,6 +42,7 @@
           <relation connection='stat-direct.1trehdl102jmex168d30718zw4lo' name='hbayarea_combined.Rdata' table='[hbayarea_combined.Rdata]' type='table' />
         </_.fcp.ObjectModelEncapsulateLegacy.true...relation>
         <cols>
+          <map key='[AGEP]' value='[pbayarea_combined.Rdata].[AGEP]' />
           <map key='[BLD (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[BLD]' />
           <map key='[COUNTY (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata].[COUNTY]' />
           <map key='[COUNTYNAME (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata].[COUNTYNAME]' />
@@ -77,10 +78,16 @@
           <map key='[TYPEHUGQ (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[TYPEHUGQ]' />
           <map key='[VEH (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[VEH]' />
           <map key='[WGTP (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata].[WGTP]' />
+          <map key='[WKHP]' value='[pbayarea_combined.Rdata].[WKHP]' />
+          <map key='[WKW]' value='[pbayarea_combined.Rdata].[WKW]' />
+          <map key='[employ_status]' value='[pbayarea_combined.Rdata].[employ_status]' />
+          <map key='[employed]' value='[pbayarea_combined.Rdata].[employed]' />
+          <map key='[person_type]' value='[pbayarea_combined.Rdata].[person_type]' />
           <map key='[rownames (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata].[rownames]' />
           <map key='[rownames]' value='[hbayarea_combined.Rdata].[rownames]' />
           <map key='[source (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata].[source]' />
           <map key='[source]' value='[hbayarea_combined.Rdata].[source]' />
+          <map key='[student_status]' value='[pbayarea_combined.Rdata].[student_status]' />
         </cols>
         <refresh increment-key='' incremental-updates='false' />
         <metadata-records>
@@ -218,6 +225,39 @@
             <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
           </metadata-record>
           <metadata-record class='column'>
+            <remote-name>AGEP</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[AGEP]</local-name>
+            <parent-name>[pbayarea_combined.Rdata]</parent-name>
+            <remote-alias>AGEP</remote-alias>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>WKHP</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[WKHP]</local-name>
+            <parent-name>[pbayarea_combined.Rdata]</parent-name>
+            <remote-alias>WKHP</remote-alias>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>WKW</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[WKW]</local-name>
+            <parent-name>[pbayarea_combined.Rdata]</parent-name>
+            <remote-alias>WKW</remote-alias>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
             <remote-name>source</remote-name>
             <remote-type>129</remote-type>
             <local-name>[source (pbayarea_combined.Rdata)]</local-name>
@@ -235,6 +275,50 @@
             <local-name>[PINCP_2000dollars (pbayarea_combined.Rdata)]</local-name>
             <parent-name>[pbayarea_combined.Rdata]</parent-name>
             <remote-alias>PINCP_2000dollars</remote-alias>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>student_status</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[student_status]</local-name>
+            <parent-name>[pbayarea_combined.Rdata]</parent-name>
+            <remote-alias>student_status</remote-alias>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>employed</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[employed]</local-name>
+            <parent-name>[pbayarea_combined.Rdata]</parent-name>
+            <remote-alias>employed</remote-alias>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>employ_status</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[employ_status]</local-name>
+            <parent-name>[pbayarea_combined.Rdata]</parent-name>
+            <remote-alias>employ_status</remote-alias>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <_.fcp.ObjectModelEncapsulateLegacy.true...object-id>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</_.fcp.ObjectModelEncapsulateLegacy.true...object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>person_type</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[person_type]</local-name>
+            <parent-name>[pbayarea_combined.Rdata]</parent-name>
+            <remote-alias>person_type</remote-alias>
             <local-type>real</local-type>
             <aggregation>Sum</aggregation>
             <contains-null>true</contains-null>
@@ -538,7 +622,8 @@
           <alias key='&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[pcdf:usr:Calculation_2968998110989086720:qk:1]&quot;' value='% Difference' />
         </aliases>
       </column>
-      <column caption='BLD (hbayarea combined.Rdata)' datatype='integer' name='[BLD (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+      <column aggregation='Sum' datatype='integer' name='[AGEP]' role='dimension' type='ordinal' />
+      <column caption='Units in structure' datatype='integer' name='[BLD (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
       <column caption='County Code (person)' datatype='string' name='[COUNTY (pbayarea_combined.Rdata)]' role='dimension' semantic-role='[County].[Name]' type='nominal' />
       <column caption='County of Residence (person)' datatype='string' name='[COUNTYNAME (pbayarea_combined.Rdata)]' role='dimension' semantic-role='[County].[Name]' type='nominal' />
       <column caption='County of Residence' datatype='string' name='[COUNTYNAME]' role='dimension' semantic-role='[County].[Name]' type='nominal' />
@@ -594,12 +679,12 @@
           <alias key='6' value='Not in labor force' />
         </aliases>
       </column>
-      <column caption='HHT (hbayarea combined.Rdata)' datatype='integer' name='[HHT (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+      <column caption='Household/family type' datatype='integer' name='[HHT (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
       <column aggregation='None' datatype='integer' name='[HINCP 2000dollars no negatives (bin)]' role='dimension' type='quantitative'>
         <calculation class='bin' decimals='4' formula='[Calculation_2955205837339451404]' peg='0' size='10000' />
       </column>
       <column caption='HINCP 2000dollars' datatype='real' name='[HINCP_2000dollars (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
-      <column caption='HUPAC (hbayarea combined.Rdata)' datatype='integer' name='[HUPAC (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+      <column caption='HH presence and age of children' datatype='integer' name='[HUPAC (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
       <column aggregation='None' caption='Travel Time bin (minutes)' datatype='integer' name='[JWMNP (bin)]' role='dimension' type='quantitative'>
         <calculation class='bin' decimals='0' formula='[JWMNP (pbayarea_combined.Rdata)]' peg='0' size='5' />
       </column>
@@ -666,8 +751,8 @@
       </column>
       <column caption='PUMA of Residence (person)' datatype='string' name='[NAMELSAD10 (pbayarea_combined.Rdata)]' role='dimension' type='nominal' />
       <column caption='Namelsad10' datatype='string' name='[NAMELSAD10]' role='dimension' type='nominal' />
-      <column caption='NP (hbayarea combined.Rdata)' datatype='integer' name='[NP (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
-      <column caption='NPF (hbayarea combined.Rdata)' datatype='integer' name='[NPF (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+      <column caption='Number of persons' datatype='integer' name='[NP (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+      <column caption='Number of persons in family (unweighted)' datatype='integer' name='[NPF (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
       <column caption='NWAB (pbayarea combined.Rdata)' datatype='integer' name='[NWAB (pbayarea_combined.Rdata)]' role='measure' type='quantitative' />
       <column aggregation='None' datatype='integer' name='[PINCP 2000dollars (bin)]' role='dimension' type='quantitative'>
         <calculation class='bin' decimals='4' formula='[PINCP_2000dollars (pbayarea_combined.Rdata)]' peg='0' size='10000' />
@@ -680,7 +765,7 @@
       <column aggregation='Sum' caption='PUMA (pbayarea combined.Rdata)' datatype='integer' name='[PUMA (pbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
       <column caption='PUMACE10 (pbayarea combined.Rdata)' datatype='string' name='[PUMACE10 (pbayarea_combined.Rdata)]' role='dimension' type='nominal' />
       <column caption='Pumace10' datatype='string' name='[PUMACE10]' role='dimension' type='nominal' />
-      <column caption='Puma' datatype='integer' name='[PUMA]' role='measure' type='quantitative' />
+      <column aggregation='Sum' caption='Puma' datatype='integer' name='[PUMA]' role='dimension' type='ordinal' />
       <column caption='Person Weight' datatype='integer' name='[PWGTP (pbayarea_combined.Rdata)]' role='measure' type='quantitative' />
       <column caption='County of Work' datatype='string' name='[Powcountyname (group)]' role='dimension' semantic-role='[County].[Name]' type='nominal'>
         <calculation class='categorical-bin' column='[POWCOUNTYNAME (pbayarea_combined.Rdata)]' new-bin='true'>
@@ -727,10 +812,13 @@
       <column caption='Serialno' datatype='string' name='[SERIALNO]' role='dimension' type='nominal' />
       <column caption='SPORDER (pbayarea combined.Rdata)' datatype='integer' name='[SPORDER (pbayarea_combined.Rdata)]' role='measure' type='quantitative' />
       <column aggregation='Sum' caption='ST (pbayarea combined.Rdata)' datatype='integer' name='[ST (pbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
-      <column caption='TEN (hbayarea combined.Rdata)' datatype='integer' name='[TEN (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
-      <column caption='TYPEHUGQ (hbayarea combined.Rdata)' datatype='integer' name='[TYPEHUGQ (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
-      <column caption='VEH (hbayarea combined.Rdata)' datatype='integer' name='[VEH (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
-      <column caption='WGTP (hbayarea combined.Rdata)' datatype='integer' name='[WGTP (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+      <column aggregation='Sum' caption='State code' datatype='integer' name='[ST]' role='dimension' type='ordinal' />
+      <column caption='Tenure' datatype='integer' name='[TEN (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+      <column caption='Type of unit' datatype='integer' name='[TYPEHUGQ (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+      <column caption='Vehicles Available' datatype='integer' name='[VEH (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+      <column caption='WGTP (hbayarea combined.Rdata)' datatype='integer' hidden='true' name='[WGTP (hbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+      <column datatype='integer' name='[WKHP]' role='measure' type='quantitative' />
+      <column datatype='real' name='[WKW]' role='measure' type='quantitative' />
       <column caption='Workers for Work County' datatype='integer' name='[Workers for Home County (copy)_2273754918127525902]' role='measure' type='quantitative'>
         <calculation class='tableau' formula='{ FIXED [source],[Powcountyname (group)],[Calculation_601793557088251904] :&#13;&#10;  sum([PWGTP (pbayarea_combined.Rdata)])&#13;&#10;}' />
       </column>
@@ -739,10 +827,34 @@
       </column>
       <_.fcp.ObjectModelTableType.true...column caption='hbayarea_combined.Rdata' datatype='table' name='[__tableau_internal_object_id__].[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]' role='measure' type='quantitative' />
       <_.fcp.ObjectModelTableType.true...column caption='pbayarea_combined.Rdata' datatype='table' name='[__tableau_internal_object_id__].[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]' role='measure' type='quantitative' />
+      <column aggregation='Sum' datatype='real' name='[employ_status]' role='dimension' type='ordinal' />
+      <column aggregation='Sum' datatype='real' name='[employed]' role='dimension' type='ordinal' />
+      <column aggregation='Sum' caption='Person Type' datatype='real' name='[person_type]' role='dimension' type='ordinal'>
+        <aliases>
+          <alias key='1.0' value='Full-time worker' />
+          <alias key='2.0' value='Part-time worker' />
+          <alias key='3.0' value='University student' />
+          <alias key='4.0' value='Non-working adult' />
+          <alias key='5.0' value='Retired' />
+          <alias key='6.0' value='Student of driving age' />
+          <alias key='7.0' value='Non-driving age student' />
+          <alias key='8.0' value='Child too young for school' />
+        </aliases>
+      </column>
       <column aggregation='Sum' caption='rownames (pbayarea combined.Rdata)' datatype='integer' name='[rownames (pbayarea_combined.Rdata)]' role='dimension' type='ordinal' />
-      <column caption='Rownames' datatype='integer' name='[rownames]' role='measure' type='quantitative' />
+      <column aggregation='Sum' caption='Rownames' datatype='integer' name='[rownames]' role='dimension' type='ordinal' />
       <column caption='Source (person)' datatype='string' name='[source (pbayarea_combined.Rdata)]' role='dimension' type='nominal' />
       <column caption='Source' datatype='string' name='[source]' role='dimension' type='nominal' />
+      <column aggregation='Sum' datatype='real' name='[student_status]' role='dimension' type='ordinal' />
+      <column-instance column='[__tableau_internal_object_id__].[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]' derivation='Count' name='[__tableau_internal_object_id__].[cnt:hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279:qk]' pivot='key' type='quantitative' />
+      <column-instance column='[__tableau_internal_object_id__].[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]' derivation='Count' name='[__tableau_internal_object_id__].[cnt:pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82:qk]' pivot='key' type='quantitative' />
+      <column-instance column='[PWGTP (pbayarea_combined.Rdata)]' derivation='Sum' name='[diff:sum:PWGTP (pbayarea_combined.Rdata):qk:1]' pivot='key' type='quantitative'>
+        <table-calc diff-options='Relative' ordering-type='Rows' type='Difference'>
+          <address>
+            <value>-1</value>
+          </address>
+        </table-calc>
+      </column-instance>
       <column-instance column='[Calculation_2273754918126235659]' derivation='User' name='[diff:usr:Calculation_2273754918126235659:qk:3]' pivot='key' type='quantitative'>
         <table-calc diff-options='Relative' ordering-field='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[source]' ordering-type='Field' type='Difference'>
           <address>
@@ -764,6 +876,7 @@
           </address>
         </table-calc>
       </column-instance>
+      <column-instance column='[person_type]' derivation='None' name='[none:person_type:ok]' pivot='key' type='ordinal' />
       <column-instance column='[source]' derivation='None' name='[none:source:nk]' pivot='key' type='nominal' />
       <column-instance column='[Calculation_2968998110989086720]' derivation='User' name='[pcdf:usr:Calculation_2968998110989086720:qk:1]' pivot='key' type='quantitative'>
         <table-calc diff-options='Relative' ordering-field='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:source:nk]' ordering-type='Field' type='PctDiff'>
@@ -772,14 +885,65 @@
           </address>
         </table-calc>
       </column-instance>
+      <column-instance column='[PWGTP (pbayarea_combined.Rdata)]' derivation='Sum' name='[pcto:sum:PWGTP (pbayarea_combined.Rdata):qk:1]' pivot='key' type='quantitative'>
+        <table-calc ordering-type='Rows' type='PctTotal' />
+      </column-instance>
+      <column-instance column='[PWGTP (pbayarea_combined.Rdata)]' derivation='Sum' name='[pcto:sum:PWGTP (pbayarea_combined.Rdata):qk:2]' pivot='key' type='quantitative'>
+        <table-calc ordering-field='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:person_type:ok]' ordering-type='Field' type='PctTotal' />
+      </column-instance>
+      <column-instance column='[PWGTP (pbayarea_combined.Rdata)]' derivation='Sum' name='[pcto:sum:PWGTP (pbayarea_combined.Rdata):qk:3]' pivot='key' type='quantitative'>
+        <table-calc ordering-field='' ordering-type='Field' type='PctTotal' />
+      </column-instance>
+      <column-instance column='[PWGTP (pbayarea_combined.Rdata)]' derivation='Sum' name='[pcto:sum:PWGTP (pbayarea_combined.Rdata):qk:4]' pivot='key' type='quantitative'>
+        <table-calc ordering-field='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[Means of transportation to work (group)]' ordering-type='Field' type='PctTotal' />
+      </column-instance>
+      <column-instance column='[BLD (hbayarea_combined.Rdata)]' derivation='Sum' name='[sum:BLD (hbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+      <column-instance column='[Calculation_2273754918116126722]' derivation='Sum' name='[sum:Calculation_2273754918116126722:qk]' pivot='key' type='quantitative' />
+      <column-instance column='[Calculation_2955205837339451404]' derivation='Sum' name='[sum:Calculation_2955205837339451404:qk]' pivot='key' type='quantitative' />
+      <column-instance column='[HHT (hbayarea_combined.Rdata)]' derivation='Sum' name='[sum:HHT (hbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+      <column-instance column='[HINCP_2000dollars (hbayarea_combined.Rdata)]' derivation='Sum' name='[sum:HINCP_2000dollars (hbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+      <column-instance column='[HUPAC (hbayarea_combined.Rdata)]' derivation='Sum' name='[sum:HUPAC (hbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+      <column-instance column='[JWMNP (pbayarea_combined.Rdata)]' derivation='Sum' name='[sum:JWMNP (pbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+      <column-instance column='[JWTRNS (pbayarea_combined.Rdata)]' derivation='Sum' name='[sum:JWTRNS (pbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+      <column-instance column='[NP (hbayarea_combined.Rdata)]' derivation='Sum' name='[sum:NP (hbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+      <column-instance column='[NPF (hbayarea_combined.Rdata)]' derivation='Sum' name='[sum:NPF (hbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+      <column-instance column='[NWAB (pbayarea_combined.Rdata)]' derivation='Sum' name='[sum:NWAB (pbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+      <column-instance column='[PINCP_2000dollars (pbayarea_combined.Rdata)]' derivation='Sum' name='[sum:PINCP_2000dollars (pbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+      <column-instance column='[POWSP (pbayarea_combined.Rdata)]' derivation='Sum' name='[sum:POWSP (pbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+      <column-instance column='[PWGTP (pbayarea_combined.Rdata)]' derivation='Sum' name='[sum:PWGTP (pbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+      <column-instance column='[SPORDER (pbayarea_combined.Rdata)]' derivation='Sum' name='[sum:SPORDER (pbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+      <column-instance column='[TEN (hbayarea_combined.Rdata)]' derivation='Sum' name='[sum:TEN (hbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+      <column-instance column='[TYPEHUGQ (hbayarea_combined.Rdata)]' derivation='Sum' name='[sum:TYPEHUGQ (hbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+      <column-instance column='[VEH (hbayarea_combined.Rdata)]' derivation='Sum' name='[sum:VEH (hbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+      <column-instance column='[WKHP]' derivation='Sum' name='[sum:WKHP:qk]' pivot='key' type='quantitative' />
+      <column-instance column='[WKW]' derivation='Sum' name='[sum:WKW:qk]' pivot='key' type='quantitative' />
+      <column-instance column='[Workers for Home County (copy)_2273754918127525902]' derivation='Sum' name='[sum:Workers for Home County (copy)_2273754918127525902:qk]' pivot='key' type='quantitative' />
+      <column-instance column='[Workers for Home/Work County (copy)_2273754918126059530]' derivation='Sum' name='[sum:Workers for Home/Work County (copy)_2273754918126059530:qk]' pivot='key' type='quantitative' />
+      <column-instance column='[Calculation_2273754918116511747]' derivation='User' name='[usr:Calculation_2273754918116511747:qk]' pivot='key' type='quantitative' />
+      <column-instance column='[Calculation_2273754918125551625]' derivation='User' name='[usr:Calculation_2273754918125551625:qk:1]' pivot='key' type='quantitative'>
+        <table-calc ordering-field='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:person_type:ok]' ordering-type='Field' />
+      </column-instance>
+      <column-instance column='[Calculation_2273754918125551625]' derivation='User' name='[usr:Calculation_2273754918125551625:qk:2]' pivot='key' type='quantitative'>
+        <table-calc ordering-field='' ordering-type='Field' />
+      </column-instance>
+      <column-instance column='[Calculation_2273754918125551625]' derivation='User' name='[usr:Calculation_2273754918125551625:qk:3]' pivot='key' type='quantitative'>
+        <table-calc ordering-field='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[Means of transportation to work (group)]' ordering-type='Field' />
+      </column-instance>
+      <column-instance column='[Calculation_2273754918125551625]' derivation='User' name='[usr:Calculation_2273754918125551625:qk]' pivot='key' type='quantitative'>
+        <table-calc ordering-type='Rows' />
+      </column-instance>
+      <column-instance column='[Calculation_2273754918126235659]' derivation='User' name='[usr:Calculation_2273754918126235659:qk]' pivot='key' type='quantitative' />
+      <column-instance column='[Calculation_2968998110989086720]' derivation='User' name='[usr:Calculation_2968998110989086720:qk]' pivot='key' type='quantitative' />
+      <column-instance column='[Mode Share for Home County (copy)_2273754918127607823]' derivation='User' name='[usr:Mode Share for Home County (copy)_2273754918127607823:qk]' pivot='key' type='quantitative' />
       <extract _.fcp.ObjectModelExtractV2.true...object-id='' _.fcp.VConnDownstreamExtractsWithWarnings.true...user-specific='false' count='-1' enabled='true' units='records'>
-        <connection access_mode='readonly' authentication='auth-none' author-locale='en_US' class='hyper' dbname='M:/Data/Census/PUMS/WorkFromHomeInvestigation/pbayarea_combined.hyper' default-settings='yes' schema='Extract' sslmode='' tablename='Extract' update-time='08/09/2023 07:32:55 PM' username='tableau_internal_user'>
+        <connection access_mode='readonly' authentication='auth-none' author-locale='en_US' class='hyper' dbname='M:/Data/Census/PUMS/WorkFromHomeInvestigation/pbayarea_combined.hyper' default-settings='yes' schema='Extract' sslmode='' update-time='08/10/2023 12:37:54 AM' username='tableau_internal_user'>
           <_.fcp.ObjectModelEncapsulateLegacy.false...relation name='hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279' table='[Extract].[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]' type='table' />
           <_.fcp.ObjectModelEncapsulateLegacy.true...relation type='collection'>
             <relation name='pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82' table='[Extract].[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]' type='table' />
             <relation name='hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279' table='[Extract].[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]' type='table' />
           </_.fcp.ObjectModelEncapsulateLegacy.true...relation>
           <cols>
+            <map key='[AGEP]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[AGEP]' />
             <map key='[BLD (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[BLD]' />
             <map key='[COUNTY (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[COUNTY]' />
             <map key='[COUNTYNAME (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[COUNTYNAME]' />
@@ -814,14 +978,19 @@
             <map key='[TEN (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[TEN]' />
             <map key='[TYPEHUGQ (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[TYPEHUGQ]' />
             <map key='[VEH (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[VEH]' />
-            <map key='[WGTP (hbayarea_combined.Rdata)]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[WGTP]' />
+            <map key='[WKHP]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[WKHP]' />
+            <map key='[WKW]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[WKW]' />
+            <map key='[employ_status]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[employ_status]' />
+            <map key='[employed]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[employed]' />
+            <map key='[person_type]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[person_type]' />
             <map key='[rownames (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[rownames]' />
             <map key='[rownames]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[rownames]' />
             <map key='[source (pbayarea_combined.Rdata)]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[source]' />
             <map key='[source]' value='[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279].[source]' />
+            <map key='[student_status]' value='[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82].[student_status]' />
           </cols>
-          <refresh increment-key='' incremental-updates='false'>
-            <refresh-event add-from-file-path='pbayarea_combined' increment-value='%null%' refresh-type='create' rows-inserted='642330' timestamp-start='2023-08-09 19:32:42.752' />
+          <refresh>
+            <refresh-event add-from-file-path='pbayarea_combined' increment-value='%null%' refresh-type='create' rows-inserted='642330' timestamp-start='2023-08-10 00:37:41.704' />
           </refresh>
           <metadata-records>
             <metadata-record class='column'>
@@ -847,7 +1016,7 @@
               <family>pbayarea_combined.Rdata</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>322934</approx-count>
+              <approx-count>301360</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='binary' />
             </metadata-record>
@@ -861,7 +1030,7 @@
               <family>pbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>27</approx-count>
+              <approx-count>24</approx-count>
               <contains-null>true</contains-null>
             </metadata-record>
             <metadata-record class='column'>
@@ -874,7 +1043,7 @@
               <family>pbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>737</approx-count>
+              <approx-count>973</approx-count>
               <contains-null>true</contains-null>
             </metadata-record>
             <metadata-record class='column'>
@@ -913,7 +1082,7 @@
               <family>pbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>47</approx-count>
+              <approx-count>118</approx-count>
               <contains-null>true</contains-null>
             </metadata-record>
             <metadata-record class='column'>
@@ -926,7 +1095,7 @@
               <family>pbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>44</approx-count>
+              <approx-count>302</approx-count>
               <contains-null>true</contains-null>
             </metadata-record>
             <metadata-record class='column'>
@@ -939,7 +1108,7 @@
               <family>pbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>138</approx-count>
+              <approx-count>142</approx-count>
               <contains-null>true</contains-null>
             </metadata-record>
             <metadata-record class='column'>
@@ -952,7 +1121,7 @@
               <family>pbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>25</approx-count>
+              <approx-count>13</approx-count>
               <contains-null>true</contains-null>
             </metadata-record>
             <metadata-record class='column'>
@@ -965,7 +1134,7 @@
               <family>pbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>8</approx-count>
+              <approx-count>6</approx-count>
               <contains-null>true</contains-null>
             </metadata-record>
             <metadata-record class='column'>
@@ -982,12 +1151,51 @@
               <contains-null>true</contains-null>
             </metadata-record>
             <metadata-record class='column'>
+              <remote-name>AGEP</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[AGEP]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>AGEP</remote-alias>
+              <ordinal>12</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>104</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>WKHP</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[WKHP]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>WKHP</remote-alias>
+              <ordinal>13</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>157</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>WKW</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[WKW]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>WKW</remote-alias>
+              <ordinal>14</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>7</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
               <remote-name>source</remote-name>
               <remote-type>129</remote-type>
               <local-name>[source (pbayarea_combined.Rdata)]</local-name>
               <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
               <remote-alias>source</remote-alias>
-              <ordinal>12</ordinal>
+              <ordinal>15</ordinal>
               <family>pbayarea_combined.Rdata</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
@@ -1001,11 +1209,63 @@
               <local-name>[PINCP_2000dollars (pbayarea_combined.Rdata)]</local-name>
               <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
               <remote-alias>PINCP_2000dollars</remote-alias>
-              <ordinal>13</ordinal>
+              <ordinal>16</ordinal>
               <family>pbayarea_combined.Rdata</family>
               <local-type>real</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>16723</approx-count>
+              <approx-count>17532</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>student_status</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[student_status]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>student_status</remote-alias>
+              <ordinal>17</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>3</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>employed</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[employed]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>employed</remote-alias>
+              <ordinal>18</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>2</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>employ_status</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[employ_status]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>employ_status</remote-alias>
+              <ordinal>19</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>4</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>person_type</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[person_type]</local-name>
+              <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
+              <remote-alias>person_type</remote-alias>
+              <ordinal>20</ordinal>
+              <family>pbayarea_combined.Rdata</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>8</approx-count>
               <contains-null>true</contains-null>
             </metadata-record>
             <metadata-record class='column'>
@@ -1014,7 +1274,7 @@
               <local-name>[PUMACE10 (pbayarea_combined.Rdata)]</local-name>
               <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
               <remote-alias>PUMACE10</remote-alias>
-              <ordinal>14</ordinal>
+              <ordinal>21</ordinal>
               <family>pbayarea_combined.Rdata</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
@@ -1028,11 +1288,11 @@
               <local-name>[POWPUMACE10 (pbayarea_combined.Rdata)]</local-name>
               <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
               <remote-alias>POWPUMACE10</remote-alias>
-              <ordinal>15</ordinal>
+              <ordinal>22</ordinal>
               <family>pbayarea_combined.Rdata</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>53</approx-count>
+              <approx-count>118</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='binary' />
             </metadata-record>
@@ -1042,7 +1302,7 @@
               <local-name>[NAMELSAD10 (pbayarea_combined.Rdata)]</local-name>
               <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
               <remote-alias>NAMELSAD10</remote-alias>
-              <ordinal>16</ordinal>
+              <ordinal>23</ordinal>
               <family>pbayarea_combined.Rdata</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
@@ -1056,7 +1316,7 @@
               <local-name>[COUNTY (pbayarea_combined.Rdata)]</local-name>
               <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
               <remote-alias>COUNTY</remote-alias>
-              <ordinal>17</ordinal>
+              <ordinal>24</ordinal>
               <family>pbayarea_combined.Rdata</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
@@ -1070,7 +1330,7 @@
               <local-name>[COUNTYNAME (pbayarea_combined.Rdata)]</local-name>
               <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
               <remote-alias>COUNTYNAME</remote-alias>
-              <ordinal>18</ordinal>
+              <ordinal>25</ordinal>
               <family>pbayarea_combined.Rdata</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
@@ -1084,11 +1344,11 @@
               <local-name>[POWCOUNTYNAME (pbayarea_combined.Rdata)]</local-name>
               <parent-name>[pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82]</parent-name>
               <remote-alias>POWCOUNTYNAME</remote-alias>
-              <ordinal>19</ordinal>
+              <ordinal>26</ordinal>
               <family>pbayarea_combined.Rdata</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
-              <approx-count>34</approx-count>
+              <approx-count>47</approx-count>
               <contains-null>true</contains-null>
               <collation flag='0' name='binary' />
             </metadata-record>
@@ -1098,7 +1358,7 @@
               <local-name>[rownames]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>rownames</remote-alias>
-              <ordinal>20</ordinal>
+              <ordinal>27</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
@@ -1111,7 +1371,7 @@
               <local-name>[SERIALNO]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>SERIALNO</remote-alias>
-              <ordinal>21</ordinal>
+              <ordinal>28</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
@@ -1120,25 +1380,12 @@
               <collation flag='0' name='binary' />
             </metadata-record>
             <metadata-record class='column'>
-              <remote-name>WGTP</remote-name>
-              <remote-type>20</remote-type>
-              <local-name>[WGTP (hbayarea_combined.Rdata)]</local-name>
-              <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
-              <remote-alias>WGTP</remote-alias>
-              <ordinal>22</ordinal>
-              <family>hbayarea_combined.Rdata</family>
-              <local-type>integer</local-type>
-              <aggregation>Sum</aggregation>
-              <approx-count>869</approx-count>
-              <contains-null>true</contains-null>
-            </metadata-record>
-            <metadata-record class='column'>
               <remote-name>PUMA</remote-name>
               <remote-type>20</remote-type>
               <local-name>[PUMA]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>PUMA</remote-alias>
-              <ordinal>23</ordinal>
+              <ordinal>29</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
@@ -1151,7 +1398,7 @@
               <local-name>[ST]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>ST</remote-alias>
-              <ordinal>24</ordinal>
+              <ordinal>30</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
@@ -1164,11 +1411,11 @@
               <local-name>[NP (hbayarea_combined.Rdata)]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>NP</remote-alias>
-              <ordinal>25</ordinal>
+              <ordinal>31</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>28</approx-count>
+              <approx-count>20</approx-count>
               <contains-null>true</contains-null>
             </metadata-record>
             <metadata-record class='column'>
@@ -1177,7 +1424,7 @@
               <local-name>[TYPEHUGQ (hbayarea_combined.Rdata)]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>TYPEHUGQ</remote-alias>
-              <ordinal>26</ordinal>
+              <ordinal>32</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
@@ -1190,11 +1437,11 @@
               <local-name>[BLD (hbayarea_combined.Rdata)]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>BLD</remote-alias>
-              <ordinal>27</ordinal>
+              <ordinal>33</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>11</approx-count>
+              <approx-count>10</approx-count>
               <contains-null>true</contains-null>
             </metadata-record>
             <metadata-record class='column'>
@@ -1203,7 +1450,7 @@
               <local-name>[HHT (hbayarea_combined.Rdata)]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>HHT</remote-alias>
-              <ordinal>28</ordinal>
+              <ordinal>34</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
@@ -1216,7 +1463,7 @@
               <local-name>[HUPAC (hbayarea_combined.Rdata)]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>HUPAC</remote-alias>
-              <ordinal>29</ordinal>
+              <ordinal>35</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
@@ -1229,11 +1476,11 @@
               <local-name>[NPF (hbayarea_combined.Rdata)]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>NPF</remote-alias>
-              <ordinal>30</ordinal>
+              <ordinal>36</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>43</approx-count>
+              <approx-count>24</approx-count>
               <contains-null>true</contains-null>
             </metadata-record>
             <metadata-record class='column'>
@@ -1242,7 +1489,7 @@
               <local-name>[TEN (hbayarea_combined.Rdata)]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>TEN</remote-alias>
-              <ordinal>31</ordinal>
+              <ordinal>37</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
@@ -1255,7 +1502,7 @@
               <local-name>[VEH (hbayarea_combined.Rdata)]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>VEH</remote-alias>
-              <ordinal>32</ordinal>
+              <ordinal>38</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>integer</local-type>
               <aggregation>Sum</aggregation>
@@ -1268,7 +1515,7 @@
               <local-name>[source]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>source</remote-alias>
-              <ordinal>33</ordinal>
+              <ordinal>39</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
@@ -1282,11 +1529,11 @@
               <local-name>[HINCP_2000dollars (hbayarea_combined.Rdata)]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>HINCP_2000dollars</remote-alias>
-              <ordinal>34</ordinal>
+              <ordinal>40</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>real</local-type>
               <aggregation>Sum</aggregation>
-              <approx-count>26935</approx-count>
+              <approx-count>26930</approx-count>
               <contains-null>true</contains-null>
             </metadata-record>
             <metadata-record class='column'>
@@ -1295,7 +1542,7 @@
               <local-name>[PUMACE10]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>PUMACE10</remote-alias>
-              <ordinal>35</ordinal>
+              <ordinal>41</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
@@ -1309,7 +1556,7 @@
               <local-name>[NAMELSAD10]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>NAMELSAD10</remote-alias>
-              <ordinal>36</ordinal>
+              <ordinal>42</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
@@ -1323,7 +1570,7 @@
               <local-name>[COUNTY]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>COUNTY</remote-alias>
-              <ordinal>37</ordinal>
+              <ordinal>43</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
@@ -1337,7 +1584,7 @@
               <local-name>[COUNTYNAME]</local-name>
               <parent-name>[hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279]</parent-name>
               <remote-alias>COUNTYNAME</remote-alias>
-              <ordinal>38</ordinal>
+              <ordinal>44</ordinal>
               <family>hbayarea_combined.Rdata</family>
               <local-type>string</local-type>
               <aggregation>Count</aggregation>
@@ -1351,33 +1598,117 @@
       <layout _.fcp.SchemaViewerObjectModel.false...dim-percentage='0.5' _.fcp.SchemaViewerObjectModel.false...measure-percentage='0.4' dim-ordering='alphabetic' measure-ordering='alphabetic' show-aliased-fields='true' show-structure='true' />
       <style>
         <style-rule element='mark'>
-          <encoding attr='color' field='[Means of transportation to work (group)]' type='palette'>
+          <encoding attr='color' field='[:Measure Names]' type='palette'>
+            <map to='#499894'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:NWAB (pbayarea_combined.Rdata):qk]&quot;</bucket>
+            </map>
+            <map to='#499894'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:Workers for Home County (copy)_2273754918127525902:qk]&quot;</bucket>
+            </map>
             <map to='#4e79a7'>
-              <bucket>&quot;Walked&quot;</bucket>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[diff:sum:PWGTP (pbayarea_combined.Rdata):qk:1]&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[pcto:sum:PWGTP (pbayarea_combined.Rdata):qk:1]&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[pcto:sum:PWGTP (pbayarea_combined.Rdata):qk:2]&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[pcto:sum:PWGTP (pbayarea_combined.Rdata):qk:3]&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:PWGTP (pbayarea_combined.Rdata):qk]&quot;</bucket>
+            </map>
+            <map to='#4e79a7'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[usr:Calculation_2968998110989086720:qk]&quot;</bucket>
             </map>
             <map to='#59a14f'>
-              <bucket>&quot;Bicycle&quot;</bucket>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[__tableau_internal_object_id__].[cnt:hbayarea_combined.Rdata_F61E4D05B9204AB38457003B9B350279:qk]&quot;</bucket>
             </map>
-            <map to='#9c755f'>
-              <bucket>&quot;Didn&apos;t work&quot;</bucket>
+            <map to='#59a14f'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[usr:Calculation_2273754918116511747:qk]&quot;</bucket>
+            </map>
+            <map to='#79706e'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:NP (hbayarea_combined.Rdata):qk]&quot;</bucket>
+            </map>
+            <map to='#86bcb6'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:WKHP:qk]&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:POWSP (pbayarea_combined.Rdata):qk]&quot;</bucket>
+            </map>
+            <map to='#8cd17d'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[usr:Mode Share for Home County (copy)_2273754918127607823:qk]&quot;</bucket>
+            </map>
+            <map to='#9d7660'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:TEN (hbayarea_combined.Rdata):qk]&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[__tableau_internal_object_id__].[cnt:pbayarea_combined.Rdata_209BC94B44A1421BA78A39E9D6395A82:qk]&quot;</bucket>
+            </map>
+            <map to='#a0cbe8'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:Calculation_2955205837339451404:qk]&quot;</bucket>
             </map>
             <map to='#b07aa1'>
-              <bucket>&quot;Worked at home&quot;</bucket>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:HUPAC (hbayarea_combined.Rdata):qk]&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:JWMNP (pbayarea_combined.Rdata):qk]&quot;</bucket>
+            </map>
+            <map to='#b6992d'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:Workers for Home/Work County (copy)_2273754918126059530:qk]&quot;</bucket>
             </map>
             <map to='#bab0ac'>
-              <bucket>&quot;Other method&quot;</bucket>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:TYPEHUGQ (hbayarea_combined.Rdata):qk]&quot;</bucket>
+            </map>
+            <map to='#d37295'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:BLD (hbayarea_combined.Rdata):qk]&quot;</bucket>
+            </map>
+            <map to='#d4a6c8'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:NPF (hbayarea_combined.Rdata):qk]&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:HINCP_2000dollars (hbayarea_combined.Rdata):qk]&quot;</bucket>
+            </map>
+            <map to='#d7b5a6'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:VEH (hbayarea_combined.Rdata):qk]&quot;</bucket>
             </map>
             <map to='#e15759'>
-              <bucket>&quot;Car, truck, van or motorcycle&quot;</bucket>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:WKW:qk]&quot;</bucket>
             </map>
-            <map to='#edc948'>
-              <bucket>&quot;Transit&quot;</bucket>
+            <map to='#f1ce63'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:Calculation_2273754918116126722:qk]&quot;</bucket>
+            </map>
+            <map to='#f1ce63'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:JWTRNS (pbayarea_combined.Rdata):qk]&quot;</bucket>
             </map>
             <map to='#f28e2b'>
-              <bucket>&quot;Taxicab&quot;</bucket>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[pcto:sum:PWGTP (pbayarea_combined.Rdata):qk:4]&quot;</bucket>
             </map>
-            <map to='#ff9da7'>
-              <bucket>%null%</bucket>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[usr:Calculation_2273754918125551625:qk:1]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[usr:Calculation_2273754918125551625:qk:2]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[usr:Calculation_2273754918125551625:qk:3]&quot;</bucket>
+            </map>
+            <map to='#f28e2b'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[usr:Calculation_2273754918125551625:qk]&quot;</bucket>
+            </map>
+            <map to='#fabfd2'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:HHT (hbayarea_combined.Rdata):qk]&quot;</bucket>
+            </map>
+            <map to='#ff9d9a'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:PINCP_2000dollars (pbayarea_combined.Rdata):qk]&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:SPORDER (pbayarea_combined.Rdata):qk]&quot;</bucket>
+            </map>
+            <map to='#ffbe7d'>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[usr:Calculation_2273754918126235659:qk]&quot;</bucket>
             </map>
           </encoding>
           <encoding attr='color' field='[Means of transportation to work (group) 1]' palette='miller_stone_10_0' type='palette'>
@@ -1403,6 +1734,38 @@
             </map>
             <map to='#8175aa'>
               <bucket>&quot;Nonworkers&quot;</bucket>
+            </map>
+          </encoding>
+          <encoding attr='color' field='[Means of transportation to work (group)]' type='palette'>
+            <map to='#55ad89'>
+              <bucket>&quot;Didn&apos;t work&quot;</bucket>
+            </map>
+            <map to='#767676'>
+              <bucket>&quot;Bicycle&quot;</bucket>
+            </map>
+            <map to='#767676'>
+              <bucket>&quot;Car, truck, van or motorcycle&quot;</bucket>
+            </map>
+            <map to='#767676'>
+              <bucket>&quot;Other method&quot;</bucket>
+            </map>
+            <map to='#767676'>
+              <bucket>&quot;Taxicab&quot;</bucket>
+            </map>
+            <map to='#767676'>
+              <bucket>&quot;Transit&quot;</bucket>
+            </map>
+            <map to='#767676'>
+              <bucket>&quot;Walked&quot;</bucket>
+            </map>
+            <map to='#767676'>
+              <bucket>%all%</bucket>
+            </map>
+            <map to='#c3bc3f'>
+              <bucket>&quot;Worked at home&quot;</bucket>
+            </map>
+            <map to='#ff9da7'>
+              <bucket>%null%</bucket>
             </map>
           </encoding>
         </style-rule>
@@ -2624,6 +2987,148 @@
         </show-full-range>
       </table>
       <simple-id uuid='{79FCC715-1BFA-43E0-9C22-87221322EB0D}' />
+    </worksheet>
+    <worksheet name='Mode Share by PersonType'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='pbayarea_combined' name='federated.0ejlp7v1jsg3v217quixw11ntaz4' />
+          </datasources>
+          <datasource-dependencies datasource='federated.0ejlp7v1jsg3v217quixw11ntaz4'>
+            <column caption='Is Worker' datatype='boolean' name='[Calculation_601793557088251904]' role='dimension' type='nominal'>
+              <calculation class='tableau' formula='CASE [ESR (pbayarea_combined.Rdata)]&#13;&#10;WHEN NULL then FALSE&#13;&#10;WHEN 1 then TRUE&#13;&#10;WHEN 2 then TRUE&#13;&#10;WHEN 3 then FALSE&#13;&#10;WHEN 4 then TRUE&#13;&#10;WHEN 5 then TRUE&#13;&#10;WHEN 6 then FALSE&#13;&#10;END' />
+            </column>
+            <column aggregation='Sum' caption='ESR (Employment Status)' datatype='integer' name='[ESR (pbayarea_combined.Rdata)]' role='dimension' type='ordinal'>
+              <aliases>
+                <alias key='%null%' value='N/A (less than 16 years old)' />
+                <alias key='1' value='Civilian employed, at work' />
+                <alias key='2' value='Civilian employed, with a job but not at work' />
+                <alias key='3' value='Unemployed' />
+                <alias key='4' value='Armed forces, at work' />
+                <alias key='5' value='Armed forces, with a job but not at work' />
+                <alias key='6' value='Not in labor force' />
+              </aliases>
+            </column>
+            <column caption='Means of transportation to work' datatype='integer' name='[JWTRNS (pbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+            <column caption='Work Mode' datatype='string' name='[Means of transportation to work (group)]' role='dimension' type='nominal'>
+              <calculation class='categorical-bin' column='[JWTRNS (pbayarea_combined.Rdata)]' new-bin='true'>
+                <bin default-name='false' value='&quot;Bicycle&quot;'>
+                  <value>9</value>
+                </bin>
+                <bin default-name='false' value='&quot;Car, truck, van or motorcycle&quot;'>
+                  <value>1</value>
+                  <value>8</value>
+                </bin>
+                <bin default-name='false' value='&quot;Didn&apos;t work&quot;'>
+                  <value>%null%</value>
+                </bin>
+                <bin default-name='false' value='&quot;Other method&quot;'>
+                  <value>12</value>
+                </bin>
+                <bin default-name='false' value='&quot;Taxicab&quot;'>
+                  <value>7</value>
+                </bin>
+                <bin default-name='false' value='&quot;Transit&quot;'>
+                  <value>2</value>
+                  <value>3</value>
+                  <value>4</value>
+                  <value>5</value>
+                  <value>6</value>
+                </bin>
+                <bin default-name='false' value='&quot;Walked&quot;'>
+                  <value>10</value>
+                </bin>
+                <bin default-name='false' value='&quot;Worked at home&quot;'>
+                  <value>11</value>
+                </bin>
+              </calculation>
+            </column>
+            <column caption='Person Weight' datatype='integer' name='[PWGTP (pbayarea_combined.Rdata)]' role='measure' type='quantitative' />
+            <column-instance column='[Calculation_601793557088251904]' derivation='None' name='[none:Calculation_601793557088251904:nk]' pivot='key' type='nominal' />
+            <column-instance column='[person_type]' derivation='None' name='[none:person_type:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[source (pbayarea_combined.Rdata)]' derivation='None' name='[none:source (pbayarea_combined.Rdata):nk]' pivot='key' type='nominal' />
+            <column-instance column='[PWGTP (pbayarea_combined.Rdata)]' derivation='Sum' name='[pcto:sum:PWGTP (pbayarea_combined.Rdata):qk:4]' pivot='key' type='quantitative'>
+              <table-calc ordering-field='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[Means of transportation to work (group)]' ordering-type='Field' type='PctTotal' />
+            </column-instance>
+            <column aggregation='Sum' caption='Person Type' datatype='real' name='[person_type]' role='dimension' type='ordinal'>
+              <aliases>
+                <alias key='1.0' value='Full-time worker' />
+                <alias key='2.0' value='Part-time worker' />
+                <alias key='3.0' value='University student' />
+                <alias key='4.0' value='Non-working adult' />
+                <alias key='5.0' value='Retired' />
+                <alias key='6.0' value='Student of driving age' />
+                <alias key='7.0' value='Non-driving age student' />
+                <alias key='8.0' value='Child too young for school' />
+              </aliases>
+            </column>
+            <column caption='Source (person)' datatype='string' name='[source (pbayarea_combined.Rdata)]' role='dimension' type='nominal' />
+            <column-instance column='[PWGTP (pbayarea_combined.Rdata)]' derivation='Sum' name='[sum:PWGTP (pbayarea_combined.Rdata):qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <filter class='categorical' column='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[:Measure Names]'>
+            <groupfilter function='union' user:op='manual'>
+              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:PWGTP (pbayarea_combined.Rdata):qk]&quot;' />
+              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[pcto:sum:PWGTP (pbayarea_combined.Rdata):qk:4]&quot;' />
+            </groupfilter>
+          </filter>
+          <manual-sort column='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[:Measure Names]' direction='ASC'>
+            <dictionary>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[sum:PWGTP (pbayarea_combined.Rdata):qk]&quot;</bucket>
+              <bucket>&quot;[federated.0ejlp7v1jsg3v217quixw11ntaz4].[pcto:sum:PWGTP (pbayarea_combined.Rdata):qk:4]&quot;</bucket>
+            </dictionary>
+          </manual-sort>
+          <filter class='categorical' column='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:Calculation_601793557088251904:nk]'>
+            <groupfilter function='member' level='[none:Calculation_601793557088251904:nk]' member='true' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
+          </filter>
+          <manual-sort column='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:person_type:ok]' direction='ASC'>
+            <dictionary>
+              <bucket>1.0</bucket>
+              <bucket>2.0</bucket>
+              <bucket>3.0</bucket>
+              <bucket>6.0</bucket>
+            </dictionary>
+          </manual-sort>
+          <slices>
+            <column>[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:Calculation_601793557088251904:nk]</column>
+            <column>[federated.0ejlp7v1jsg3v217quixw11ntaz4].[:Measure Names]</column>
+          </slices>
+          <aggregation value='true' />
+        </view>
+        <style>
+          <style-rule element='cell'>
+            <format attr='text-format' field='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[pcto:sum:PWGTP (pbayarea_combined.Rdata):qk:4]' value='p0.0%' />
+          </style-rule>
+          <style-rule element='header'>
+            <format attr='width' field='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[Means of transportation to work (group)]' value='104' />
+          </style-rule>
+          <style-rule element='label'>
+            <format attr='text-orientation' field='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:source (pbayarea_combined.Rdata):nk]' value='-90' />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Automatic' />
+            <encodings>
+              <color column='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[Means of transportation to work (group)]' />
+              <text column='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[Multiple Values]' />
+            </encodings>
+            <style>
+              <style-rule element='mark'>
+                <format attr='mark-labels-show' value='true' />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows total='true'>([federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:source (pbayarea_combined.Rdata):nk] / [federated.0ejlp7v1jsg3v217quixw11ntaz4].[Means of transportation to work (group)])</rows>
+        <cols onLeft='true' total='true'>([federated.0ejlp7v1jsg3v217quixw11ntaz4].[:Measure Names] / [federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:person_type:ok])</cols>
+        <subtotals>
+          <column>[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:source (pbayarea_combined.Rdata):nk]</column>
+        </subtotals>
+      </table>
+      <simple-id uuid='{C87D8A3D-CA3F-4445-9047-0C0C303A33FD}' />
     </worksheet>
     <worksheet name='Remote Work and Hinc'>
       <table>
@@ -4175,8 +4680,8 @@
         <devicelayout auto-generated='true' name='Phone'>
           <size maxheight='1450' minheight='1450' sizing-mode='vscroll' />
           <zones>
-            <zone h='100000' id='119' type-v2='layout-basic' w='100000' x='0' y='0'>
-              <zone h='98000' id='118' param='vert' type-v2='layout-flow' w='98858' x='571' y='1000'>
+            <zone h='100000' id='141' type-v2='layout-basic' w='100000' x='0' y='0'>
+              <zone h='98000' id='140' param='vert' type-v2='layout-flow' w='98858' x='571' y='1000'>
                 <zone h='27750' id='6' mode='dropdown' name='ResTable' param='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:COUNTYNAME:nk]' type-v2='filter' w='10214' x='43500' y='1000'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -4375,8 +4880,8 @@
         <devicelayout auto-generated='true' name='Phone'>
           <size maxheight='800' minheight='800' sizing-mode='vscroll' />
           <zones>
-            <zone h='100000' id='126' type-v2='layout-basic' w='100000' x='0' y='0'>
-              <zone h='98476' id='125' param='vert' type-v2='layout-flow' w='99200' x='400' y='762'>
+            <zone h='100000' id='148' type-v2='layout-basic' w='100000' x='0' y='0'>
+              <zone h='98476' id='147' param='vert' type-v2='layout-flow' w='99200' x='400' y='762'>
                 <zone fixed-size='937' h='18476' id='8' mode='dropdown' name=' Worker Flow by Mode' param='[federated.0ejlp7v1jsg3v217quixw11ntaz4].[Means of transportation to work (group)]' type-v2='filter' w='50150' x='49450' y='80762'>
                   <zone-style>
                     <format attr='border-color' value='#000000' />
@@ -4741,7 +5246,7 @@
       </viewpoint>
       <simple-id uuid='{1F0983FB-1C64-4B66-BC07-BC8B6D1DBBC7}' />
     </window>
-    <window class='worksheet' maximized='true' name='Remote Work and Hinc'>
+    <window class='worksheet' name='Remote Work and Hinc'>
       <cards>
         <edge name='left'>
           <strip size='160'>
@@ -4809,6 +5314,43 @@
         </highlight>
       </viewpoint>
       <simple-id uuid='{A49BF768-8BB1-450A-BC93-BA9CAD4C9EBF}' />
+    </window>
+    <window class='worksheet' maximized='true' name='Mode Share by PersonType'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+            <card type='measures' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'>
+            <card type='columns' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='rows' />
+          </strip>
+          <strip size='31'>
+            <card type='title' />
+          </strip>
+        </edge>
+      </cards>
+      <viewpoint>
+        <highlight>
+          <color-one-way>
+            <field>[federated.0ejlp7v1jsg3v217quixw11ntaz4].[:Measure Names]</field>
+            <field>[federated.0ejlp7v1jsg3v217quixw11ntaz4].[Means of transportation to work (group)]</field>
+            <field>[federated.0ejlp7v1jsg3v217quixw11ntaz4].[Multiple Values]</field>
+            <field>[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:AGEP:ok]</field>
+            <field>[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:Calculation_601793557088251904:nk]</field>
+            <field>[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:person_type:ok]</field>
+            <field>[federated.0ejlp7v1jsg3v217quixw11ntaz4].[none:source (pbayarea_combined.Rdata):nk]</field>
+          </color-one-way>
+        </highlight>
+      </viewpoint>
+      <simple-id uuid='{BAE5190C-EC22-4AF0-AF76-D30B96F08BB5}' />
     </window>
     <window class='worksheet' hidden='true' name=' Worker Flow by Mode'>
       <cards>
@@ -6226,6 +6768,544 @@
       m+SLRTQNJAaWGZ7U966fKdtkSjNUtjYpPIRfeXONcs2hVEgh9Th+s4qdymGaAs+VxOPhz7FV
       r3J7eX20BTCKHXPF4WJ0m0AKxQAY2U6wQtEv3t3oUQJQTBw/fOn7NFt7s8KqCaSYODZXbrO4
       urcpuOoEKyaOSrVC4O/tKKmaQIqJI5t5J9nC/weqYpxCEiFeLAAAAABJRU5ErkJggg==
+    </thumbnail>
+    <thumbnail height='192' name='Mode Share by PersonType' width='192'>
+      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
+      SUVORK5CYII=
     </thumbnail>
     <thumbnail height='192' name='Mode Shares' width='192'>
       iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAACXBIWXMAAA7DAAAOwwHHb6hk

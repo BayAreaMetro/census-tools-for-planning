@@ -21,7 +21,11 @@ pbayarea1317 = select(
   PINCP,    # Total person's income (signed, use ADJINC to adjust to constant dollars)
   ADJINC,   # Adjustment factor for income and earnings dollar amounts
   ESR,      # Employment status recode
-  NWAB,     # Temporary absence from work (UNEDITED
+  NWAB,     # Temporary absence from work (UNEDITED),
+  AGEP,     # Age
+  SCHG,     # Grade level attending
+  WKHP,     # Usual hours worked per week past 12 months
+  WKW,      # Weeks worked during past 12 months  
 )
 
 # Read PUMS 2021 & keep subset of variables
@@ -40,7 +44,11 @@ pbayarea21 = select(
   PINCP,    # Total person's income (signed, use ADJINC to adjust to constant dollars)
   ADJINC,   # Adjustment factor for income and earnings dollar amounts
   ESR,      # Employment status recode
-  NWAB,     # Temporary absence from work (UNEDITED
+  NWAB,     # Temporary absence from work (UNEDITED)
+  AGEP,     # Age
+  SCHG,     # Grade level attending
+  WKHP,     # Usual hours worked per week past 12 months
+  WKWN,     # Weeks worked during past 12 months  
 )
 
 # Definitions are the same except:
@@ -48,7 +56,7 @@ pbayarea21 = select(
 # JWTR == JWTRNS
 # ADJINCP*PINCP = 2017 dollars for PUMS 2013-2017
 # ADJINCP*PINCP = 2021 dollars for PUMS 2021
-
+# WKW is a set of codes, WKWN is number
 # https://github.com/BayAreaMetro/modeling-website/wiki/InflationAssumptions
 DOLLARS_2017_TO_2000 = 1.0/1.53
 DOLLARS_2021_TO_2000 = 1.0/1.72
@@ -67,10 +75,66 @@ pbayarea21 <- mutate(
   pbayarea21,
   source = "PUMS2021",
   PINCP_2021dollars = PINCP*(ADJINC/ONE_MILLION),
-  PINCP_2000dollars = PINCP_2021dollars*DOLLARS_2021_TO_2000
-) %>% select(-PINCP, -ADJINC, -PINCP_2021dollars)
+  PINCP_2000dollars = PINCP_2021dollars*DOLLARS_2021_TO_2000,
+  # recode WKWN to WKW categories
+  WKW = if_else(WKWN >= 50 & WKWN <= 52, 1, NA, NA),
+  WKW = if_else(WKWN >= 48 & WKWN <= 49, 2, WKW, NA),
+  WKW = if_else(WKWN >= 40 & WKWN <= 47, 3, WKW, NA),
+  WKW = if_else(WKWN >= 27 & WKWN <= 39, 4, WKW, NA),
+  WKW = if_else(WKWN >= 14 & WKWN <= 26, 5, WKW, NA),
+  WKW = if_else(WKWN >=  1 & WKWN <  14, 6, WKW, NA),
+) %>% select(-PINCP, -ADJINC, -PINCP_2021dollars, -WKWN)
 
 pbayarea_combined <- rbind(pbayarea1317, pbayarea21)
+
+# student_status: 
+#   1 is pre-school through grade 12 student, 
+#   2 is university/professional school student
+#   3 is non-student
+pbayarea_combined <- mutate(
+  pbayarea_combined,
+  student_status = 3,
+  student_status = if_else (SCHG >= 1 & SCHG <= 14, 1, student_status, 3), # pre 12
+  student_status = if_else (SCHG >=15 & SCHG <= 16, 2, student_status, 3), # college
+) %>% select(-SCHG)
+
+# set employment status based on employment status recode, weeks worked per year, and hours worked per week
+# employ_status:
+#  1 is full-time worker
+#  2 is part-time worker
+#  3 is not in the labor force
+#  4 is student under 16
+pbayarea_combined <- mutate(
+  pbayarea_combined,
+  employed = if_else( ESR %in% c(1,2,4,5), 1, 0, 0),
+  # default to part-time for employed, or not in the labor force
+  employ_status = if_else( employed==1, 2, 3, NA),
+  # convert some to full-time-worker
+  employ_status = if_else((employed == 1)&(WKW %in% c(1,2,3,4))&(WKHP>=35), 1, employ_status, NA),
+  employ_status = if_else(AGEP < 16, 4, employ_status, NA)
+)
+
+# code person_type consistent with 
+# populationsim/bayarea/create_seed_population.py
+#  1 is full-time worker
+#  2 is part-time worker
+#  3 is college student
+#  4 is non-working adult 
+#  5 is retired
+#  6 is driving-age student
+#  7 is non-driving age student
+#  8 is child too young for school
+pbayarea_combined <- mutate(
+  pbayarea_combined,
+  person_type = 5, # non-working senior
+  person_type = ifelse(AGEP < 65, 4, person_type),         # non-working adult
+  person_type = ifelse(employ_status==1, 1, person_type),  # full-time worker
+  person_type = ifelse(employ_status==2, 2, person_type),  # part-time worker
+  person_type = ifelse((student_status==2)|((AGEP>=20)&(student_status==1)), 3, person_type), # college student
+  person_type = ifelse(student_status==1, 6, person_type), # driving-age student
+  person_type = ifelse(AGEP <=15, 7, person_type),         # non-driving under 16
+  person_type = ifelse((AGEP < 6)&(student_status==3), 8, person_type), # pre-school
+)
 
 # don't drop folks without POWPUMA -- universe == all residents
 
