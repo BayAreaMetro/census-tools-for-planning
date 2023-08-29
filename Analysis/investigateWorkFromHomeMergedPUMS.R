@@ -25,7 +25,8 @@ pbayarea1317 = select(
   AGEP,     # Age
   SCHG,     # Grade level attending
   WKHP,     # Usual hours worked per week past 12 months
-  WKW,      # Weeks worked during past 12 months  
+  WKW,      # Weeks worked during past 12 months
+  NAICSP,   # NAICS Industry code based on 2012 NAICS codes
 )
 
 # Read PUMS 2021 & keep subset of variables
@@ -48,7 +49,8 @@ pbayarea21 = select(
   AGEP,     # Age
   SCHG,     # Grade level attending
   WKHP,     # Usual hours worked per week past 12 months
-  WKWN,     # Weeks worked during past 12 months  
+  WKWN,     # Weeks worked during past 12 months
+  NAICSP,   # North American Industry Classification System (NAICS) recode for 2018 and later based on 2017 NAICS codes
 )
 
 # Definitions are the same except:
@@ -135,6 +137,42 @@ pbayarea_combined <- mutate(
   person_type = ifelse(AGEP <=15, 7, person_type),         # non-driving under 16
   person_type = ifelse((AGEP < 6)&(student_status==3), 8, person_type), # pre-school
 )
+
+# code NAICSP to empsix categories
+# See petrale\applications\travel_model_lu_inputs\2015\Employment\NAICS_to_EMPSIX.xlsx
+pbayarea_combined$NAICSP <- as.character(pbayarea_combined$NAICSP)
+pbayarea_combined <- mutate(
+  pbayarea_combined,
+  empsix = 'Unknown',
+  empsix = ifelse(startsWith(NAICSP,"11"), "Agriculture & Natural Resources", empsix),
+  empsix = ifelse(startsWith(NAICSP,"21"), "Agriculture & Natural Resources", empsix),
+  empsix = ifelse(startsWith(NAICSP,"22"), "Manufacturing, Wholesale & Transportation", empsix),
+  empsix = ifelse(startsWith(NAICSP,"23"), "Other", empsix),
+  empsix = ifelse(startsWith(NAICSP,"31"), "Manufacturing, Wholesale & Transportation", empsix),
+  empsix = ifelse(startsWith(NAICSP,"32"), "Manufacturing, Wholesale & Transportation", empsix),
+  empsix = ifelse(startsWith(NAICSP,"33"), "Manufacturing, Wholesale & Transportation", empsix),
+  empsix = ifelse(startsWith(NAICSP,"42"), "Manufacturing, Wholesale & Transportation", empsix),
+  empsix = ifelse(startsWith(NAICSP,"44"), "Retail ", empsix),
+  empsix = ifelse(startsWith(NAICSP,"45"), "Retail ", empsix),
+  empsix = ifelse(startsWith(NAICSP,"48"), "Manufacturing, Wholesale & Transportation", empsix),
+  empsix = ifelse(startsWith(NAICSP,"49"), "Manufacturing, Wholesale & Transportation", empsix),
+  empsix = ifelse(startsWith(NAICSP,"51"), "Other", empsix),
+  empsix = ifelse(startsWith(NAICSP,"52"), "Financial & Professional Services", empsix),
+  empsix = ifelse(startsWith(NAICSP,"53"), "Financial & Professional Services", empsix),
+  empsix = ifelse(startsWith(NAICSP,"54"), "Financial & Professional Services", empsix),
+  empsix = ifelse(startsWith(NAICSP,"55"), "Financial & Professional Services", empsix),
+  empsix = ifelse(startsWith(NAICSP,"56"), "Financial & Professional Services", empsix),
+  empsix = ifelse(startsWith(NAICSP,"61"), "Health, Educational & Recreational Services", empsix),
+  empsix = ifelse(startsWith(NAICSP,"62"), "Health, Educational & Recreational Services", empsix),
+  empsix = ifelse(startsWith(NAICSP,"71"), "Health, Educational & Recreational Services", empsix),
+  empsix = ifelse(startsWith(NAICSP,"72"), "Health, Educational & Recreational Services", empsix),
+  empsix = ifelse(startsWith(NAICSP,"81"), "Health, Educational & Recreational Services", empsix),
+  empsix = ifelse(startsWith(NAICSP,"92"), "Other", empsix),
+)
+NAICS_empsix <- group_by(pbayarea_combined, NAICSP, empsix) %>% summarise(total_count=n(), .groups='drop')
+pbayarea_combined <- select(pbayarea_combined, -NAICSP)
+pbayarea_combined$empsix <- as.factor(pbayarea_combined$empsix)
+print(NAICS_empsix)
 
 # don't drop folks without POWPUMA -- universe == all residents
 
