@@ -17,7 +17,7 @@ load (PERSON_RDATA)
 
 commuters <- pbayarea22 %>%
   filter(!is.na(JWTRNS)) %>%                                   # Extract only commuters (folks with a commute mode)
-  mutate(employ_status=if_else((WKWN>-27 & WKHP>=35),"full-time","part-time"),
+  mutate(employ_status=if_else((WKWN>=27 & WKHP>=35),"full-time","part-time"),
          work_home=if_else(JWTRNS==11,PWGTP,0L),
          total_workers=PWGTP)
 
