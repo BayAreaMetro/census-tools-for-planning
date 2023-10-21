@@ -44,5 +44,5 @@ write.csv(pbayarea22, file = BAYPER_OUTPUT_CSV, row.names=FALSE)
 BAYHH_OUTPUT_FEATHER = str_replace(BAYHH_OUTPUT_RDATA, ".Rdata", ".feather")
 BAYPER_OUTPUT_FEATHER = str_replace(BAYPER_OUTPUT_RDATA, ".Rdata", ".feather")
 
-write_feather(hbayarea1721, BAYHH_OUTPUT_FEATHER)
-write_feather(pbayarea1721, BAYPER_OUTPUT_FEATHER)
+write_feather(hbayarea22, BAYHH_OUTPUT_FEATHER)
+write_feather(pbayarea22, BAYPER_OUTPUT_FEATHER)
