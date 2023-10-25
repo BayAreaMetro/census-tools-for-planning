@@ -4,6 +4,8 @@ library(foreign)
 library(stringr)
 PUMS_DIR = "M:/Data/Census/PUMS"
 PUMA10_FILE = "M:/Data/Census/Geography/tl_2010_06_puma10/tl_2010_06_puma10.dbf"
+PUMA20_FILE = "M:/Data/Census/Geography/tl_2020_06_puma20/tl_2020_06_puma20.dbf"
+
 
 # Read PUMS 2013-2017 & keep subset of variables
 load(file.path(PUMS_DIR, "PUMS 2013-17", "pbayarea1317.Rdata"))
@@ -53,15 +55,43 @@ pbayarea21 = select(
   NAICSP,   # North American Industry Classification System (NAICS) recode for 2018 and later based on 2017 NAICS codes
 )
 
+# Read PUMS 2022 & keep subset of variables
+load(file.path(PUMS_DIR, "PUMS 2022", "pbayarea22.Rdata"))
+pbayarea22 = select(
+  pbayarea22,
+  SERIALNO, # Housing unit/GQ person serial number
+  SPORDER,  # Person number
+  PWGTP,    # Person weight
+  PUMA,     # Public use microdata area code (PUMA) based on 2020 Census definition
+  ST,       # State code based on 2020 Census definitions
+  POWPUMA,  # Place of work PUMA based on 2020 Census
+  POWSP,    # Place of work - State or foreign country recode
+  JWMNP,    # Travel time to work
+  JWTRNS,   # Means of transportation to work
+  PINCP,    # Total person's income (signed, use ADJINC to adjust to constant dollars)
+  ADJINC,   # Adjustment factor for income and earnings dollar amounts
+  ESR,      # Employment status recode
+  NWAB,     # Temporary absence from work (UNEDITED)
+  AGEP,     # Age
+  SCHG,     # Grade level attending
+  WKHP,     # Usual hours worked per week past 12 months
+  WKWN,     # Weeks worked during past 12 months
+  NAICSP,   # North American Industry Classification System (NAICS) recode for 2018 and later based on 2017 NAICS codes
+)
+
+
 # Definitions are the same except:
-# SERIALNO is number in PUMS2013-2017 but character in PUMS 2021
+# SERIALNO is number in PUMS2013-2017 but character in PUMS 2021 and 2022
 # JWTR == JWTRNS
 # ADJINCP*PINCP = 2017 dollars for PUMS 2013-2017
 # ADJINCP*PINCP = 2021 dollars for PUMS 2021
+# ADJINCP*PINCP = 2022 dollars for PUMS 2022
 # WKW is a set of codes, WKWN is number
 # https://github.com/BayAreaMetro/modeling-website/wiki/InflationAssumptions
+# PUMS2013-2017 uses 2010 Census geometries but PUMS2022 uses 2020 Census geometries
 DOLLARS_2017_TO_2000 = 1.0/1.53
 DOLLARS_2021_TO_2000 = 1.0/1.72
+DOLLARS_2022_TO_2000 = 1.0/1.81
 ONE_MILLION = 1000000
 
 pbayarea1317 <- rename(pbayarea1317, JWTRNS=JWTR)
@@ -79,15 +109,35 @@ pbayarea21 <- mutate(
   PINCP_2021dollars = PINCP*(ADJINC/ONE_MILLION),
   PINCP_2000dollars = PINCP_2021dollars*DOLLARS_2021_TO_2000,
   # recode WKWN to WKW categories
-  WKW = if_else(WKWN >= 50 & WKWN <= 52, 1, NA, NA),
-  WKW = if_else(WKWN >= 48 & WKWN <= 49, 2, WKW, NA),
-  WKW = if_else(WKWN >= 40 & WKWN <= 47, 3, WKW, NA),
-  WKW = if_else(WKWN >= 27 & WKWN <= 39, 4, WKW, NA),
-  WKW = if_else(WKWN >= 14 & WKWN <= 26, 5, WKW, NA),
-  WKW = if_else(WKWN >=  1 & WKWN <  14, 6, WKW, NA),
+  WKW = if_else(WKWN >= 50 & WKWN <= 52, 1, NA_real_, NA_real_),
+  WKW = if_else(WKWN >= 48 & WKWN <= 49, 2, WKW, NA_real_),
+  WKW = if_else(WKWN >= 40 & WKWN <= 47, 3, WKW, NA_real_),
+  WKW = if_else(WKWN >= 27 & WKWN <= 39, 4, WKW, NA_real_),
+  WKW = if_else(WKWN >= 14 & WKWN <= 26, 5, WKW, NA_real_),
+  WKW = if_else(WKWN >=  1 & WKWN <  14, 6, WKW, NA_real_),
 ) %>% select(-PINCP, -ADJINC, -PINCP_2021dollars, -WKWN)
 
-pbayarea_combined <- rbind(pbayarea1317, pbayarea21)
+pbayarea22 <- mutate(
+  pbayarea22,
+  source = "PUMS2022",
+  PINCP_2022dollars = PINCP*(ADJINC/ONE_MILLION),
+  PINCP_2000dollars = PINCP_2022dollars*DOLLARS_2022_TO_2000,
+  # recode WKWN to WKW categories
+  WKW = if_else(WKWN >= 50 & WKWN <= 52, 1, NA_real_, NA_real_),
+  WKW = if_else(WKWN >= 48 & WKWN <= 49, 2, WKW, NA_real_),
+  WKW = if_else(WKWN >= 40 & WKWN <= 47, 3, WKW, NA_real_),
+  WKW = if_else(WKWN >= 27 & WKWN <= 39, 4, WKW, NA_real_),
+  WKW = if_else(WKWN >= 14 & WKWN <= 26, 5, WKW, NA_real_),
+  WKW = if_else(WKWN >=  1 & WKWN <  14, 6, WKW, NA_real_),
+) %>% select(-PINCP, -ADJINC, -PINCP_2022dollars, -WKWN)
+  # also, conver PUMA and ST columns to integer to be consistent with other datasets
+pbayarea22 <- transform(
+  pbayarea22,
+  PUMA = as.integer(PUMA),
+  ST   = as.integer(ST)
+)
+
+pbayarea_combined <- rbind(pbayarea1317, pbayarea21, pbayarea22)
 
 # student_status: 
 #   1 is pre-school through grade 12 student, 
@@ -110,10 +160,10 @@ pbayarea_combined <- mutate(
   pbayarea_combined,
   employed = if_else( ESR %in% c(1,2,4,5), 1, 0, 0),
   # default to part-time for employed, or not in the labor force
-  employ_status = if_else( employed==1, 2, 3, NA),
+  employ_status = if_else( employed==1, 2, 3, NA_real_),
   # convert some to full-time-worker
-  employ_status = if_else((employed == 1)&(WKW %in% c(1,2,3,4))&(WKHP>=35), 1, employ_status, NA),
-  employ_status = if_else(AGEP < 16, 4, employ_status, NA)
+  employ_status = if_else((employed == 1)&(WKW %in% c(1,2,3,4))&(WKHP>=35), 1, employ_status, NA_real_),
+  employ_status = if_else(AGEP < 16, 4, employ_status, NA_real_)
 )
 
 # code person_type consistent with 
@@ -182,38 +232,129 @@ print(NAICS_empsix)
 # Add PUMA name and county
 pbayarea_combined <- mutate(
   pbayarea_combined,
-  PUMACE10 = as.factor(sprintf('%03d%05d', ST, PUMA)),
-  POWPUMACE10 = as.factor(sprintf('%03d%05d', POWSP, POWPUMA)),
-  POWPUMACE10 = substr(POWPUMACE10, 0, 6) # POWPUMA is only county
+  PUMACE = as.factor(sprintf('%03d%05d', ST, PUMA)),
+  POWPUMACE = as.factor(sprintf('%03d%05d', POWSP, POWPUMA)),
+  POWPUMACE = substr(POWPUMACE, 0, 6) # POWPUMA is only county
 )
 
+# label PUMA geo version
+pbayarea_combined <- mutate(
+  pbayarea_combined,
+  PUMA_version = if_else(pbayarea_combined$source %in% list('PUMS2013-2017', 'PUMS2021'), 'geo2010', 'geo2020'))
+
+# check col types, make sure PUMACE or POWPUMACE are character cols
+print(str(pbayarea_combined))
+pbayarea_combined <- mutate(
+  pbayarea_combined,
+  PUMACE_CH = as.character(PUMACE))
+pbayarea_combined <- mutate(
+  pbayarea_combined,
+  POWPUMACE_CH = as.character(POWPUMACE))
+
+# create diff columns for joins (later steps)
+pbayarea_combined <- mutate(
+  pbayarea_combined,
+  PUMACE20 = 'n/a',
+  PUMACE20 = ifelse(PUMA_version == 'geo2020', PUMACE_CH, PUMACE20))
+pbayarea_combined <- mutate(
+  pbayarea_combined,
+  PUMACE10 = 'n/a',
+  PUMACE10 = ifelse(PUMA_version == 'geo2010', PUMACE_CH, PUMACE10))
+
+pbayarea_combined <- mutate(
+  pbayarea_combined,
+  POWPUMACE20 = 'n/a',
+  POWPUMACE20 = ifelse(PUMA_version == 'geo2020', POWPUMACE_CH, POWPUMACE20))
+pbayarea_combined <- mutate(
+  pbayarea_combined,
+  POWPUMACE10 = 'n/a',
+  POWPUMACE10 = ifelse(PUMA_version == 'geo2010', POWPUMACE_CH, POWPUMACE10))
+
 # read PUMA to county lookup
-PUMA_COUNTY <- read.dbf(PUMA10_FILE) %>% select(PUMACE10, GEOID10, NAMELSAD10)
-PUMA_COUNTY <- mutate(
-  PUMA_COUNTY, 
+PUMA_COUNTY10 <- read.dbf(PUMA10_FILE) %>% select(PUMACE10, GEOID10, NAMELSAD10)
+PUMA_COUNTY10 <- mutate(
+  PUMA_COUNTY10, 
   GEOID10 = paste0("0",GEOID10), # county + PUMA but PUMS has a leading country code char
   COUNTY=substr(GEOID10, 0, 6),
-  COUNTYNAME = str_extract(NAMELSAD10, regex("(.*) (County|Counties)"), group=1)
+  # COUNTYNAME = str_extract(NAMELSAD10, regex("(.*) (County|Counties)"), group=1) # this line errors for me: "unused argument (group=1)
+  COUNTYNAME = str_extract(NAMELSAD10, regex("(.*) (County|Counties)"))
 )
+PUMA_COUNTY20 <- read.dbf(PUMA20_FILE) %>% select(PUMACE20, GEOID20, NAMELSAD20)
+PUMA_COUNTY20 <- mutate(
+  PUMA_COUNTY20, 
+  GEOID20 = paste0("0",GEOID20), # county + PUMA but PUMS has a leading country code char
+  COUNTY=substr(GEOID20, 0, 6),
+  # COUNTYNAME = str_extract(NAMELSAD20, regex("(.*) (County|Counties)"), group=1) # this line errors for me: "unused argument (group=1)
+  COUNTYNAME = str_extract(NAMELSAD20, regex("(.*) (County|Counties)"))
+)
+
+# make sure the new fiels have character type, not Factor type
+print(str(PUMA_COUNTY10))
+PUMA_COUNTY10[] <- lapply(PUMA_COUNTY10, as.character)
+print(str(PUMA_COUNTY10))
+print(str(PUMA_COUNTY20))
+PUMA_COUNTY20[] <- lapply(PUMA_COUNTY20, as.character)
+print(str(PUMA_COUNTY20))
+
 # POW is really just COUNTY, not PUMA
 # COUNTY is a 6-char number string
 # COUNTYNAME is the name based on the PUMA file
-COUNTY_NO_PUMA <- select(PUMA_COUNTY, COUNTY, COUNTYNAME) %>%
+COUNTY_NO_PUMA10 <- select(PUMA_COUNTY10, COUNTY, COUNTYNAME) %>%
+  arrange(COUNTY) %>%
+  distinct(COUNTY, .keep_all=TRUE)
+COUNTY_NO_PUMA20 <- select(PUMA_COUNTY20, COUNTY, COUNTYNAME) %>%
   arrange(COUNTY) %>%
   distinct(COUNTY, .keep_all=TRUE)
 
 # join for PUMA of residence
 pbayarea_combined <- left_join(
   pbayarea_combined,
-  select(PUMA_COUNTY, -PUMACE10) %>% rename(PUMACE10 = GEOID10)
+  select(PUMA_COUNTY10, -PUMACE10) %>% rename(PUMACE10 = GEOID10,
+                                              COUNTY10 = COUNTY,
+                                              COUNTYNAME10 = COUNTYNAME)
 )
+pbayarea_combined <- left_join(
+  pbayarea_combined,
+  select(PUMA_COUNTY20, -PUMACE20) %>% rename(PUMACE20 = GEOID20,
+                                              COUNTY20 = COUNTY,
+                                              COUNTYNAME20 = COUNTYNAME)
+)
+
 # join for PUMA (really county) of workplace
 pbayarea_combined <- left_join(
   pbayarea_combined,
-  rename(COUNTY_NO_PUMA, 
+  rename(COUNTY_NO_PUMA10, 
          POWPUMACE10 = COUNTY,
-         POWCOUNTYNAME = COUNTYNAME)
+         POWCOUNTYNAME10 = COUNTYNAME)
 )
+pbayarea_combined <- left_join(
+  pbayarea_combined,
+  rename(COUNTY_NO_PUMA20, 
+         POWPUMACE20 = COUNTY,
+         POWCOUNTYNAME20 = COUNTYNAME)
+)
+
+# consolidate into one COUNTY and one COUNTYNAME field
+pbayarea_combined <- mutate(
+  pbayarea_combined,
+  NAMELSAD = ifelse(PUMA_version == 'geo2020', NAMELSAD20, NAMELSAD10))
+pbayarea_combined <- mutate(
+  pbayarea_combined,
+  COUNTY = ifelse(PUMA_version == 'geo2020', COUNTY20, COUNTY10))
+pbayarea_combined <- mutate(
+  pbayarea_combined,
+  COUNTYNAME = ifelse(PUMA_version == 'geo2020', COUNTYNAME20, COUNTYNAME10))
+pbayarea_combined <- mutate(
+  pbayarea_combined,
+  POWCOUNTYNAME = ifelse(PUMA_version == 'geo2020', POWCOUNTYNAME20, POWCOUNTYNAME10))
+
+pbayarea_combined <- select(
+  pbayarea_combined, -c(NAMELSAD10,      NAMELSAD20,
+                        PUMACE10,        PUMACE20,
+                        POWPUMACE10,     POWPUMACE20,
+                        COUNTY10,        COUNTY20,
+                        COUNTYNAME10,    COUNTYNAME20,
+                        POWCOUNTYNAME10, POWCOUNTYNAME20))
 
 # write it
 save(pbayarea_combined,
@@ -260,6 +401,32 @@ hbayarea21 = select(
   VEH,      # Vehicles (1 ton or less) available
 )
 
+# Read PUMS 2022 & keep subset of variables
+load(file.path(PUMS_DIR, "PUMS 2022", "hbayarea22.Rdata"))
+hbayarea22 = select(
+  hbayarea22,
+  SERIALNO, # Housing unit/GQ person serial number
+  WGTP,     # Housing weight
+  PUMA,     # Public use microdata area code (PUMA) based on 2020 Census definition
+  ST,       # State code based on 2020 Census definitions
+  NP,       # Number of person records associated with this housing record
+  TYPEHUGQ, # Type of unit
+  BLD,      # Units in structure
+  HHT,      # Household/family type (Note: there's also HHT2)
+  HINCP,    # Household income (past 12 months, use ADJINC to adjust HINCP to constant dollars))
+  ADJINC,   # Adjustment factor for income and earnings dollar amounts
+  HUPAC,    # HH presence and age of children
+  NPF,      # Number of persons in family (unweighted)
+  TEN,      # Tenure
+  VEH,      # Vehicles (1 ton or less) available
+)
+# also, conver PUMA and ST columns to integer to be consistent with other datasets
+hbayarea22 <- transform(
+  hbayarea22,
+  PUMA = as.integer(PUMA),
+  ST   = as.integer(ST)
+)
+
 hbayarea1317 <- rename(hbayarea1317, TYPEHUGQ=TYPE)
 hbayarea1317 <- mutate(
   hbayarea1317, 
@@ -276,19 +443,67 @@ hbayarea21 <- mutate(
   HINCP_2000dollars = HINCP_2021dollars*DOLLARS_2021_TO_2000
 ) %>% select(-HINCP, -ADJINC, -HINCP_2021dollars)
 
-hbayarea_combined <- rbind(hbayarea1317, hbayarea21)
+hbayarea22 <- mutate(
+  hbayarea22,
+  source = "PUMS2022",
+  HINCP_2022dollars = HINCP*(ADJINC/ONE_MILLION),
+  HINCP_2000dollars = HINCP_2022dollars*DOLLARS_2022_TO_2000
+) %>% select(-HINCP, -ADJINC, -HINCP_2022dollars)
+
+hbayarea_combined <- rbind(hbayarea1317, hbayarea21, hbayarea22)
 
 # Add PUMA name
 hbayarea_combined <- mutate(
   hbayarea_combined,
-  PUMACE10 = as.factor(sprintf('%03d%05d', ST, PUMA)),
+  PUMACE = as.factor(sprintf('%03d%05d', ST, PUMA)),
+  PUMACE = as.character(PUMACE)
 )
+
+# label PUMA geo version
+hbayarea_combined <- mutate(
+  hbayarea_combined,
+  PUMA_version = if_else(hbayarea_combined$source %in% list('PUMS2013-2017', 'PUMS2021'), 'geo2010', 'geo2020'))
+
+# create diff columns for joins (later steps)
+hbayarea_combined <- mutate(
+  hbayarea_combined,
+  PUMACE20 = 'n/a',
+  PUMACE20 = ifelse(PUMA_version == 'geo2020', PUMACE, PUMACE20))
+hbayarea_combined <- mutate(
+  hbayarea_combined,
+  PUMACE10 = 'n/a',
+  PUMACE10 = ifelse(PUMA_version == 'geo2010', PUMACE, PUMACE10))
 
 # join for PUMA of residence
 hbayarea_combined <- left_join(
   hbayarea_combined,
-  select(PUMA_COUNTY, -PUMACE10) %>% rename(PUMACE10 = GEOID10)
+  select(PUMA_COUNTY10, -PUMACE10) %>% rename(PUMACE10 = GEOID10,
+                                              COUNTY10 = COUNTY,
+                                              COUNTYNAME10 = COUNTYNAME)
 )
+hbayarea_combined <- left_join(
+  hbayarea_combined,
+  select(PUMA_COUNTY20, -PUMACE20) %>% rename(PUMACE20 = GEOID20,
+                                              COUNTY20 = COUNTY,
+                                              COUNTYNAME20 = COUNTYNAME)
+)
+
+# consolidate into one COUNTY and one COUNTYNAME field
+hbayarea_combined <- mutate(
+  hbayarea_combined,
+  NAMELSAD = ifelse(PUMA_version == 'geo2020', NAMELSAD20, NAMELSAD10))
+hbayarea_combined <- mutate(
+  hbayarea_combined,
+  COUNTY = ifelse(PUMA_version == 'geo2020', COUNTY20, COUNTY10))
+hbayarea_combined <- mutate(
+  hbayarea_combined,
+  COUNTYNAME = ifelse(PUMA_version == 'geo2020', COUNTYNAME20, COUNTYNAME10))
+
+hbayarea_combined <- select(
+  hbayarea_combined, -c(PUMACE10,        PUMACE20,
+                        NAMELSAD10,      NAMELSAD20,
+                        COUNTY10,        COUNTY20,
+                        COUNTYNAME10,    COUNTYNAME20))
 
 # write it
 save(hbayarea_combined,
