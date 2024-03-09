@@ -30,8 +30,7 @@ workers15 <- pbayarea15 %>%
     POWPUMA==9500   ~"Solano",
     POWPUMA==9700   ~"Sonoma"
   ),Year=2015) %>% 
-  rename(Residence_County=County_Name) %>% 
-  select(Residence_County,Work_County,JWTR_JWTRNS=JWTR,PWGTP,Year)
+  select(Residence_County=County_Name,Work_County,JWTR_JWTRNS=JWTR,PWGTP,Year)
 
 # Create vector of Bay Area PUMAs for 2022
 
