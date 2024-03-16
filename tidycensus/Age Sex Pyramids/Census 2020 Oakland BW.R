@@ -1,0 +1,237 @@
+##########################################################
+#  Census 2020 Oakland Age Sex.R
+#  Create an Age-Sex Pyramid using Census 2020, Data Profile (DP)
+#  Example #3 : Oakland, California (place-level)
+#  Adapted from Kyle Walker's example in the book "Analyzing US Census Data"
+##########################################################
+library(tidyverse)
+library(tidycensus)
+library(ggplot2)
+library(scales) # this is needed for formatting the x-axis in the ggplot2
+
+DHC_table <- load_variables(year=2020, dataset="dhc", cache=TRUE)
+DP_table <- load_variables(year=2020, dataset="dp", cache=TRUE)
+
+city="Oakland"
+state="CA"
+
+selvars <- c(
+#White
+  w_agepop_m_0004  = "P12I_003N",   # White Male Population, Age 00-04
+  w_agepop_m_0509  = "P12I_004N",   # White Male Population, Age 05-09
+  w_agepop_m_1014  = "P12I_005N",   # White Male Population, Age 10-14
+  w_agepop_m_1517  = "P12I_006N",   # White Male Population, Age 15-17
+  w_agepop_m_1819  = "P12I_007N",   # White Male Population, Age 18-19
+  w_agepop_m_20    = "P12I_008N",   # White Male Population, Age 20
+  w_agepop_m_21    = "P12I_009N",   # White Male Population, Age 21
+  w_agepop_m_2224  = "P12I_010N",   # White Male Population, Age 22-24
+  w_agepop_m_2529  = "P12I_011N",   # White Male Population, Age 15-29
+  w_agepop_m_3034  = "P12I_012N",   # White Male Population, Age 30-34
+  w_agepop_m_3539  = "P12I_013N",   # White Male Population, Age 35-39
+  w_agepop_m_4044  = "P12I_014N",   # White Male Population, Age 40-44
+  w_agepop_m_4549  = "P12I_015N",   # White Male Population, Age 45-49
+  w_agepop_m_5054  = "P12I_016N",   # White Male Population, Age 50-54
+  w_agepop_m_5559  = "P12I_017N",   # White Male Population, Age 55-59
+  w_agepop_m_6061  = "P12I_018N",   # White Male Population, Age 60-61
+  w_agepop_m_6264  = "P12I_019N",   # White Male Population, Age 62-64
+  w_agepop_m_6566  = "P12I_020N",   # White Male Population, Age 65-66
+  w_agepop_m_6769  = "P12I_021N",   # White Male Population, Age 67-69
+  w_agepop_m_7074  = "P12I_022N",   # White Male Population, Age 70-74
+  w_agepop_m_7579  = "P12I_023N",   # White Male Population, Age 75-79
+  w_agepop_m_8084  = "P12I_024N",   # White Male Population, Age 80-84
+  w_agepop_m_8599  = "P12I_025N",   # White Male Population, Age 85-99
+  w_agepop_f_0004  = "P12I_027N",   # White Female Population, Age 00-04
+  w_agepop_f_0509  = "P12I_028N",   # White Female Population, Age 05-09
+  w_agepop_f_1014  = "P12I_029N",   # White Female Population, Age 10-14
+  w_agepop_f_1517  = "P12I_030N",   # White Female Population, Age 15-17
+  w_agepop_f_1819  = "P12I_031N",   # White Female Population, Age 18-19
+  w_agepop_f_20    = "P12I_032N",   # White Female Population, Age 20
+  w_agepop_f_21    = "P12I_033N",   # White Female Population, Age 21
+  w_agepop_f_2224  = "P12I_034N",   # White Female Population, Age 22-24
+  w_agepop_f_2529  = "P12I_035N",   # White Female Population, Age 15-29
+  w_agepop_f_3034  = "P12I_036N",   # White Female Population, Age 30-34
+  w_agepop_f_3539  = "P12I_037N",   # White Female Population, Age 35-39
+  w_agepop_f_4044  = "P12I_038N",   # White Female Population, Age 40-44
+  w_agepop_f_4549  = "P12I_039N",   # White Female Population, Age 45-49
+  w_agepop_f_5054  = "P12I_040N",   # White Female Population, Age 50-54
+  w_agepop_f_5559  = "P12I_041N",   # White Female Population, Age 55-59
+  w_agepop_f_6061  = "P12I_042N",   # White Female Population, Age 60-61
+  w_agepop_f_6264  = "P12I_043N",   # White Female Population, Age 62-64
+  w_agepop_f_6566  = "P12I_044N",   # White Female Population, Age 65-66
+  w_agepop_f_6769  = "P12I_045N",   # White Female Population, Age 67-69
+  w_agepop_f_7074  = "P12I_046N",   # White Female Population, Age 70-74
+  w_agepop_f_7579  = "P12I_047N",   # White Female Population, Age 75-79
+  w_agepop_f_8084  = "P12I_048N",   # White Female Population, Age 80-84
+  w_agepop_f_8599  = "P12I_049N",   # White Female Population, Age 85-99
+#Black
+  b_agepop_m_0004  = "P12J_003N",   # Black Male Population, Age 00-04
+  b_agepop_m_0509  = "P12J_004N",   # Black Male Population, Age 05-09
+  b_agepop_m_1014  = "P12J_005N",   # Black Male Population, Age 10-14
+  b_agepop_m_1517  = "P12J_006N",   # Black Male Population, Age 15-17
+  b_agepop_m_1819  = "P12J_007N",   # Black Male Population, Age 18-19
+  b_agepop_m_20    = "P12J_008N",   # Black Male Population, Age 20
+  b_agepop_m_21    = "P12J_009N",   # Black Male Population, Age 21
+  b_agepop_m_2224  = "P12J_010N",   # Black Male Population, Age 22-24
+  b_agepop_m_2529  = "P12J_011N",   # Black Male Population, Age 15-29
+  b_agepop_m_3034  = "P12J_012N",   # Black Male Population, Age 30-34
+  b_agepop_m_3539  = "P12J_013N",   # Black Male Population, Age 35-39
+  b_agepop_m_4044  = "P12J_014N",   # Black Male Population, Age 40-44
+  b_agepop_m_4549  = "P12J_015N",   # Black Male Population, Age 45-49
+  b_agepop_m_5054  = "P12J_016N",   # Black Male Population, Age 50-54
+  b_agepop_m_5559  = "P12J_017N",   # Black Male Population, Age 55-59
+  b_agepop_m_6061  = "P12J_018N",   # Black Male Population, Age 60-61
+  b_agepop_m_6264  = "P12J_019N",   # Black Male Population, Age 62-64
+  b_agepop_m_6566  = "P12J_020N",   # Black Male Population, Age 65-66
+  b_agepop_m_6769  = "P12J_021N",   # Black Male Population, Age 67-69
+  b_agepop_m_7074  = "P12J_022N",   # Black Male Population, Age 70-74
+  b_agepop_m_7579  = "P12J_023N",   # Black Male Population, Age 75-79
+  b_agepop_m_8084  = "P12J_024N",   # Black Male Population, Age 80-84
+  b_agepop_m_8599  = "P12J_025N",   # Black Male Population, Age 85-99
+  b_agepop_f_0004  = "P12J_027N",   # Black Female Population, Age 00-04
+  b_agepop_f_0509  = "P12J_028N",   # Black Female Population, Age 05-09
+  b_agepop_f_1014  = "P12J_029N",   # Black Female Population, Age 10-14
+  b_agepop_f_1517  = "P12J_030N",   # Black Female Population, Age 15-17
+  b_agepop_f_1819  = "P12J_031N",   # Black Female Population, Age 18-19
+  b_agepop_f_20    = "P12J_032N",   # Black Female Population, Age 20
+  b_agepop_f_21    = "P12J_033N",   # Black Female Population, Age 21
+  b_agepop_f_2224  = "P12J_034N",   # Black Female Population, Age 22-24
+  b_agepop_f_2529  = "P12J_035N",   # Black Female Population, Age 15-29
+  b_agepop_f_3034  = "P12J_036N",   # Black Female Population, Age 30-34
+  b_agepop_f_3539  = "P12J_037N",   # Black Female Population, Age 35-39
+  b_agepop_f_4044  = "P12J_038N",   # Black Female Population, Age 40-44
+  b_agepop_f_4549  = "P12J_039N",   # Black Female Population, Age 45-49
+  b_agepop_f_5054  = "P12J_040N",   # Black Female Population, Age 50-54
+  b_agepop_f_5559  = "P12J_041N",   # Black Female Population, Age 55-59
+  b_agepop_f_6061  = "P12J_042N",   # Black Female Population, Age 60-61
+  b_agepop_f_6264  = "P12J_043N",   # Black Female Population, Age 62-64
+  b_agepop_f_6566  = "P12J_044N",   # Black Female Population, Age 65-66
+  b_agepop_f_6769  = "P12J_045N",   # Black Female Population, Age 67-69
+  b_agepop_f_7074  = "P12J_046N",   # Black Female Population, Age 70-74
+  b_agepop_f_7579  = "P12J_047N",   # Black Female Population, Age 75-79
+  b_agepop_f_8084  = "P12J_048N",   # Black Female Population, Age 80-84
+  b_agepop_f_8599  = "P12J_049N")   # Black Female Population, Age 85-99 
+
+
+# Pull Census 2020 data using the tidycensus function get_decennial  
+place1 <- get_decennial(year=2020,  sumfile="dhc", 
+                        geography = "place", state=state,
+                        #geography = "us",
+                        show_call = TRUE,output="wide", 
+                        variables = selvars) %>% 
+  filter(str_detect(NAME,city)) %>% 
+  mutate(
+  w_agepop_0004  =  w_agepop_m_0004 + w_agepop_f_0004,
+  w_agepop_0509  =  w_agepop_m_0509 + w_agepop_f_0509,
+  w_agepop_1014  =  w_agepop_m_1014 + w_agepop_f_1014,
+  w_agepop_1519  =  w_agepop_m_1517 + w_agepop_f_1517 + w_agepop_m_1819 + w_agepop_f_1819,
+  w_agepop_2024  =  w_agepop_m_20   + w_agepop_f_20 + w_agepop_m_21 + w_agepop_f_21 + w_agepop_m_2224 + w_agepop_f_2224, 
+  w_agepop_2529  =  w_agepop_m_2529 + w_agepop_f_2529,
+  w_agepop_3034  =  w_agepop_m_3034 + w_agepop_f_3034,
+  w_agepop_3539  =  w_agepop_m_3539 + w_agepop_f_3539,
+  w_agepop_4044  =  w_agepop_m_4044 + w_agepop_f_4044,
+  w_agepop_4549  =  w_agepop_m_4549 + w_agepop_f_4549,
+  w_agepop_5054  =  w_agepop_m_5054 + w_agepop_f_5054,
+  w_agepop_5559  =  w_agepop_m_5559 + w_agepop_f_5559,
+  w_agepop_6064  =  w_agepop_m_6061 + w_agepop_f_6061 + w_agepop_m_6264 + w_agepop_f_6264,
+  w_agepop_6569  =  w_agepop_m_6566 + w_agepop_f_6566 + w_agepop_m_6769 + w_agepop_f_6769,
+  w_agepop_7074  =  w_agepop_m_7074 + w_agepop_f_7074,
+  w_agepop_7579  =  w_agepop_m_7579 + w_agepop_f_7579,
+  w_agepop_8084  =  w_agepop_m_8084 + w_agepop_f_8084,
+  w_agepop_8599  =  w_agepop_m_8599 + w_agepop_f_8599,
+  
+  b_agepop_0004  =  b_agepop_m_0004 + b_agepop_f_0004,
+  b_agepop_0509  =  b_agepop_m_0509 + b_agepop_f_0509,
+  b_agepop_1014  =  b_agepop_m_1014 + b_agepop_f_1014,
+  b_agepop_1519  =  b_agepop_m_1517 + b_agepop_f_1517 + b_agepop_m_1819 + b_agepop_f_1819,
+  b_agepop_2024  =  b_agepop_m_20   + b_agepop_f_20 + b_agepop_m_21 + b_agepop_f_21 + b_agepop_m_2224 + b_agepop_f_2224, 
+  b_agepop_2529  =  b_agepop_m_2529 + b_agepop_f_2529,
+  b_agepop_3034  =  b_agepop_m_3034 + b_agepop_f_3034,
+  b_agepop_3539  =  b_agepop_m_3539 + b_agepop_f_3539,
+  b_agepop_4044  =  b_agepop_m_4044 + b_agepop_f_4044,
+  b_agepop_4549  =  b_agepop_m_4549 + b_agepop_f_4549,
+  b_agepop_5054  =  b_agepop_m_5054 + b_agepop_f_5054,
+  b_agepop_5559  =  b_agepop_m_5559 + b_agepop_f_5559,
+  b_agepop_6064  =  b_agepop_m_6061 + b_agepop_f_6061 + b_agepop_m_6264 + b_agepop_f_6264,
+  b_agepop_6569  =  b_agepop_m_6566 + b_agepop_f_6566 + b_agepop_m_6769 + b_agepop_f_6769,
+  b_agepop_7074  =  b_agepop_m_7074 + b_agepop_f_7074,
+  b_agepop_7579  =  b_agepop_m_7579 + b_agepop_f_7579,
+  b_agepop_8084  =  b_agepop_m_8084 + b_agepop_f_8084,
+  b_agepop_8599  =  b_agepop_m_8599 + b_agepop_f_8599
+  ) %>% 
+  select(GEOID,NAME,
+         w_agepop_0004,
+         w_agepop_0509,
+         w_agepop_1014,
+         w_agepop_1519,
+         w_agepop_2024,
+         w_agepop_2529,
+         w_agepop_3034,
+         w_agepop_3539,
+         w_agepop_4044,
+         w_agepop_4549,
+         w_agepop_5054,
+         w_agepop_5559,
+         w_agepop_6064,
+         w_agepop_6569,
+         w_agepop_7074,
+         w_agepop_7579,
+         w_agepop_8084,
+         w_agepop_8599,
+         b_agepop_0004,
+         b_agepop_0509,
+         b_agepop_1014,
+         b_agepop_1519,
+         b_agepop_2024,
+         b_agepop_2529,
+         b_agepop_3034,
+         b_agepop_3539,
+         b_agepop_4044,
+         b_agepop_4549,
+         b_agepop_5054,
+         b_agepop_5559,
+         b_agepop_6064,
+         b_agepop_6569,
+         b_agepop_7074,
+         b_agepop_7579,
+         b_agepop_8084,
+         b_agepop_8599) %>% 
+  pivot_longer(cols=-c(GEOID,NAME),names_to = "variable",values_to = "value")
+
+# clean up variables using the tidyverse (dplyr, tidyr)
+place1a <- place1 %>% 
+  separate(variable,c("race","agepop","range"),"_") %>% 
+  separate(range,c("from","to"),2) %>% 
+  unite(agerange,from:to,sep=" to ") %>% 
+  mutate(value = ifelse(race == "w", -value, value)) %>%
+  mutate(Race = ifelse(race=="w"," White",  # the space before Male helps...
+                      ifelse(race=="b","Black","missing"))) %>% 
+  mutate(agerange = ifelse(agerange=="85 to 99","85 and over",agerange)) 
+
+# Create an age-race pyramid using ggplot2  
+place1_pyramid <- ggplot(place1a, aes(x = value, y = agerange, fill = Race)) + 
+  geom_col(width = 0.90, alpha = 0.8) +
+  theme_minimal(base_family = "Verdana", base_size = 12) +
+  
+  # note that the function number_format is from the R package "scales"....  
+  scale_x_continuous(
+    labels = ~ scales::number_format(scale = .001, suffix = "k")(abs(.x))) +
+  
+  #      scale_x_continuous(
+  #         labels = ~ scales::number_format(scale = .001, suffix = "k")(abs(.x)),
+  #                    limits = c(-75000,75000)) +
+  #     limits = 75000 * c(-1,1)) + 
+  
+  scale_fill_manual(values = c("darkred", "navy")) + 
+  theme(plot.caption = element_text(size = 10),
+        legend.position = "bottom", legend.direction = "horizontal") +
+  theme(plot.subtitle = element_text(size = 14,
+                                     face = "bold"), plot.caption = element_text(face = "bold.italic"),
+        axis.title = element_text(face = "bold"),
+        plot.title = element_text(size = 15,
+                                  face = "bold"), panel.background = element_rect(fill = "gray82")) +
+  labs(x="Total Population, Census 2020",y="Age Cohorts", fill=NULL, 
+       title    = paste0(city,", ",state),
+       subtitle = "Age-Race Population Pyramid based on Census 2020",
+       caption  = "Data source: US Census Bureau Data DHC & tidycensus R package")
+
+place1_pyramid
