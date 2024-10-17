@@ -26,31 +26,34 @@ label_home_county <- function(PUMA) {
     PUMA %in% santa_clara   ~ "Santa Clara",
     PUMA %in% solano        ~ "Solano",
     PUMA %in% sonoma        ~ "Sonoma",
-    TRUE                    ~ "Out of Region"
+    TRUE                    ~ "Should not be included in this extraction"
   )
 }
 
+
 # Function to label work county based on POWPUMA
-label_work_county <- function(POWPUMA) {
+label_work_county <- function(POWPUMA, POWSP) {
   case_when(
-    POWPUMA == "00100"  ~ "Alameda",
-    POWPUMA == "01300"  ~ "Contra Costa",
-    POWPUMA == "04100"  ~ "Marin",
-    POWPUMA == "05500"  ~ "Napa",
-    POWPUMA == "07500"  ~ "San Francisco",
-    POWPUMA == "08100"  ~ "San Mateo",
-    POWPUMA == "08500"  ~ "Santa Clara",
-    POWPUMA == "09500"  ~ "Solano",
-    POWPUMA == "09700"  ~ "Sonoma",
-    POWPUMA == "0000N"  ~ "zNot_in_labour_force",
-    TRUE                ~ "zOut of Region"
+    POWPUMA == "00100"  & POWSP == "006" ~ "Alameda",
+    POWPUMA == "01300"  & POWSP == "006" ~ "Contra Costa",
+    POWPUMA == "04100"  & POWSP == "006" ~ "Marin",
+    POWPUMA == "05500"  & POWSP == "006" ~ "Napa",
+    POWPUMA == "07500"  & POWSP == "006" ~ "San Francisco",
+    POWPUMA == "08100"  & POWSP == "006" ~ "San Mateo",
+    POWPUMA == "08500"  & POWSP == "006" ~ "Santa Clara",
+    POWPUMA == "09500"  & POWSP == "006" ~ "Solano",
+    POWPUMA == "09700"  & POWSP == "006" ~ "Sonoma",
+    POWPUMA == "N"                     ~ "zNot Coded",
+    TRUE                               ~ "zOut of Region"
   )
 }
+
 
 # Function to label service worker status based on OCCP
 label_service_worker <- function(OCCP) {
   case_when(
-    OCCP == "000N"                 ~ "Not_in_labour_force",
+    OCCP == "000N"                 ~ "Not_Coded", # for PUMS 2022
+    OCCP == "N"                    ~ "Not_Coded", # for PUMS 2023
     OCCP >= 3601 & OCCP <= 4655    ~ "Service_worker",
     TRUE                           ~ "Not_service_worker"
   )
@@ -60,6 +63,7 @@ label_service_worker <- function(OCCP) {
 # Function to label travel to work mode based on JWTRNS
 label_journey_to_work_mode <- function(JWTRNS, JWRIP) {
   case_when(
+    JWTRNS==0                                     ~ "0. Not Coded",
     JWTRNS==1                                     ~ "1. Drive",
     JWTRNS %in% c("2","3","4","5","6")            ~ "2. Transit",
     JWTRNS %in% c("7","8")                        ~ "8. Other",
@@ -67,6 +71,6 @@ label_journey_to_work_mode <- function(JWTRNS, JWRIP) {
     JWTRNS=="10"                                  ~ "4. Walk",
     JWTRNS=="11"                                  ~ "5. Worked from home",
     JWTRNS=="12"                                  ~ "8. Other",
-    TRUE                                          ~ "Not Coded"
+    TRUE                                          ~ "Miscoded"
   )
 }
