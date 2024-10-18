@@ -68,7 +68,7 @@ pums_df <- pums_df %>%
 # M is preferable if we want to have the file read by Tableau
 # output_path <- file.path(USERPROFILE, "Box", "Modeling and Surveys","Census_Requests", "BATA_Bridge_Toll_Increase")
 output_path <- file.path("M:/Data/Requests/BATA_Bridge_Toll_Increase")
-write_csv(pums_df, file.path(output_path,"PUMS2022_SelectedVars_person.csv"))
+write_csv(pums_df, file.path(output_path,"PUMS2023_SelectedVars_person.csv"))
 
 
 # Write a log file
@@ -76,7 +76,7 @@ timestamp <- Sys.time()
 log_entry <- paste("Data saved on:", timestamp, 
                    "\nSource script: https://github.com/BayAreaMetro/census-tools-for-planning/tree/master/analysis_by_topic/Service_Workers_Journey_To_Work.R", 
                    "\nAsana task: https://app.asana.com/0/12291104512646/1208522736825597/f", 
-                   "\nSaved file path:", file.path(output_path, "PUMS2022_SelectedVars_person.csv"), "\n\n")
+                   "\nSaved file path:", file.path(output_path, "PUMS2023_SelectedVars_person.csv"), "\n\n")
 write(log_entry, file = file.path(output_path,"log.txt"), append = TRUE)
 
 # --------------------------------------------------------------------------------
