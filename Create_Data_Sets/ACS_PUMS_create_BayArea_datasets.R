@@ -24,20 +24,24 @@ stopifnot(argv$year >= 2020)
 PUMS_ROOT_DIR <- "M:/Data/Census/PUMS"
 if (argv$survey == "acs5") {
     PUMS_DIR <- sprintf("PUMS %d-%02d", argv$year-4, argv$year %% 100)
+    OUTPUT_YEAR_STR <- sprintf("%02d%02d", (argv$year-4) %% 100, argv$year %% 100)
 } else {
     PUMS_DIR <- sprintf("PUMS %d", argv$year)
+    OUTPUT_YEAR_STR <- sprintf("%02d", argv$year %% 100)
 }
 print(paste("PUMS_DIR:", PUMS_DIR))
+print(paste("OUTPUT_YEAR_STR:", OUTPUT_YEAR_STR))
 
 CA_HOUSEHOLDS = file.path(PUMS_ROOT_DIR, PUMS_DIR, "psam_h06.csv")
 CA_PERSONS    = file.path(PUMS_ROOT_DIR, PUMS_DIR, "psam_p06.csv")
 EQUIVALENCE   = "M:/Data/Census/corrlib/Bay_puma_2020.csv"
 
-CAHH_OUTPUT_RDATA  = file.path(PUMS_ROOT_DIR, PUMS_DIR, sprintf("hcalif%02d.Rdata", argv$year %% 100))
-CAPER_OUTPUT_RDATA = file.path(PUMS_ROOT_DIR, PUMS_DIR, sprintf("pcalif%02d.Rdata", argv$year %% 100))
 
-BAYHH_OUTPUT_RDATA   = file.path(PUMS_ROOT_DIR, PUMS_DIR, sprintf("hbayarea%02d.Rdata", argv$year %% 100))
-BAYPER_OUTPUT_RDATA  = file.path(PUMS_ROOT_DIR, PUMS_DIR, sprintf("pbayarea%02d.Rdata", argv$year %% 100))
+CAHH_OUTPUT_RDATA  = file.path(PUMS_ROOT_DIR, PUMS_DIR, sprintf("hcalif%s.Rdata", OUTPUT_YEAR_STR))
+CAPER_OUTPUT_RDATA = file.path(PUMS_ROOT_DIR, PUMS_DIR, sprintf("pcalif%s.Rdata", OUTPUT_YEAR_STR))
+
+BAYHH_OUTPUT_RDATA   = file.path(PUMS_ROOT_DIR, PUMS_DIR, sprintf("hbayarea%s.Rdata", OUTPUT_YEAR_STR))
+BAYPER_OUTPUT_RDATA  = file.path(PUMS_ROOT_DIR, PUMS_DIR, sprintf("pbayarea%s.Rdata", OUTPUT_YEAR_STR))
 
 BAYHH_OUTPUT_CSV  = str_replace(BAYHH_OUTPUT_RDATA, ".Rdata", ".csv")
 BAYPER_OUTPUT_CSV = str_replace(BAYPER_OUTPUT_RDATA, ".Rdata", ".csv")
