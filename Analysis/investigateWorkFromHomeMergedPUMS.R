@@ -9,7 +9,7 @@ PUMA20_FILE = "M:/Data/Census/Geography/tl_2020_06_puma20/tl_2020_06_puma20.dbf"
 
 # Read PUMS 2013-2017 & keep subset of variables
 load(file.path(PUMS_DIR, "PUMS 2013-17", "pbayarea1317.Rdata"))
-pbayarea1317 = select(
+pbayarea1317 <- select(
   pbayarea1317,
   SERIALNO, # Housing unit/GQ person serial number
   SPORDER,  # Person number
@@ -33,7 +33,7 @@ pbayarea1317 = select(
 
 # Read PUMS 2021 & keep subset of variables
 load(file.path(PUMS_DIR, "PUMS 2021", "pbayarea21.Rdata"))
-pbayarea21 = select(
+pbayarea21 <- select(
   pbayarea21,
   SERIALNO, # Housing unit/GQ person serial number
   SPORDER,  # Person number
@@ -57,7 +57,7 @@ pbayarea21 = select(
 
 # Read PUMS 2022 & keep subset of variables
 load(file.path(PUMS_DIR, "PUMS 2022", "pbayarea22.Rdata"))
-pbayarea22 = select(
+pbayarea22 <- select(
   pbayarea22,
   SERIALNO, # Housing unit/GQ person serial number
   SPORDER,  # Person number
@@ -79,19 +79,46 @@ pbayarea22 = select(
   NAICSP,   # North American Industry Classification System (NAICS) recode for 2018 and later based on 2017 NAICS codes
 )
 
+# Read PUMS 2023 & keep subset of variables
+load(file.path(PUMS_DIR, "PUMS 2023", "pbayarea23.Rdata"))
+pbayarea23 <- pbayarea
+remove(pbayarea)
+pbayarea23 <- select(
+  pbayarea23,
+  SERIALNO, # Housing unit/GQ person serial number
+  SPORDER,  # Person number
+  PWGTP,    # Person weight
+  PUMA,     # Public use microdata area code (PUMA) based on 2010 Census definition
+  STATE,    # State code based on 2020 Census definitions
+  POWPUMA,  # Place of work PUMA based on 2020 Census
+  POWSP,    # Place of work - State or foreign country recode
+  JWMNP,    # Travel time to work
+  JWTRNS,   # Means of transportation to work
+  PINCP,    # Total person's income (signed, use ADJINC to adjust to constant dollars)
+  ADJINC,   # Adjustment factor for income and earnings dollar amounts
+  ESR,      # Employment status recode
+  NWAB,     # Temporary absence from work (UNEDITED)
+  AGEP,     # Age
+  SCHG,     # Grade level attending
+  WKHP,     # Usual hours worked per week past 12 months
+  WKWN,     # Weeks worked during past 12 months
+  NAICSP,   # North American Industry Classification System (NAICS) recode for 2018 and later based on 2017 NAICS codes
+)
 
 # Definitions are the same except:
-# SERIALNO is number in PUMS2013-2017 but character in PUMS 2021 and 2022
+# SERIALNO is number in PUMS2013-2017 but character in PUMS 2021, 2022, and 2023
 # JWTR == JWTRNS
 # ADJINCP*PINCP = 2017 dollars for PUMS 2013-2017
 # ADJINCP*PINCP = 2021 dollars for PUMS 2021
 # ADJINCP*PINCP = 2022 dollars for PUMS 2022
+# ADJINCP*PINCP = 2023 dollars for PUMS 2023
 # WKW is a set of codes, WKWN is number
 # https://github.com/BayAreaMetro/modeling-website/wiki/InflationAssumptions
 # PUMS2013-2017 uses 2010 Census geometries but PUMS2022 uses 2020 Census geometries
 DOLLARS_2017_TO_2000 = 1.0/1.53
 DOLLARS_2021_TO_2000 = 1.0/1.72
 DOLLARS_2022_TO_2000 = 1.0/1.81
+DOLLARS_2023_TO_2000 = 1.0/1.88
 ONE_MILLION = 1000000
 
 pbayarea1317 <- rename(pbayarea1317, JWTRNS=JWTR)
@@ -130,14 +157,34 @@ pbayarea22 <- mutate(
   WKW = if_else(WKWN >= 14 & WKWN <= 26, 5, WKW, NA_real_),
   WKW = if_else(WKWN >=  1 & WKWN <  14, 6, WKW, NA_real_),
 ) %>% select(-PINCP, -ADJINC, -PINCP_2022dollars, -WKWN)
-  # also, conver PUMA and ST columns to integer to be consistent with other datasets
+# also, convert PUMA and ST columns to integer to be consistent with other datasets
 pbayarea22 <- transform(
   pbayarea22,
   PUMA = as.integer(PUMA),
   ST   = as.integer(ST)
 )
 
-pbayarea_combined <- rbind(pbayarea1317, pbayarea21, pbayarea22)
+pbayarea23 <- mutate(
+  pbayarea23,
+  source = "PUMS2023",
+  PINCP_2023dollars = PINCP*(ADJINC/ONE_MILLION),
+  PINCP_2000dollars = PINCP_2023dollars*DOLLARS_2023_TO_2000,
+  # recode WKWN to WKW categories
+  WKW = if_else(WKWN >= 50 & WKWN <= 52, 1, NA_real_, NA_real_),
+  WKW = if_else(WKWN >= 48 & WKWN <= 49, 2, WKW, NA_real_),
+  WKW = if_else(WKWN >= 40 & WKWN <= 47, 3, WKW, NA_real_),
+  WKW = if_else(WKWN >= 27 & WKWN <= 39, 4, WKW, NA_real_),
+  WKW = if_else(WKWN >= 14 & WKWN <= 26, 5, WKW, NA_real_),
+  WKW = if_else(WKWN >=  1 & WKWN <  14, 6, WKW, NA_real_),
+) %>% select(-PINCP, -ADJINC, -PINCP_2023dollars, -WKWN)
+# also, convert PUMA and ST columns to integer to be consistent with other datasets
+pbayarea23 <- transform(
+  pbayarea23,
+  PUMA = as.integer(PUMA),
+  ST   = as.integer(STATE)
+) %>% select(-STATE)
+
+pbayarea_combined <- rbind(pbayarea1317, pbayarea21, pbayarea22, pbayarea23)
 
 # student_status: 
 #   1 is pre-school through grade 12 student, 
@@ -189,7 +236,7 @@ pbayarea_combined <- mutate(
 )
 
 # code NAICSP to empsix categories
-# See petrale\applications\travel_model_lu_inputs\2015\Employment\NAICS_to_EMPSIX.xlsx
+# See travel-model-one\utilities\taz-data-baseyears\2015\Employment\NAICS_to_EMPSIX.xlsx
 pbayarea_combined$NAICSP <- as.character(pbayarea_combined$NAICSP)
 pbayarea_combined <- mutate(
   pbayarea_combined,
@@ -363,7 +410,7 @@ save(pbayarea_combined,
 # Households now
 # Read PUMS 2013-2017 & keep subset of variables
 load(file.path(PUMS_DIR, "PUMS 2013-17", "hbayarea1317.Rdata"))
-hbayarea1317 = select(
+hbayarea1317 <- select(
   hbayarea1317,
   SERIALNO, # Housing unit/GQ person serial number
   WGTP,     # Housing weight
@@ -383,7 +430,7 @@ hbayarea1317 = select(
 
 # Read PUMS 2021 & keep subset of variables
 load(file.path(PUMS_DIR, "PUMS 2021", "hbayarea21.Rdata"))
-hbayarea21 = select(
+hbayarea21 <- select(
   hbayarea21,
   SERIALNO, # Housing unit/GQ person serial number
   WGTP,     # Housing weight
@@ -403,7 +450,7 @@ hbayarea21 = select(
 
 # Read PUMS 2022 & keep subset of variables
 load(file.path(PUMS_DIR, "PUMS 2022", "hbayarea22.Rdata"))
-hbayarea22 = select(
+hbayarea22 <- select(
   hbayarea22,
   SERIALNO, # Housing unit/GQ person serial number
   WGTP,     # Housing weight
@@ -426,6 +473,34 @@ hbayarea22 <- transform(
   PUMA = as.integer(PUMA),
   ST   = as.integer(ST)
 )
+
+# Read PUMS 2023 & keep subset of variables
+load(file.path(PUMS_DIR, "PUMS 2023", "hbayarea23.Rdata"))
+hbayarea23 <- hbayarea
+remove(hbayarea)
+hbayarea23 <- select(
+  hbayarea23,
+  SERIALNO, # Housing unit/GQ person serial number
+  WGTP,     # Housing weight
+  PUMA,     # Public use microdata area code (PUMA) based on 2020 Census definition
+  STATE,    # State code based on 2020 Census definitions
+  NP,       # Number of person records associated with this housing record
+  TYPEHUGQ, # Type of unit
+  BLD,      # Units in structure
+  HHT,      # Household/family type (Note: there's also HHT2)
+  HINCP,    # Household income (past 12 months, use ADJINC to adjust HINCP to constant dollars))
+  ADJINC,   # Adjustment factor for income and earnings dollar amounts
+  HUPAC,    # HH presence and age of children
+  NPF,      # Number of persons in family (unweighted)
+  TEN,      # Tenure
+  VEH,      # Vehicles (1 ton or less) available
+)
+# also, conver PUMA and ST columns to integer to be consistent with other datasets
+hbayarea23 <- transform(
+  hbayarea23,
+  PUMA = as.integer(PUMA),
+  ST   = as.integer(STATE)
+) %>% select(-STATE)
 
 hbayarea1317 <- rename(hbayarea1317, TYPEHUGQ=TYPE)
 hbayarea1317 <- mutate(
@@ -450,7 +525,14 @@ hbayarea22 <- mutate(
   HINCP_2000dollars = HINCP_2022dollars*DOLLARS_2022_TO_2000
 ) %>% select(-HINCP, -ADJINC, -HINCP_2022dollars)
 
-hbayarea_combined <- rbind(hbayarea1317, hbayarea21, hbayarea22)
+hbayarea23 <- mutate(
+  hbayarea23,
+  source = "PUMS2023",
+  HINCP_2023dollars = HINCP*(ADJINC/ONE_MILLION),
+  HINCP_2000dollars = HINCP_2023dollars*DOLLARS_2023_TO_2000
+) %>% select(-HINCP, -ADJINC, -HINCP_2023dollars)
+
+hbayarea_combined <- rbind(hbayarea1317, hbayarea21, hbayarea22, hbayarea23)
 
 # Add PUMA name
 hbayarea_combined <- mutate(
