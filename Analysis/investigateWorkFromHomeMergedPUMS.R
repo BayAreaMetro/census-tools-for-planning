@@ -185,6 +185,7 @@ pbayarea23 <- transform(
 ) %>% select(-STATE)
 
 pbayarea_combined <- rbind(pbayarea1317, pbayarea21, pbayarea22, pbayarea23)
+remove(pbayarea1317, pbayarea21, pbayarea22, pbayarea23)
 
 # student_status: 
 #   1 is pre-school through grade 12 student, 
@@ -533,6 +534,7 @@ hbayarea23 <- mutate(
 ) %>% select(-HINCP, -ADJINC, -HINCP_2023dollars)
 
 hbayarea_combined <- rbind(hbayarea1317, hbayarea21, hbayarea22, hbayarea23)
+remove(hbayarea1317, hbayarea21, hbayarea22, hbayarea23)
 
 # Add PUMA name
 hbayarea_combined <- mutate(
@@ -590,3 +592,129 @@ hbayarea_combined <- select(
 # write it
 save(hbayarea_combined,
      file = file.path(PUMS_DIR, "WorkFromHomeInvestigation", "hbayarea_combined.Rdata"))
+
+# save a version similar to model output, JourneyToWork_modes.csv
+# columns are incQ, incQ_label, ptype, ptype_label, wfh_choice, homeSD, homeSubZone, workSD, workSubZone, tour_mode, freq, distance
+
+# select relevant person variables
+model_like_WFH_persons <- pbayarea_combined %>%
+  select(SERIALNO, SPORDER, PWGTP, person_type, employ_status, source, COUNTYNAME, POWCOUNTYNAME, JWMNP, JWTRNS)
+
+# join with non-vacant households for household income
+model_like_WFH_persons <- left_join(
+  model_like_WFH_persons,
+  select(filter(hbayarea_combined, NP>0), SERIALNO, source, HINCP_2000dollars),
+  by=c("SERIALNO","source"),
+  unmatched="error",
+  relationship = "many-to-one"
+)
+model_like_WFH_persons <- model_like_WFH_persons %>% 
+  mutate(
+    incQ = case_when(
+      HINCP_2000dollars <   30000 ~ 1,
+      HINCP_2000dollars <   60000 ~ 2,
+      HINCP_2000dollars <  100000 ~ 3,
+      HINCP_2000dollars >= 100000 ~ 4
+    ),
+    incQ_label = case_when(
+      incQ == 1 ~ "Less than $30k",
+      incQ == 2 ~ "$30k to $60k",
+      incQ == 3 ~ "$60k to $100k",
+      incQ == 4 ~ "More than $100k",
+    )
+  )
+
+# select only full-time worker, part-time worker, college student, driving-age student
+model_like_WFH_persons <- model_like_WFH_persons %>%
+  filter(person_type %in% c(1,2,3,6)) %>%
+  rename(ptype=person_type) %>%
+  mutate(
+    ptype_label = case_when(
+      ptype == 1 ~ "Full-time worker",
+      ptype == 2 ~ "Part-time worker",
+      ptype == 3 ~ "College student",
+      ptype == 6 ~ "Driving-age student",
+    )
+  )
+
+# code wfh_choice and tour_mode from JWTRNS
+# tour_modes: https://github.com/BayAreaMetro/modeling-website/wiki/TravelModes#tour-and-trip-modes
+# JWTRNS
+# 01 .Car, truck, or van
+# 02 .Bus
+# 03 .Subway or elevated rail
+# 04 .Long-distance train or commuter rail
+# 05 .Light rail, streetcar, or trolley
+# 06 .Ferryboat
+# 07 .Taxicab
+# 08 .Motorcycle
+# 09 .Bicycle
+# 10 .Walked
+# 11 .Worked from home
+# 12 .Other method
+model_like_WFH_persons <- model_like_WFH_persons %>%
+  mutate(
+    wfh_choice = ifelse(JWTRNS == 11,1,0),
+    tour_mode = case_when(
+      JWTRNS == 1 ~ 1, # Car, truck, or van => Drive alone
+      JWTRNS == 2 ~ 9, # Bus => Walk to local bus
+      JWTRNS == 3 ~ 12, # Subway or elevated rail => Walk to heavy rail
+      JWTRNS == 4 ~ 13, # Long-distance train or commuter rail => walk to commuter rail
+      JWTRNS == 5 ~ 10, # Light rail => Walk to light rail or ferry
+      JWTRNS == 6 ~ 10, # Ferryboat => Walk to light rail or ferry
+      JWTRNS == 7 ~ 19, # Taxicab => Taxi
+      JWTRNS == 8 ~ 1,  # Motorcycle => Drive alone
+      JWTRNS == 9 ~ 8,  # Bicycle => Bicycle
+      JWTRNS ==10 ~ 7,  # Walked => Walk
+      JWTRNS ==11 ~ 0,  # WFH => 0
+      # leave Other as NA
+    ),
+    # code by county since we'll just use for county summaries
+    # code to first super district in the county
+    homeSD = case_when(
+      COUNTYNAME == "Alameda County"      ~ 15,
+      COUNTYNAME == "Contra Costa County" ~ 20,
+      COUNTYNAME == "Marin County"        ~ 32,
+      COUNTYNAME == "Napa County"         ~ 27,
+      COUNTYNAME == "San Francisco County"~  1,
+      COUNTYNAME == "San Mateo County"    ~  5,
+      COUNTYNAME == "Santa Clara County"  ~  8,
+      COUNTYNAME == "Solano County"       ~ 25,
+      COUNTYNAME == "Sonoma County"       ~ 29,
+    ),
+    # code by county since we'll just use for county summaries
+    # code to first super district in the county
+    workSD = case_when(
+      POWCOUNTYNAME == "Alameda County"      ~ 15,
+      POWCOUNTYNAME == "Contra Costa County" ~ 20,
+      POWCOUNTYNAME == "Marin County"        ~ 32,
+      POWCOUNTYNAME == "Napa County"         ~ 27,
+      POWCOUNTYNAME == "San Francisco County"~  1,
+      POWCOUNTYNAME == "San Mateo County"    ~  5,
+      POWCOUNTYNAME == "Santa Clara County"  ~  8,
+      POWCOUNTYNAME == "Solano County"       ~ 25,
+      POWCOUNTYNAME == "Sonoma County"       ~ 29,
+    )
+  )
+
+# Set these to -1 for unknown
+model_like_WFH_persons <- model_like_WFH_persons %>%
+  mutate(HomeSubZone = -1, WorkSubZone = -1, distance = -1)
+
+model_like_WFH_persons <- model_like_WFH_persons %>%
+  group_by(source, incQ, incQ_label, ptype, ptype_label, wfh_choice, 
+           homeSD, HomeSubZone, workSD, WorkSubZone, tour_mode) %>%
+  summarise(freq = sum(PWGTP), distance=min(distance))
+
+for (my_source in unique(model_like_WFH_persons$source)) {
+  df_source <- filter(model_like_WFH_persons, source==my_source)
+  df_source <- df_source[, !names(df_source) == my_source]
+  my_year <- 2023
+  if (my_source == "PUMS2013-2017") my_year <- 2015
+  
+  OUTFILE <- file.path(PUMS_DIR, "WorkFromHomeInvestigation",
+                       sprintf("JourneyToWork_modes_%d_%s.csv", my_year, my_source))
+  write.csv(df_source, file = OUTFILE, row.names=FALSE)
+  print(paste0("Wrote ",nrow(df_source)," rows to ",OUTFILE))
+}
+
