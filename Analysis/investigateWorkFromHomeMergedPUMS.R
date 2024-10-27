@@ -184,7 +184,7 @@ pbayarea23 <- transform(
   ST   = as.integer(STATE)
 ) %>% select(-STATE)
 
-pbayarea_combined <- rbind(pbayarea1317, pbayarea21, pbayarea22, pbayarea23)
+pbayarea_combined <- bind_rows(pbayarea1317, pbayarea21, pbayarea22, pbayarea23)
 remove(pbayarea1317, pbayarea21, pbayarea22, pbayarea23)
 
 # student_status: 
@@ -510,30 +510,30 @@ hbayarea1317 <- mutate(
   SERIALNO = as.character(SERIALNO),
   HINCP_2017dollars = HINCP*(ADJINC/ONE_MILLION),
   HINCP_2000dollars = HINCP_2017dollars*DOLLARS_2017_TO_2000
-) %>% select(-HINCP, -ADJINC, -HINCP_2017dollars)
+) %>% select(-HINCP, -ADJINC)
 
 hbayarea21 <- mutate(
   hbayarea21,
   source = "PUMS2021",
   HINCP_2021dollars = HINCP*(ADJINC/ONE_MILLION),
   HINCP_2000dollars = HINCP_2021dollars*DOLLARS_2021_TO_2000
-) %>% select(-HINCP, -ADJINC, -HINCP_2021dollars)
+) %>% select(-HINCP, -ADJINC)
 
 hbayarea22 <- mutate(
   hbayarea22,
   source = "PUMS2022",
   HINCP_2022dollars = HINCP*(ADJINC/ONE_MILLION),
   HINCP_2000dollars = HINCP_2022dollars*DOLLARS_2022_TO_2000
-) %>% select(-HINCP, -ADJINC, -HINCP_2022dollars)
+) %>% select(-HINCP, -ADJINC)
 
 hbayarea23 <- mutate(
   hbayarea23,
   source = "PUMS2023",
   HINCP_2023dollars = HINCP*(ADJINC/ONE_MILLION),
   HINCP_2000dollars = HINCP_2023dollars*DOLLARS_2023_TO_2000
-) %>% select(-HINCP, -ADJINC, -HINCP_2023dollars)
+) %>% select(-HINCP, -ADJINC)
 
-hbayarea_combined <- rbind(hbayarea1317, hbayarea21, hbayarea22, hbayarea23)
+hbayarea_combined <- bind_rows(hbayarea1317, hbayarea21, hbayarea22, hbayarea23)
 remove(hbayarea1317, hbayarea21, hbayarea22, hbayarea23)
 
 # Add PUMA name
