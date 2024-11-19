@@ -1,26 +1,54 @@
-# ACS 2017-2021 PUMS HH and Person Worker Research.R
-# Analyze PUMS data for total workers and households by number of workers, 2021 5-year PUMS data
+USAGE = "
+ Analyze PUMS data for total workers and households by number of workers, 5-year PUMS data.
+"
+
 # Import Libraries
 
-suppressMessages(library(tidyverse))
+suppressMessages({
+  library(tidyverse)
+  library(argparser)
+})
+
+argparser <- arg_parser(USAGE, hide.opts=TRUE)
+argparser <- add_argument(parser=argparser, arg="PUMS", help="Survey (one of '2017-21' or '2018-22')")
+# parse the command line arguments
+argv <- parse_args(argparser)
+stopifnot(argv$PUMS %in% c("2017-21","2018-22"))
+
+pums_short <- paste0(substr(argv$PUMS,3,4), substr(argv$PUMS,6,7))
+output_prefix <- paste0("ACSPUMS",str_replace(argv$PUMS,"-","-20"))
+print(paste("PUMS:", argv$PUMS))
+print(paste("pums_short:",pums_short))
+print(paste("output_prefix:",output_prefix))
 
 # Set working directory
 
-USERPROFILE          <- gsub("\\\\","/", Sys.getenv("USERPROFILE"))
-petrale              <- file.path(USERPROFILE,"Documents","GitHub","petrale","applications")
-output               <- file.path(petrale,"travel_model_lu_inputs","2020","Workers")
+output <- file.path("X:/travel-model-one-v1.6.1_develop/utilities/taz-data-baseyears/2020/Workers")
 
 # Input household and person census files, merge them
 # Select out needed variables
 # Recode as worker or non-worker
 
-HOUSEHOLD_RDATA = "M:/Data/Census/PUMS/PUMS 2017-21/hbayarea1721.Rdata"
-PERSON_RDATA = "M:/Data/Census/PUMS/PUMS 2017-21/pbayarea1721.Rdata"
+HOUSEHOLD_RDATA = paste0("M:/Data/Census/PUMS/PUMS ",argv$PUMS,"/hbayarea",pums_short,".Rdata")
+PERSON_RDATA = paste0("M:/Data/Census/PUMS/PUMS ",argv$PUMS,"/pbayarea",pums_short,".Rdata")
 
+print(paste("Loading",HOUSEHOLD_RDATA))
 load (HOUSEHOLD_RDATA)
+print(paste("Loading",PERSON_RDATA))
 load (PERSON_RDATA)
 
-combined <- left_join(pbayarea1721,hbayarea1721, by=c("PUMA", "SERIALNO", "ST", "ADJINC", "COUNTY", 
+if (argv$PUMS == "2017-21") {
+  pbayarea <- pbayarea1721
+  remove(pbayarea1721)
+  hbayarea <- hbayarea1721
+  remove(hbayarea1721)
+} else {
+  # rename for backwards compat
+  pbayarea <- pbayarea %>% rename(PUMA = PUMA20)
+  hbayarea <- hbayarea %>% rename(PUMA = PUMA20)
+}
+
+combined <- left_join(pbayarea,hbayarea, by=c("PUMA", "SERIALNO", "ST", "ADJINC", "COUNTY", 
                                                       "County_Name", "PUMA_Name")) %>%
   select(SERIALNO,PUMA,COUNTY,County_Name,PUMA_Name,PWGTP,WGTP,TYPEHUGQ,ESR,NP,AGEP) %>% mutate(
     p_workers=case_when(
@@ -62,7 +90,7 @@ HH_summary_1 <- combined %>%
 
 HH_summary3p <- HH_summary_1 %>%   # County-level values
   filter(worker_total>=3) %>%
-  left_join(.,hbayarea1721,by="SERIALNO") %>%
+  left_join(.,hbayarea,by="SERIALNO") %>%
   select(County_Name,SERIALNO,WGTP,worker_total) %>% 
   group_by(County_Name) %>% 
   summarize(avg3p=weighted.mean(worker_total,WGTP)) %>% 
@@ -70,7 +98,7 @@ HH_summary3p <- HH_summary_1 %>%   # County-level values
 
 HH_summary3p_Bay <- HH_summary_1 %>%   # For full Bay Area
   filter(worker_total>=3) %>%
-  left_join(.,hbayarea1721,by="SERIALNO") %>%
+  left_join(.,hbayarea,by="SERIALNO") %>%
   select(County_Name,SERIALNO,WGTP,worker_total) %>% 
   summarize(avg3p=weighted.mean(worker_total,WGTP)) %>% 
   ungroup()
@@ -79,11 +107,13 @@ Bay_3p <- as.numeric(HH_summary3p_Bay[1,1])
 
 # Export avg3p values for county
 
-write.csv(HH_summary3p, file.path(output,"ACSPUMS2017-2021_Avg_3p_Workers_County.csv"),row.names = FALSE)
+output_file <- file.path(output,paste0(output_prefix,"_Avg_3p_Workers_County.csv"))
+write.csv(HH_summary3p,output_file,row.names = FALSE)
+print(paste("Wrote",output_file))
 
 # Recode number of weighted workers
 
-HH_summary_2 <- left_join(HH_summary_1,hbayarea1721,by="SERIALNO") %>%
+HH_summary_2 <- left_join(HH_summary_1,hbayarea,by="SERIALNO") %>%
   left_join(.,HH_summary3p,by="County_Name") %>% 
   select(SERIALNO,WGTP,worker_total,County_Name,avg3p) %>% mutate(
     hhworker_weighted = case_when(
@@ -120,15 +150,23 @@ final <- left_join(person_worker_summary,HH_worker_summary, by="County_Name")
 
 # Output csv
 
-write.csv(final, file.path(output,"ACSPUMS2017-2021_Person_Household_Worker_Totals.csv"),row.names = FALSE, quote = T)
-write.csv(HH_worker_cat, file.path(output,"ACSPUMS2017-2021_Person_Household_Worker_Category.csv"),row.names = FALSE, quote = T)
-write.csv(combined_HH_GQ, file.path(output,"ACSPUMS2017-2021_Stratified_Person_Worker_Totals.csv"),row.names = FALSE, quote = T)
+output_file <- file.path(output,paste0(output_prefix,"_Person_Household_Worker_Totals.csv"))
+write.csv(final, output_file, row.names = FALSE, quote = T)
+print(paste("Wrote",output_file))
+
+output_file <- file.path(output,paste0(output_prefix,"_Person_Household_Worker_Category.csv"))
+write.csv(HH_worker_cat, output_file, row.names = FALSE, quote = T)
+print(paste("Wrote",output_file))
+
+output_file <- file.path(output,paste0(output_prefix,"_Stratified_Person_Worker_Totals.csv"))
+write.csv(combined_HH_GQ, output_file, row.names = FALSE, quote = T)
+print(paste("Wrote",output_file))
 
 
 
 # Now summarize HH workers with a job, but not at work ("commuters")
 
-combined_commuters <- left_join(pbayarea1721,hbayarea1721, by=c("PUMA", "SERIALNO", "ST", "ADJINC", "COUNTY", 
+combined_commuters <- left_join(pbayarea,hbayarea, by=c("PUMA", "SERIALNO", "ST", "ADJINC", "COUNTY", 
                                                       "County_Name", "PUMA_Name")) %>%
   select(SERIALNO,PUMA,COUNTY,County_Name,PUMA_Name,PWGTP,WGTP,TYPEHUGQ,ESR,NP,AGEP) %>% mutate(
     p_workers=case_when(
@@ -148,7 +186,7 @@ HH_summary_commuters_1 <- combined_commuters %>%
   summarize(worker_total=sum(worker_or_not)) %>%
   ungroup()
 
-HH_summary_commuters_2 <- left_join(HH_summary_commuters_1,hbayarea1721,by="SERIALNO") %>%
+HH_summary_commuters_2 <- left_join(HH_summary_commuters_1,hbayarea,by="SERIALNO") %>%
   select(SERIALNO,WGTP,worker_total,County_Name,TYPEHUGQ) %>% mutate(
   worker_total_rc=case_when(
     worker_total==0 ~ "0_workers",
@@ -164,7 +202,9 @@ HH_summary_commuters_2 <- left_join(HH_summary_commuters_1,hbayarea1721,by="SERI
 
 # Output csv
 
-write.csv(HH_summary_commuters_2, file.path(output,"ACSPUMS2017-2021_Household_Commuter_Category.csv"),row.names = FALSE, quote = T)
+output_file <- file.path(output,paste0(output_prefix,"_Household_Commuter_Category.csv"))
+write.csv(HH_summary_commuters_2, output_file, row.names = FALSE, quote = T)
+print(paste("Wrote",output_file))
 
 # Create a table of households by number of workers, using the PUMS person weight
 
@@ -182,5 +222,6 @@ person_HH_worker_summary <- combined %>%
   summarize(total=sum(PWGTP)) %>% 
   ungroup()
   
-write.csv(person_HH_worker_summary, file.path(output,"ACSPUMS2017-2021_HHs_Workers_PWeight.csv"),row.names = FALSE, quote = T)
-
+output_file <- file.path(output,paste0(output_prefix,"_HHs_Workers_PWeight.csv"))
+write.csv(person_HH_worker_summary, output_file, row.names = FALSE, quote = T)
+print(paste("Wrote",output_file))
