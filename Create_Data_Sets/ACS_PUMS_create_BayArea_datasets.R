@@ -1,7 +1,7 @@
 
 # Generic script to create ACS Bay Area dataset
 USAGE = "
-  Reads downloaded raw Californa ACS PUMS data, joins with .
+  Reads downloaded raw Californa ACS PUMS data, joins with M:/Data/Census/corrlib/Bay_puma_2020.csv
 "
 
 # Import Libraries
@@ -70,15 +70,15 @@ print(paste("Read",nrow(pcalif),"rows from",CA_PERSONS))
 str(hcalif)
 str(pcalif)
 
-# columns are State, County_Name, PUMARC, PUMA_Name
-#   State County_Name PUMARC                                                                      PUMA_Name
-# 1    06     Alameda  00101                               Alameda County (North)--Berkeley & Albany Cities
-# 2    06     Alameda  00111 Alameda County (Northwest)--Oakland City (Downtown/West Oakland/North Oakland)
-# 3    06     Alameda  00112                       Alameda County (Northwest)--Oakland City (Oakland Hills)
-# 4    06     Alameda  00113            Alameda County (West)--Oakland City (Elmhurst/Central/East Oakland)
-# 5    06     Alameda  00114      Alameda County (West)--San Leandro, Alameda, Emeryville & Piedmont Cities
-# 6    06     Alameda  00115                            Alameda County (Northwest)--Castro Valley & Ashland
-equivalence <- read.csv(EQUIVALENCE, colClasses = c(PUMARC = "character",State = "character"))
+# columns are COUNTY, County_Name, PUMARC, PUMA_Name
+#   COUNTY County_Name PUMARC                                                                      PUMA_Name
+# 1  06001     Alameda  00101                               Alameda County (North)--Berkeley & Albany Cities
+# 2  06001     Alameda  00111 Alameda County (Northwest)--Oakland City (Downtown/West Oakland/North Oakland)
+# 3  06001     Alameda  00112                       Alameda County (Northwest)--Oakland City (Oakland Hills)
+# 4  06001     Alameda  00113            Alameda County (West)--Oakland City (Elmhurst/Central/East Oakland)
+# 5  06001     Alameda  00114      Alameda County (West)--San Leandro, Alameda, Emeryville & Piedmont Cities
+# 6  06001     Alameda  00115                            Alameda County (Northwest)--Castro Valley & Ashland
+equivalence <- read.csv(EQUIVALENCE, colClasses = c(PUMARC = "character",COUNTY = "character"))
 print(paste("Read",nrow(equivalence),"rows from",EQUIVALENCE))
 
 # Save out files in R format
@@ -88,8 +88,8 @@ print(paste("Saved",CAHH_OUTPUT_RDATA))
 save(pcalif, file = CAPER_OUTPUT_RDATA)
 print(paste("Saved",CAPER_OUTPUT_RDATA))
 
-hbayarea <- merge (hcalif,equivalence, by.x=c(STATE_VAR,PUMA_VAR), by.y=c("State","PUMARC"))
-pbayarea <- merge (pcalif,equivalence, by.x=c(STATE_VAR,PUMA_VAR), by.y=c("State","PUMARC"))
+hbayarea <- inner_join(hcalif,equivalence, by=setNames("PUMARC", PUMA_VAR), relationship="many-to-one")
+pbayarea <- inner_join(pcalif,equivalence, by=setNames("PUMARC", PUMA_VAR), relationship="many-to-one")
 
 save(hbayarea, file = BAYHH_OUTPUT_RDATA)
 print(paste("Saved",BAYHH_OUTPUT_RDATA))
