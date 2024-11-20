@@ -1,7 +1,7 @@
 
 # Generic script to create ACS Bay Area dataset
 USAGE = "
-  Reads downloaded raw Californa ACS PUMS data, joins with M:/Data/Census/corrlib/Bay_puma_2020.csv
+  Reads downloaded raw Californa ACS PUMS data, joins with M:/Data/Census/corrlib/Bay_puma_[2010,2020].csv
 "
 
 # Import Libraries
@@ -32,10 +32,8 @@ if (argv$survey == "acs5") {
 print(paste("PUMS_DIR:", PUMS_DIR))
 print(paste("OUTPUT_YEAR_STR:", OUTPUT_YEAR_STR))
 
-CA_HOUSEHOLDS = file.path(PUMS_ROOT_DIR, PUMS_DIR, "psam_h06.csv")
-CA_PERSONS    = file.path(PUMS_ROOT_DIR, PUMS_DIR, "psam_p06.csv")
-EQUIVALENCE   = "M:/Data/Census/corrlib/Bay_puma_2020.csv"
-
+CA_HOUSEHOLDS  = file.path(PUMS_ROOT_DIR, PUMS_DIR, "psam_h06.csv")
+CA_PERSONS     = file.path(PUMS_ROOT_DIR, PUMS_DIR, "psam_p06.csv")
 
 CAHH_OUTPUT_RDATA  = file.path(PUMS_ROOT_DIR, PUMS_DIR, sprintf("hcalif%s.Rdata", OUTPUT_YEAR_STR))
 CAPER_OUTPUT_RDATA = file.path(PUMS_ROOT_DIR, PUMS_DIR, sprintf("pcalif%s.Rdata", OUTPUT_YEAR_STR))
@@ -46,19 +44,14 @@ BAYPER_OUTPUT_RDATA  = file.path(PUMS_ROOT_DIR, PUMS_DIR, sprintf("pbayarea%s.Rd
 BAYHH_OUTPUT_CSV  = str_replace(BAYHH_OUTPUT_RDATA, ".Rdata", ".csv")
 BAYPER_OUTPUT_CSV = str_replace(BAYPER_OUTPUT_RDATA, ".Rdata", ".csv")
 
-PUMA_VAR  <- "PUMA"
-if ((argv$survey == "acs5") && (argv$year <= 2022)) {
-    # there's a PUMA10 and PUMA20
-    PUMA_VAR  <- "PUMA20"
-}
+PUMA_STATE_COLCLASSES = c(
+    "PUMA"="character",
+    "PUMA10"="character",
+    "PUMA20"="character",
+    "ST"="character",
+    "STATE"="character"
+)
 
-STATE_VAR <- "ST"
-# state variable was renamed for 2023
-if (argv$year >= 2023) {
-    STATE_VAR <- "STATE"
-}
-PUMA_STATE_COLCLASSES <- c("character","character")
-names(PUMA_STATE_COLCLASSES) <- c(PUMA_VAR, STATE_VAR)
 print("PUMA_STATE_COLCLASSES:")
 print(PUMA_STATE_COLCLASSES)
 
@@ -70,6 +63,16 @@ print(paste("Read",nrow(pcalif),"rows from",CA_PERSONS))
 str(hcalif)
 str(pcalif)
 
+# Save out files in R format
+
+save(hcalif, file = CAHH_OUTPUT_RDATA)
+print(paste("Saved",CAHH_OUTPUT_RDATA))
+save(pcalif, file = CAPER_OUTPUT_RDATA)
+print(paste("Saved",CAPER_OUTPUT_RDATA))
+
+EQUIVALENCE_10 = "M:/Data/Census/corrlib/Bay_puma_2010.csv"
+EQUIVALENCE_20 = "M:/Data/Census/corrlib/Bay_puma_2020.csv"
+
 # columns are COUNTY, County_Name, PUMARC, PUMA_Name
 #   COUNTY County_Name PUMARC                                                                      PUMA_Name
 # 1  06001     Alameda  00101                               Alameda County (North)--Berkeley & Albany Cities
@@ -78,18 +81,60 @@ str(pcalif)
 # 4  06001     Alameda  00113            Alameda County (West)--Oakland City (Elmhurst/Central/East Oakland)
 # 5  06001     Alameda  00114      Alameda County (West)--San Leandro, Alameda, Emeryville & Piedmont Cities
 # 6  06001     Alameda  00115                            Alameda County (Northwest)--Castro Valley & Ashland
-equivalence <- read.csv(EQUIVALENCE, colClasses = c(PUMARC = "character",COUNTY = "character"))
-print(paste("Read",nrow(equivalence),"rows from",EQUIVALENCE))
+equivalence_10 <- read.csv(EQUIVALENCE_10, colClasses = c(PUMARC = "character",COUNTY = "character"))
+equivalence_20 <- read.csv(EQUIVALENCE_20, colClasses = c(PUMARC = "character",COUNTY = "character"))
+print(paste("Read",nrow(equivalence_10),"rows from",EQUIVALENCE_10))
+print(paste("Read",nrow(equivalence_20),"rows from",EQUIVALENCE_20))
 
-# Save out files in R format
+# acs5 2017-21 uses PUMA (which is PUMA10)
+# acs5 2018-22 uses both with PUMA10 and PUMA20
+if (argv$survey == "acs5") {
+    if (argv$year < 2022) {
+        stop("acs5 before 2022 is not supported by this script")
+    }
+    if (argv$year == 2022) {
+        # handle both PUMA10 and PUMA20
+        hbayarea <- left_join(hcalif,  equivalence_10, by=c("PUMA10"="PUMARC"), relationship="many-to-one")
+        hbayarea <- left_join(hbayarea,equivalence_20, by=c("PUMA20"="PUMARC"), relationship="many-to-one", suffix=c("","_20"))
+        # consolidate the _20 version into the _10 (no suffix) version
+        hbayarea <- hbayarea %>% 
+        mutate(
+            County_Name = ifelse(!is.na(County_Name_20),County_Name_20,County_Name),
+            COUNTY      = ifelse(!is.na(COUNTY_20     ),COUNTY_20,     COUNTY     ),
+            PUMA_Name   = ifelse(!is.na(PUMA_Name_20  ),PUMA_Name_20, PUMA_Name   )) %>%
+        select(-County_Name_20, -COUNTY_20, -PUMA_Name_20) %>% 
+        filter(!is.na(COUNTY))
 
-save(hcalif, file = CAHH_OUTPUT_RDATA)
-print(paste("Saved",CAHH_OUTPUT_RDATA))
-save(pcalif, file = CAPER_OUTPUT_RDATA)
-print(paste("Saved",CAPER_OUTPUT_RDATA))
 
-hbayarea <- inner_join(hcalif,equivalence, by=setNames("PUMARC", PUMA_VAR), relationship="many-to-one")
-pbayarea <- inner_join(pcalif,equivalence, by=setNames("PUMARC", PUMA_VAR), relationship="many-to-one")
+        pbayarea <- left_join(pcalif,  equivalence_10, by=c("PUMA10"="PUMARC"), relationship="many-to-one")
+        pbayarea <- left_join(pbayarea,equivalence_20, by=c("PUMA20"="PUMARC"), relationship="many-to-one", suffix=c("","_20"))
+        # consolidate the _20 version into the _10 (no suffix) version
+        pbayarea <- pbayarea %>% 
+        mutate(
+            County_Name = ifelse(!is.na(County_Name_20),County_Name_20,County_Name),
+            COUNTY      = ifelse(!is.na(COUNTY_20     ),COUNTY_20,     COUNTY     ),
+            PUMA_Name   = ifelse(!is.na(PUMA_Name_20  ),PUMA_Name_20,  PUMA_Name  )) %>%
+        select(-County_Name_20, -COUNTY_20, -PUMA_Name_20) %>%
+        filter(!is.na(COUNTY))
+    }
+    if (argv$year > 2022) {
+        stop("acs5 after 2022 is not *yet* supported by this script")
+    }
+}
+# acs1 2021 uses PUMA (which is PUMA10)
+# acs1 2022 uses PUMA (which is PUMA20)
+if (argv$survey == "acs1") {
+    if (argv$year <= 2021) {
+        hbayarea <- left_join(hcalif,equivalence_10, by=c("PUMA"="PUMARC"), relationship="many-to-one")
+        pbayarea <- left_join(pcalif,equivalence_10, by=c("PUMA"="PUMARC"), relationship="many-to-one")
+    }
+    if (argv$year >= 2022) {
+        hbayarea <- left_join(hcalif,equivalence_20, by=c("PUMA"="PUMARC"), relationship="many-to-one")
+        pbayarea <- left_join(pcalif,equivalence_20, by=c("PUMA"="PUMARC"), relationship="many-to-one")
+    }
+}
+print(paste("Filtered to ",nrow(hbayarea),"rows for hbayarea"))
+print(paste("Filtered to ",nrow(pbayarea),"rows for pbayarea"))
 
 save(hbayarea, file = BAYHH_OUTPUT_RDATA)
 print(paste("Saved",BAYHH_OUTPUT_RDATA))
