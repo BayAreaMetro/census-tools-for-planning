@@ -1,3 +1,19 @@
+
+BAY_AREA_COUNTY_FIPS = data.frame(
+    FIPS = character(),
+    COUNTY = character()
+) %>% 
+  add_row(FIPS = "06001", COUNTY = "Alameda") %>%
+  add_row(FIPS = "06013", COUNTY = "Contra Costa") %>%
+  add_row(FIPS = "06041", COUNTY = "Marin") %>%
+  add_row(FIPS = "06055", COUNTY = "Napa") %>%
+  add_row(FIPS = "06075", COUNTY = "San Francisco") %>%
+  add_row(FIPS = "06081", COUNTY = "San Mateo") %>%
+  add_row(FIPS = "06085", COUNTY = "Santa Clara") %>%
+  add_row(FIPS = "06095", COUNTY = "Solano") %>%
+  add_row(FIPS = "06097", COUNTY = "Sonoma")
+
+# TODO: Which vintage of PUMAS are these?
 # PUMAs for the Bay Area
 puma_lists <- list(
     alameda       <- c("00101","00111","00112","00113","00114","00115","00116","00117","00118","00119","00120","00121","00122","00123"),
