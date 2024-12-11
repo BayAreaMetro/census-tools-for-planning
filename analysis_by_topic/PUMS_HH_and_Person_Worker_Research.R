@@ -1,5 +1,48 @@
 USAGE = "
  Analyze PUMS data for total workers and households by number of workers, 5-year PUMS data.
+ Here, workers are defined by ESR values: 
+   1: Workers at work
+   2: Job, but not at work
+   4: Armed forces at work
+   5: Armed forces not at work
+ Household workers are workers associated with a housing unit where TYPEHUGQ==1
+
+ Reads M:/Data/Census/PUMS/PUMS YYYY-YY/[hp]bayarea[YY-YY].Rdata
+ Outputs the following files into the same directory:
+
+ * Avg_3p_Workers_County.csv  Contains columns: 
+   - County_Name
+   - avg3p = average number of workers in households with 3+ workers
+
+ * Person_Household_Worker_Totals.csv  Contains columns: 
+   - County_Name
+   - person_worker_total = workers using person weights, 
+   - HH_worker_total = workers using household weights
+
+ * Person_Household_Worker_Category.csv  Contains columns:
+   - County_Name
+   - worker_total_rc = one of '0_workers','1_worker','2_workers','3p_workers'
+   - total_hhs = sum of household weights
+
+ * Stratified_Person_Worker_Totals.csv  Contains columns:
+   - County_Name
+   - household_worker_total = person weights for workers in households
+   - gq_worker_total = person weights for workers in non-institutionalized GQ (TYPEHUGQ==3)
+   - worker_total = household_worker_total + gq_worker_total
+
+ * Household_Commuter_Category.csv  
+   This is filtered to workers with ESR == 1 and 4 ONLY. Contains columns:
+   - County_Name
+   - worker_total_rc = one of '0_workers','1_worker','2_workers','3p_workers'
+   - total_hhs = person weights for workers in households
+   - total_gq = person weights for workers in non-institutionalized GQ (TYPEHUGQ==3)
+   - total_total = household_worker_total + gq_worker_total
+
+ * HHs_Workers_PWeight.csv  Contains columns:
+   - County_Name
+   - worker_total_rc = one of '0_workers','1_worker','2_workers','3p_workers'
+   - total = person weight for workers in these categories
+
 "
 
 # Import Libraries
@@ -21,16 +64,13 @@ print(paste("PUMS:", argv$PUMS))
 print(paste("pums_short:",pums_short))
 print(paste("output_prefix:",output_prefix))
 
-# Set working directory
-
-output <- file.path("X:/travel-model-one-v1.6.1_develop/utilities/taz-data-baseyears/2020/Workers")
-
 # Input household and person census files, merge them
 # Select out needed variables
 # Recode as worker or non-worker
 
 HOUSEHOLD_RDATA = paste0("M:/Data/Census/PUMS/PUMS ",argv$PUMS,"/hbayarea",pums_short,".Rdata")
 PERSON_RDATA = paste0("M:/Data/Census/PUMS/PUMS ",argv$PUMS,"/pbayarea",pums_short,".Rdata")
+OUTPUT_DIR = paste0("M:/Data/Census/PUMS/PUMS ",argv$PUMS)
 
 print(paste("Loading",HOUSEHOLD_RDATA))
 load (HOUSEHOLD_RDATA)
@@ -107,7 +147,7 @@ Bay_3p <- as.numeric(HH_summary3p_Bay[1,1])
 
 # Export avg3p values for county
 
-output_file <- file.path(output,paste0(output_prefix,"_Avg_3p_Workers_County.csv"))
+output_file <- file.path(OUTPUT_DIR,"Avg_3p_Workers_County.csv")
 write.csv(HH_summary3p,output_file,row.names = FALSE)
 print(paste("Wrote",output_file))
 
@@ -150,15 +190,15 @@ final <- left_join(person_worker_summary,HH_worker_summary, by="County_Name")
 
 # Output csv
 
-output_file <- file.path(output,paste0(output_prefix,"_Person_Household_Worker_Totals.csv"))
+output_file <- file.path(OUTPUT_DIR,"Person_Household_Worker_Totals.csv")
 write.csv(final, output_file, row.names = FALSE, quote = T)
 print(paste("Wrote",output_file))
 
-output_file <- file.path(output,paste0(output_prefix,"_Person_Household_Worker_Category.csv"))
+output_file <- file.path(OUTPUT_DIR,"Person_Household_Worker_Category.csv")
 write.csv(HH_worker_cat, output_file, row.names = FALSE, quote = T)
 print(paste("Wrote",output_file))
 
-output_file <- file.path(output,paste0(output_prefix,"_Stratified_Person_Worker_Totals.csv"))
+output_file <- file.path(OUTPUT_DIR,"Stratified_Person_Worker_Totals.csv")
 write.csv(combined_HH_GQ, output_file, row.names = FALSE, quote = T)
 print(paste("Wrote",output_file))
 
@@ -202,7 +242,7 @@ HH_summary_commuters_2 <- left_join(HH_summary_commuters_1,hbayarea,by="SERIALNO
 
 # Output csv
 
-output_file <- file.path(output,paste0(output_prefix,"_Household_Commuter_Category.csv"))
+output_file <- file.path(OUTPUT_DIR,"Household_Commuter_Category.csv")
 write.csv(HH_summary_commuters_2, output_file, row.names = FALSE, quote = T)
 print(paste("Wrote",output_file))
 
@@ -222,6 +262,6 @@ person_HH_worker_summary <- combined %>%
   summarize(total=sum(PWGTP)) %>% 
   ungroup()
   
-output_file <- file.path(output,paste0(output_prefix,"_HHs_Workers_PWeight.csv"))
+output_file <- file.path(OUTPUT_DIR, "HHs_Workers_PWeight.csv")
 write.csv(person_HH_worker_summary, output_file, row.names = FALSE, quote = T)
 print(paste("Wrote",output_file))
