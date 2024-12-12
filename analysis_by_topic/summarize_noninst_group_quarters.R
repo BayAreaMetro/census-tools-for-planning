@@ -1,7 +1,7 @@
 USAGE = "
- Summarize Non-Insitutionalized Group Quarters persons for the given ACS5-year dataset.
+ Summarize Non-Insitutionalized Group Quarters persons for the given ACS dataset.
 
- Reads M:/Data/Census/PUMS/PUMS YYYY-YY/[hp]bayarea[YY-YY].Rdata
+ Reads M:/Data/Census/PUMS/PUMS YYYY[-YY]/[hp]bayarea[YY[-YY]].Rdata
  Outputs the following file into the same directory:
  NonInstitutionalGroupQuartersPersonSummary.csv
  Columns include:
@@ -23,35 +23,48 @@ suppressMessages({
 options(width = 200)
 
 argparser <- arg_parser(USAGE, hide.opts=TRUE)
-argparser <- add_argument(parser=argparser, arg="PUMS", help="Survey (one of '2017-21' or '2018-22')")
+argparser <- add_argument(parser=argparser, arg="survey",  help="Either acs1 or acs5")
+argparser <- add_argument(parser=argparser, arg="year",    help="Survey year", type="numeric")
 # parse the command line arguments
 argv <- parse_args(argparser)
-stopifnot(argv$PUMS %in% c("2017-21","2018-22"))
+stopifnot(argv$survey %in% c("acs1","acs5"))
+stopifnot(argv$year >= 2020)
 
-pums_short <- paste0(substr(argv$PUMS,3,4), substr(argv$PUMS,6,7))
-output_prefix <- paste0("ACSPUMS",str_replace(argv$PUMS,"-","-20"))
-print(paste("PUMS:", argv$PUMS))
-print(paste("pums_short:",pums_short))
-print(paste("output_prefix:",output_prefix))
+PUMS_ROOT_DIR <- "M:/Data/Census/PUMS"
+if (argv$survey == "acs5") {
+    PUMS_DIR <- file.path(PUMS_ROOT_DIR, sprintf("PUMS %d-%02d", argv$year-4, argv$year %% 100))
+    PUMS_YEAR_STR <- sprintf("%02d%02d", (argv$year-4) %% 100, argv$year %% 100)
+} else {
+    PUMS_DIR <- file.path(PUMS_ROOT_DIR, sprintf("PUMS %d", argv$year))
+    PUMS_YEAR_STR <- sprintf("%02d", argv$year %% 100)
+}
+print(paste("PUMS_DIR:", PUMS_DIR))
+print(paste("PUMS_YEAR_STR:", PUMS_YEAR_STR))
 
-HOUSEHOLD_RDATA = paste0("M:/Data/Census/PUMS/PUMS ",argv$PUMS,"/hbayarea",pums_short,".Rdata")
-PERSON_RDATA = paste0("M:/Data/Census/PUMS/PUMS ",argv$PUMS,"/pbayarea",pums_short,".Rdata")
-OUTPUT_DIR = paste0("M:/Data/Census/PUMS/PUMS ",argv$PUMS)
+HOUSEHOLD_RDATA = file.path(PUMS_DIR, paste0("hbayarea",PUMS_YEAR_STR,".Rdata"))
+PERSON_RDATA    = file.path(PUMS_DIR, paste0("pbayarea",PUMS_YEAR_STR,".Rdata"))
 
 print(paste("Loading",HOUSEHOLD_RDATA))
 load (HOUSEHOLD_RDATA)
 print(paste("Loading",PERSON_RDATA))
 load (PERSON_RDATA)
 
-if (argv$PUMS == "2017-21") {
+if ((argv$survey == "acs5") & (argv$year == 2021)) {
   pbayarea <- pbayarea1721
   remove(pbayarea1721)
   hbayarea <- hbayarea1721
   remove(hbayarea1721)
-} else {
+} 
+
+if ("PUMA20" %in% colnames(pbayarea)) {
   # rename for backwards compat
   pbayarea <- pbayarea %>% rename(PUMA = PUMA20)
   hbayarea <- hbayarea %>% rename(PUMA = PUMA20)
+}
+if ("STATE" %in% colnames(pbayarea)) {
+  # rename for backwards compat
+  pbayarea <- pbayarea %>% rename(ST = STATE)
+  hbayarea <- hbayarea %>% rename(ST = STATE)
 }
 
 noninst_gq <- left_join(pbayarea,hbayarea, 
@@ -104,7 +117,7 @@ print(head(noninst_gq))
 gq_type_summary <- noninst_gq %>%
     group_by(County_Name, gq_type) %>%
     summarize(PWGTP=sum(PWGTP)) %>% 
-    pivot_wider(names_from=gq_type, values_from=PWGTP) %>%
+    pivot_wider(names_from=gq_type, values_from=PWGTP, values_fill=0) %>%
     mutate(gq_tot = gq_mil + gq_univ + gq_oth)
 
 # summarize workers
@@ -122,6 +135,6 @@ gq_summary <- full_join(gq_type_summary, gq_worker_summary)
 gq_summary <- full_join(gq_summary, gq_age_summary)
 print(gq_summary)
 
-output_file <- file.path(OUTPUT_DIR,"NonInstitutionalGroupQuartersPersonSummary.csv")
+output_file <- file.path(PUMS_DIR,"NonInstitutionalGroupQuartersPersonSummary.csv")
 write.csv(gq_summary,output_file,row.names = FALSE)
 print(paste("Wrote",output_file))
