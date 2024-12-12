@@ -1,5 +1,6 @@
 USAGE = "
- Analyze PUMS data for total workers and households by number of workers, 5-year PUMS data.
+ Analyze PUMS data for total workers and households by number of workers, 5-year or 1-year PUMS data.
+
  Here, workers are defined by ESR values: 
    1: Workers at work
    2: Job, but not at work
@@ -53,39 +54,51 @@ suppressMessages({
 })
 
 argparser <- arg_parser(USAGE, hide.opts=TRUE)
-argparser <- add_argument(parser=argparser, arg="PUMS", help="Survey (one of '2017-21' or '2018-22')")
+argparser <- add_argument(parser=argparser, arg="survey",  help="Either acs1 or acs5")
+argparser <- add_argument(parser=argparser, arg="year",    help="Survey year", type="numeric")
 # parse the command line arguments
 argv <- parse_args(argparser)
-stopifnot(argv$PUMS %in% c("2017-21","2018-22"))
+stopifnot(argv$survey %in% c("acs1","acs5"))
+stopifnot(argv$year > 2020)
 
-pums_short <- paste0(substr(argv$PUMS,3,4), substr(argv$PUMS,6,7))
-output_prefix <- paste0("ACSPUMS",str_replace(argv$PUMS,"-","-20"))
-print(paste("PUMS:", argv$PUMS))
-print(paste("pums_short:",pums_short))
-print(paste("output_prefix:",output_prefix))
+PUMS_ROOT_DIR <- "M:/Data/Census/PUMS"
+if (argv$survey == "acs5") {
+    PUMS_DIR <- file.path(PUMS_ROOT_DIR, sprintf("PUMS %d-%02d", argv$year-4, argv$year %% 100))
+    PUMS_YEAR_STR <- sprintf("%02d%02d", (argv$year-4) %% 100, argv$year %% 100)
+} else {
+    PUMS_DIR <- file.path(PUMS_ROOT_DIR, sprintf("PUMS %d", argv$year))
+    PUMS_YEAR_STR <- sprintf("%02d", argv$year %% 100)
+}
+print(paste("PUMS_DIR:", PUMS_DIR))
+print(paste("PUMS_YEAR_STR:", PUMS_YEAR_STR))
 
 # Input household and person census files, merge them
 # Select out needed variables
 # Recode as worker or non-worker
 
-HOUSEHOLD_RDATA = paste0("M:/Data/Census/PUMS/PUMS ",argv$PUMS,"/hbayarea",pums_short,".Rdata")
-PERSON_RDATA = paste0("M:/Data/Census/PUMS/PUMS ",argv$PUMS,"/pbayarea",pums_short,".Rdata")
-OUTPUT_DIR = paste0("M:/Data/Census/PUMS/PUMS ",argv$PUMS)
+HOUSEHOLD_RDATA = file.path(PUMS_DIR, paste0("hbayarea",PUMS_YEAR_STR,".Rdata"))
+PERSON_RDATA    = file.path(PUMS_DIR, paste0("pbayarea",PUMS_YEAR_STR,".Rdata"))
 
 print(paste("Loading",HOUSEHOLD_RDATA))
 load (HOUSEHOLD_RDATA)
 print(paste("Loading",PERSON_RDATA))
 load (PERSON_RDATA)
 
-if (argv$PUMS == "2017-21") {
+if ((argv$survey == "acs5") & (argv$year == 2021)) {
   pbayarea <- pbayarea1721
   remove(pbayarea1721)
   hbayarea <- hbayarea1721
   remove(hbayarea1721)
-} else {
+}
+if ("PUMA20" %in% colnames(pbayarea)) {
   # rename for backwards compat
   pbayarea <- pbayarea %>% rename(PUMA = PUMA20)
   hbayarea <- hbayarea %>% rename(PUMA = PUMA20)
+}
+if ("STATE" %in% colnames(pbayarea)) {
+  # rename for backwards compat
+  pbayarea <- pbayarea %>% rename(ST = STATE)
+  hbayarea <- hbayarea %>% rename(ST = STATE)
 }
 
 combined <- left_join(pbayarea,hbayarea, by=c("PUMA", "SERIALNO", "ST", "ADJINC", "COUNTY", 
@@ -147,7 +160,7 @@ Bay_3p <- as.numeric(HH_summary3p_Bay[1,1])
 
 # Export avg3p values for county
 
-output_file <- file.path(OUTPUT_DIR,"Avg_3p_Workers_County.csv")
+output_file <- file.path(PUMS_DIR,"Avg_3p_Workers_County.csv")
 write.csv(HH_summary3p,output_file,row.names = FALSE)
 print(paste("Wrote",output_file))
 
@@ -190,15 +203,15 @@ final <- left_join(person_worker_summary,HH_worker_summary, by="County_Name")
 
 # Output csv
 
-output_file <- file.path(OUTPUT_DIR,"Person_Household_Worker_Totals.csv")
+output_file <- file.path(PUMS_DIR,"Person_Household_Worker_Totals.csv")
 write.csv(final, output_file, row.names = FALSE, quote = T)
 print(paste("Wrote",output_file))
 
-output_file <- file.path(OUTPUT_DIR,"Person_Household_Worker_Category.csv")
+output_file <- file.path(PUMS_DIR,"Person_Household_Worker_Category.csv")
 write.csv(HH_worker_cat, output_file, row.names = FALSE, quote = T)
 print(paste("Wrote",output_file))
 
-output_file <- file.path(OUTPUT_DIR,"Stratified_Person_Worker_Totals.csv")
+output_file <- file.path(PUMS_DIR,"Stratified_Person_Worker_Totals.csv")
 write.csv(combined_HH_GQ, output_file, row.names = FALSE, quote = T)
 print(paste("Wrote",output_file))
 
@@ -242,7 +255,7 @@ HH_summary_commuters_2 <- left_join(HH_summary_commuters_1,hbayarea,by="SERIALNO
 
 # Output csv
 
-output_file <- file.path(OUTPUT_DIR,"Household_Commuter_Category.csv")
+output_file <- file.path(PUMS_DIR,"Household_Commuter_Category.csv")
 write.csv(HH_summary_commuters_2, output_file, row.names = FALSE, quote = T)
 print(paste("Wrote",output_file))
 
@@ -262,6 +275,6 @@ person_HH_worker_summary <- combined %>%
   summarize(total=sum(PWGTP)) %>% 
   ungroup()
   
-output_file <- file.path(OUTPUT_DIR, "HHs_Workers_PWeight.csv")
+output_file <- file.path(PUMS_DIR, "HHs_Workers_PWeight.csv")
 write.csv(person_HH_worker_summary, output_file, row.names = FALSE, quote = T)
 print(paste("Wrote",output_file))
