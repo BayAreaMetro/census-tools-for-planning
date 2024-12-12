@@ -129,9 +129,11 @@ for (state_abb in state.abb) {
 
     # filter to
     # 1. Civilian employed, at work
+    # 2. Civilian employed, with a job but not at work (e.g., teachers during summer)
     # 4. Armed forces, at work
+    # 5. Armed forces, with a job but not at work
     pums_state <- pums_state %>%
-        filter(ESR %in% c(1,4))
+        filter(ESR %in% c(1,2,4,5))
     print(paste("  Filtered to workers:", nrow(pums_state)))
 
     print(pums_state)
