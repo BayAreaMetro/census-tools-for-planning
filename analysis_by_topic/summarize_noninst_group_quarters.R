@@ -2,9 +2,7 @@ USAGE = "
  Summarize Non-Insitutionalized Group Quarters persons for the given ACS dataset.
 
  Reads M:/Data/Census/PUMS/PUMS YYYY[-YY]/[hp]bayarea[YY[-YY]].Rdata
- Outputs the following file into the same directory:
- NonInstitutionalGroupQuartersPersonSummary.csv
- Columns include:
+ Outputs summaries/noninst_gq_summary.csv with columns:
   County_Name,
   gq_mil = persons in group quarters who are military
   gq_univ = persons in group quarters who are university students
@@ -133,8 +131,13 @@ gq_age_summary <- noninst_gq %>%
 
 gq_summary <- full_join(gq_type_summary, gq_worker_summary)
 gq_summary <- full_join(gq_summary, gq_age_summary)
+
+if (!("AGE_0004" %in% colnames(gq_summary))) {
+    gq_summary <- gq_summary %>% mutate(AGE_0004=0)
+}
 print(gq_summary)
 
-output_file <- file.path(PUMS_DIR,"NonInstitutionalGroupQuartersPersonSummary.csv")
+dir.create(file.path(PUMS_DIR, "summaries"), showWarnings = FALSE)
+output_file <- file.path(PUMS_DIR,"summaries","noninst_gq_summary.csv")
 write.csv(gq_summary,output_file,row.names = FALSE)
 print(paste("Wrote",output_file))
