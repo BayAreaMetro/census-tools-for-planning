@@ -132,6 +132,8 @@ if (argv$survey == "acs1") {
         hbayarea <- left_join(hcalif,equivalence_20, by=c("PUMA"="PUMARC"), relationship="many-to-one")
         pbayarea <- left_join(pcalif,equivalence_20, by=c("PUMA"="PUMARC"), relationship="many-to-one")
     }
+    hbayarea <- filter(hbayarea, !is.na(COUNTY))
+    pbayarea <- filter(pbayarea, !is.na(COUNTY))
 }
 print(paste("Filtered to ",nrow(hbayarea),"rows for hbayarea"))
 print(paste("Filtered to ",nrow(pbayarea),"rows for pbayarea"))
