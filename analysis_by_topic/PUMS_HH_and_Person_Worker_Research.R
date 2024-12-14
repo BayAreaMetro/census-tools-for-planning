@@ -30,6 +30,8 @@ USAGE = "
 suppressMessages({
   library(tidyverse)
   library(argparser)
+  library(scales) # for comma()
+  library(tidycensus)
 })
 options(width=500)
 
@@ -208,8 +210,6 @@ for (worker_def in c("ESR_in_14","ESR_in_1245")) {
       names_sep  =".",
     )
 
-
-
   print("county_summary_wide:")
   print(county_summary_wide)
 
@@ -265,3 +265,36 @@ print(paste("Wrote",output_file))
 output_file <- file.path(PUMS_DIR, "summaries", "county_hh_worker_summary_wide.csv")
 write.csv(full_county_summary_wide, output_file, row.names = FALSE, quote = T)
 print(paste("Wrote",output_file))
+
+# Compare with ACS tabular summar of households by workers
+
+simplify_col <- function(name) { gsub("sum_WGTP.hh.", "", name) }
+
+print("County summary:")
+print(full_county_summary_wide %>% 
+  select(COUNTY, County_Name, starts_with("sum_WGTP.")) %>% 
+  rename_with(simplify_col, starts_with("sum_WGTP.hh.")) %>%
+  mutate(across(starts_with("hh_wrks"), ~ comma(.))))
+
+censuskey    <- readLines("M:/Data/Census/API/api-key.txt")
+baycounties  <- c("01","13","41","55","75","81","85","95","97")
+state_code   <- "06"
+
+ACS_county <- tidycensus::get_acs(
+  geography = "county", 
+  variables = c(
+    hhwrks0_   = "B08202_002", # 0-worker HH
+    hhwrks1_   = "B08202_003",	# 1-worker HH
+    hhwrks2_   = "B08202_004",	# 2-worker HH
+    hhwrks3p_  = "B08202_005"  # 3+-worker HH
+  ),
+  state = state_code, county=baycounties,
+  year=argv$year,
+  output="wide",
+  survey = argv$survey,
+  key = censuskey) %>% select(!ends_with('_M'))
+
+print("ACS Table Summary:")
+print(ACS_county %>% 
+  arrange(GEOID) %>%
+  mutate(across(ends_with("_E"), ~ comma(.))))
