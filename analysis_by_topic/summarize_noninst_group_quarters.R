@@ -9,9 +9,9 @@ USAGE = "
   gq_oth = oter persons in group quarters
     Note: the three categories are mutually exclusive
   gq_tot = gq_mil + gq_univ + gq_oth
-  workers = persons who are employed
   AGE_0004, AGE_0519, AGE_2044, AGE_4564, AGE_65P = persons in group quarters by the TM1 age categories
-
+  pers_occ_[management,professional,services,retail,manual,military] = occupation from SOCP
+  workers = persons who are employed
 "
 
 suppressMessages({
@@ -19,6 +19,19 @@ suppressMessages({
   library(argparser)
 })
 options(width = 200)
+
+# See https://github.com/BayAreaMetro/populationsim/blob/ed898c7dec15c2c696440dc39bc0bd20c128458d/bay_area/create_seed_population.py#L109-L120
+#    0: N/A
+#    1: management
+#    2: professional
+#    3: services
+#    4: retail
+#    5: manual
+#    6: military
+SOC_to_occ <- data.frame( 
+  "SOC"       =c("11","13","15","17","19","21","23","25","27","29","31","33","35","37","39","41","43","45","47","49","51","53","55"),
+  "occupation"=c(    1,   2,   2,   2,   2,   3,   2,   2,   3,   2,   3,   3,   4,   5,   3,   4,   3,   5,   5,   5,   5,   5,   6)
+)
 
 argparser <- arg_parser(USAGE, hide.opts=TRUE)
 argparser <- add_argument(parser=argparser, arg="survey",  help="Either acs1 or acs5")
@@ -67,7 +80,7 @@ if ("STATE" %in% colnames(pbayarea)) {
 
 noninst_gq <- left_join(pbayarea,hbayarea, 
     by=c("PUMA", "SERIALNO", "ST", "ADJINC", "COUNTY", "County_Name", "PUMA_Name")) %>%
-  select(SERIALNO,PUMA,COUNTY,County_Name,PUMA_Name,PWGTP,WGTP,TYPEHUGQ,ESR,NP,AGEP,MIL,SCH) %>%
+  select(SERIALNO,PUMA,COUNTY,County_Name,PUMA_Name,PWGTP,WGTP,TYPEHUGQ,ESR,NP,AGEP,MIL,SCH,SOCP) %>%
   filter(TYPEHUGQ==3)
 
 print(paste("Filtered to", nrow(noninst_gq),"rows for noninstitional group quarters"))
@@ -90,7 +103,9 @@ print("table(noninst_gq$MIL, noninst_gq$SCH)")
 print(table(noninst_gq$MIL, noninst_gq$SCH))
 
 
-noninst_gq <- noninst_gq %>% mutate(
+noninst_gq <- noninst_gq %>% 
+  mutate(
+    SOC = str_sub(SOCP, start = 1, end = 2),
     worker_PWGTP = ifelse(ESR %in% c(1,2,4,5), PWGTP, 0),
     gq_type = case_when(
         MIL==1 ~ "gq_mil",
@@ -107,7 +122,17 @@ noninst_gq <- noninst_gq %>% mutate(
         (AGEP >= 65) ~ "AGE_65P",
         .default = "AGE_unknown"
     )
-)
+) %>% left_join(., SOC_to_occ, by="SOC") %>%
+  mutate(
+    occupation = case_when(
+      occupation == 1 ~ "pers_occ_management",
+      occupation == 2 ~ "pers_occ_professional",
+      occupation == 3 ~ "pers_occ_services",
+      occupation == 4 ~ "pers_occ_retail",
+      occupation == 5 ~ "pers_occ_manual",
+      occupation == 6 ~ "pers_occ_military",
+      .default = "pers_occ_unknown"
+    ))
 print("head(noninst_gq)")
 print(head(noninst_gq))
 
@@ -118,10 +143,13 @@ gq_type_summary <- noninst_gq %>%
     pivot_wider(names_from=gq_type, values_from=PWGTP, values_fill=0) %>%
     mutate(gq_tot = gq_mil + gq_univ + gq_oth)
 
-# summarize workers
+# summarize by occupation
 gq_worker_summary <- noninst_gq %>%
-    group_by(County_Name) %>%
-    summarize(workers=sum(worker_PWGTP))
+    group_by(County_Name, occupation) %>%
+    summarize(worker_PWGTP=sum(worker_PWGTP)) %>%
+    pivot_wider(names_from=occupation, values_from=worker_PWGTP, values_fill=0) %>%
+    mutate(workers = pers_occ_management + pers_occ_professional + pers_occ_services + 
+                     pers_occ_retail + pers_occ_manual + pers_occ_military)
 
 # summarize age
 gq_age_summary <- noninst_gq %>%
