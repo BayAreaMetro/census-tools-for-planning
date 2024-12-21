@@ -4,14 +4,14 @@ USAGE = "
  Reads M:/Data/Census/PUMS/PUMS YYYY[-YY]/[hp]bayarea[YY[-YY]].Rdata
  Outputs summaries/noninst_gq_summary.csv with columns:
   County_Name,
-  gq_mil = persons in group quarters who are military
-  gq_univ = persons in group quarters who are university students
-  gq_oth = oter persons in group quarters
+  gq_type_mil = persons in group quarters who are military
+  gq_type_univ = persons in group quarters who are university students
+  gq_type_othnon = oter persons in group quarters
     Note: the three categories are mutually exclusive
-  gq_tot = gq_mil + gq_univ + gq_oth
-  AGE_0004, AGE_0519, AGE_2044, AGE_4564, AGE_65P = persons in group quarters by the TM1 age categories
+  gqpop = gq_type_mil + gq_type_univ + gq_type_othnon
+  AGE0004, AGE0519, AGE2044, AGE4564, AGE65P = persons in group quarters by the TM1 age categories
   pers_occ_[management,professional,services,retail,manual,military] = occupation from SOCP
-  workers = persons who are employed
+  EMPRES = persons who are employed
 "
 
 suppressMessages({
@@ -108,19 +108,19 @@ noninst_gq <- noninst_gq %>%
     SOC = str_sub(SOCP, start = 1, end = 2),
     worker_PWGTP = ifelse(ESR %in% c(1,2,4,5), PWGTP, 0),
     gq_type = case_when(
-        MIL==1 ~ "gq_mil",
-        SCH==2 ~ "gq_univ", # these take precedence over MIL==3
-        SCH==3 ~ "gq_univ",
-        MIL==3 ~ "gq_mil",
-        .default = "gq_oth"
+        MIL==1 ~ "gq_type_mil",
+        SCH==2 ~ "gq_type_univ", # these take precedence over MIL==3
+        SCH==3 ~ "gq_type_univ",
+        MIL==3 ~ "gq_type_mil",
+        .default = "gq_type_othnon"
     ),
     age_cat = case_when(
-        AGEP < 5 ~ "AGE_0004",
-        (AGEP >=  5) & (AGEP <= 19) ~ "AGE_0519",
-        (AGEP >= 20) & (AGEP <= 44) ~ "AGE_2044",
-        (AGEP >= 45) & (AGEP <= 64) ~ "AGE_4564",
-        (AGEP >= 65) ~ "AGE_65P",
-        .default = "AGE_unknown"
+        AGEP < 5 ~ "AGE0004",
+        (AGEP >=  5) & (AGEP <= 19) ~ "AGE0519",
+        (AGEP >= 20) & (AGEP <= 44) ~ "AGE2044",
+        (AGEP >= 45) & (AGEP <= 64) ~ "AGE4564",
+        (AGEP >= 65) ~ "AGE65P",
+        .default = "AGEunknown"
     )
 ) %>% left_join(., SOC_to_occ, by="SOC") %>%
   mutate(
@@ -141,15 +141,16 @@ gq_type_summary <- noninst_gq %>%
     group_by(County_Name, gq_type) %>%
     summarize(PWGTP=sum(PWGTP)) %>% 
     pivot_wider(names_from=gq_type, values_from=PWGTP, values_fill=0) %>%
-    mutate(gq_tot = gq_mil + gq_univ + gq_oth)
+    mutate(gqpop = gq_type_mil + gq_type_univ + gq_type_othnon)
 
 # summarize by occupation
 gq_worker_summary <- noninst_gq %>%
     group_by(County_Name, occupation) %>%
     summarize(worker_PWGTP=sum(worker_PWGTP)) %>%
     pivot_wider(names_from=occupation, values_from=worker_PWGTP, values_fill=0) %>%
-    mutate(workers = pers_occ_management + pers_occ_professional + pers_occ_services + 
-                     pers_occ_retail + pers_occ_manual + pers_occ_military)
+    mutate(EMPRES = pers_occ_management + pers_occ_professional + pers_occ_services + 
+                     pers_occ_retail + pers_occ_manual + pers_occ_military) %>%
+    select(-pers_occ_unknown)
 
 # summarize age
 gq_age_summary <- noninst_gq %>%
@@ -160,8 +161,8 @@ gq_age_summary <- noninst_gq %>%
 gq_summary <- full_join(gq_type_summary, gq_worker_summary)
 gq_summary <- full_join(gq_summary, gq_age_summary)
 
-if (!("AGE_0004" %in% colnames(gq_summary))) {
-    gq_summary <- gq_summary %>% mutate(AGE_0004=0)
+if (!("AGE0004" %in% colnames(gq_summary))) {
+    gq_summary <- gq_summary %>% mutate(AGE0004=0)
 }
 print(gq_summary)
 
