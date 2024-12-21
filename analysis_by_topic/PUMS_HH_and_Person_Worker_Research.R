@@ -23,6 +23,16 @@ USAGE = "
  * sum_WGTP         = sum of household weights, or number of households (this is 0 for gq)
  * sum_worker_PWGTP = sum of PWGTP for workers, or number of workers
  * avg_workers      = average number of workers per household
+
+Also outputs
+* county_hh_size_sumary_wide.csv with columns:
+  * COUNTY
+  * County_Nam
+  * avg_persons.hh.hh_size_4plus
+  * sum_WGTP.hh.hh_size_[1,2,3,4plus]
+  * sum_PWGTP.gq.hh_size_1
+  * sum_PWGTP.hh.hh_size_[1,2,3,4plus]
+
 "
 
 # Import Libraries
@@ -135,6 +145,13 @@ household_summary <- combined %>%
       hh_sum_ESR_in_14 == 1 ~ "hh_wrks_1",
       hh_sum_ESR_in_14 == 2 ~ "hh_wrks_2",
       hh_sum_ESR_in_14 >= 3 ~ "hh_wrks_3plus"),
+    # simple household by size
+    hh_size = case_when(
+      NP == 1 ~ "hh_size_1",
+      NP == 2 ~ "hh_size_2",
+      NP == 3 ~ "hh_size_3",
+      NP >= 4 ~ "hh_size_4plus",
+    ),
     # convert to more readable string
     type = case_when(
       TYPEHUGQ == 1 ~ "hh",
@@ -298,3 +315,37 @@ print("ACS Table Summary:")
 print(ACS_county %>% 
   arrange(GEOID) %>%
   mutate(across(ends_with("_E"), ~ comma(.))))
+
+########################################################
+# household by size summary
+county_summary <- combined %>%
+  group_by(COUNTY, County_Name, type, hh_size) %>%
+  summarize(
+    sum_WGTP         = sum(WGTP_over_NP),  # household weight
+    sum_PWGTP        = sum(PWGTP),         # PGWT for household members
+    avg_persons      = weighted.mean(NP,WGTP_over_NP),  # weighted mean of number of persons per household
+  )
+
+  print("county_summary:")
+  print(county_summary)
+
+  county_summary_wide <- county_summary %>% 
+    pivot_wider(
+      names_from =c(type, hh_size),
+      values_from=c(avg_persons, sum_WGTP, sum_PWGTP),
+      names_sep  =".",
+    )
+  print("county_summary_wide:")
+  print(county_summary_wide)
+
+# select out columns that aren't useful
+county_summary_wide <- county_summary_wide %>% select(
+  -avg_persons.gq.hh_size_1, # all NaN
+  -avg_persons.hh.hh_size_1, # all 1
+  -avg_persons.hh.hh_size_2, # all 2
+  -avg_persons.hh.hh_size_3, # all 3
+  -sum_WGTP.gq.hh_size_1,    # all 0
+)
+output_file <- file.path(PUMS_DIR, "summaries", "county_hh_size_summary_wide.csv")
+write.csv(county_summary_wide, output_file, row.names = FALSE, quote = T)
+print(paste("Wrote",output_file))
