@@ -213,7 +213,7 @@ vehicles <- c(all_renter_all_                  =    "B25045_011",  # All renter 
 
 # Non-LEP, ages 5 to 17
 
-nonlep <- c(english_only_5_17_                 =    "B16004_003",  # Speaks English only, ages 5 to 17
+non_lep <- c(english_only_5_17_                =    "B16004_003",  # Speaks English only, ages 5 to 17
             spanish_vwell_5_17_                =    "B16004_005",  # Speaks Spanish, English very well, ages 5 to 17
             indo_vwell_5_17_                   =    "B16004_010",  # Speaks Indo-European language, English very well, ages 5 to 17
             asian_vwell_5_17_                  =    "B16004_015",  # Speaks Asian/Pacific Islander language, English very well, ages 5 to 17
@@ -290,10 +290,23 @@ lep <- c(spanish_well_5_17_                     =    "B16004_006",  # Speaks Spa
          other_notatall_65p_                    =    "B16004_067")  # Speaks other language, English well, ages 65 plus
 
 
+# Race/Ethnicity
+
+race <- c(race_total                            =    "B03002_001",  # Total population
+          race_white                            =    "B03002_003",  # White population
+          race_black                            =    "B03002_004",  # Black population
+          race_asian                            =    "B03002_006",  # Asian population
+          race_hispanic                         =    "B03002_012")  # Hispanic/Latino population
+
+
+
+
+
 # Combine all variables into single vector
 
 
-total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability,tenure,vehicles,lep,non-lep)
+total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability,tenure,vehicles,lep,non_lep,
+                         race)
 
 ACS_county_raw <- get_acs(geography = "county",table = "B16004",
                           state = statenumber, county=baycounties,
