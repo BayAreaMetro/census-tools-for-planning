@@ -1,6 +1,7 @@
 # PBA50p_Demographic_Update.R
 # Import all the appropriate variables for PBA50+ demographic update
 # Write out data into individual CSVs for updating relevant charts/tables
+# Note that variables are assigned a "_" suffix for easier removal of MOE variables and clearer naming conventions
 
 # Bring in libraries
 
@@ -17,10 +18,48 @@ PBA50p_dir         <- file.path(USERPROFILE, "Box", "Plan Bay Area 2050+","Perfo
 acs_year    =  2022  # Set ACS year
 acs_product = "acs5" # Set ACS 1- or 5-year dataset
 
-## Geography for Bay Area counties and California state
+## Geography for Bay Area counties/places, including place EQ that can be found here: "M:/Crosswalks/Census/PBA50+/Place_Geo_Classification_Plan_EQ.csv"
+
+statenumber="06"
 
 baycounties=c("01","13","41","55","75","81","85","95","97")
-statenumber="06"
+
+baycities = c("0600562","0600674","0601640","0602252","0603092","0605108","0605164","0605290",
+              "0606000","0608142","0608310","0609066","0609892","0610345","0613882","0614190",
+              "0614736","0616000","0616462","0616560","0617610","0617918","0617988","0619402",
+              "0620018","0620956","0621796","0622594","0623168","0623182","0625338","0626000",
+              "0629504","0631708","0633000","0633056","0633308","0633798","0639122","0640438",
+              "0641992","0643280","0643294","0644112","0646114","0646870","0647710","0647486",
+              "0647766","0648956","0649187","0649278","0649670","0650258","0650916","0652582",
+              "0653000","0653070","0654232","0654806","0655282","0656784","0656938","0657288",
+              "0657456","0657764","0657792","0658380","0660102","0660620","0660984","0662546",
+              "0662980","0664434","0665028","0665070","0667000","0668000","0668084","0668252",
+              "0668294","0668364","0668378","0669084","0670098","0670280","0670364","0670770",
+              "0672646","0673262","0664140","0675630","0677000","0678666","0681204","0681554",
+              "0681666","0683346","0685922","0686440","0686930")
+
+# Bayside cities, big three cities, inland/coastal/delta
+
+bayside = c("0600562", "0600674", "0603092", "0605108", "0605164", "0606000", 
+            "0608310", "0609066", "0610345", "0614736", "0616462", "0617610", 
+            "0617918", "0620956", "0621796", "0622594", "0623168", "0625338", 
+            "0626000", "0633000", "0633308", "0633798", "0640438", "0643280", 
+            "0643294", "0644112", "0646870", "0647486", "0647710", "0647766", 
+            "0648956", "0649670", "0650916", "0654806", "0655282", "0656938", 
+            "0657288", "0658380", "0660102", "0660620", "0662980", "0664434", 
+            "0665028", "0665070", "0668084", "0668252", "0668294", "0668364", 
+            "0669084", "0670280", "0670364", "0673262", "0677000", "0678666", 
+            "0681204", "0681666", "0686440")
+
+big_three = c("0653000", "0667000", "0668000")
+
+in_coast_delta = c("0601640", "0602252", "0605290", "0608142", "0609892", "0613882", 
+                   "0614190", "0616000", "0616560", "0617988", "0619402", "0620018", 
+                   "0623182", "0629504", "0631708", "0633056", "0639122", "0641992", 
+                   "0646114", "0649187", "0649278", "0650258", "0652582", "0653070", 
+                   "0654232", "0656784", "0657456", "0657764", "0657792", "0660984", 
+                   "0662546", "0664140", "0668378", "0670098", "0670770", "0672646", 
+                   "0675630", "0681554", "0683346", "0685922", "0686930")
 
 ## Assign variables
 
@@ -132,13 +171,49 @@ disability <- c(tot_dis_universe_              =    "B18101_001",  # Disability 
                 twoplus_dis_18_64_             =    "B18101G_006", # Twoplus 18 to 64 with a disability
                 twoplus_dis_65p_               =    "B18101G_009") # Twoplus 65 plus with a disability
 
+# Senior tenure (Tenure by Age of Householder)
+
+tenure <- c(owner_75_84                        =    "B25007_010",  # Owner aged 75-85
+            owner_85p                          =    "B25007_011",  # Owner aged 85 plus
+            renter_75_84                       =    "B25007_020",  # Renter aged 75-85
+            renter_85p                         =    "B25007_021")  # Renter aged 85 plus
+            
+# Vehicles (Tenure by Vehicles Available by Age of Householder)
+# Variables are structured by numvehicles_tenure_agecategory
+
+# Renters
+
+vehicles <- c(all_renter_all                   =    "B25045_011",  # All renter occupied housing units
+              zero_renter_all                  =    "B25045_012",  # All zero-vehicle rented housing units
+              
+# Owners
+              all_owner_all                    =    "B25045_002",  # All renter occupied housing units
+              zero_owner_all                   =    "B25045_003",  # All zero-vehicle rented housing units
+
+# 15 to 34
+              zero_owner_15_34                 =    "B25045_004",  # Owner zero-vehicle aged 15-34
+              onep_owner_15_34                 =    "B25045_008",  # Owner one-plus vehicle aged 15-34
+              zero_renter_15_34                =    "B25045_013",  # Renter zero-vehicle aged 15-34
+              onep_renter_15_34                =    "B25045_017",  # Renter one-plus vehicle aged 15-34
+
+# 35 to 64
+              zero_owner_35_64                 =    "B25045_005",  # Owner zero-vehicle aged 35-64
+              onep_owner_35_64                 =    "B25045_009",  # Owner one-plus vehicle aged 35-64
+              zero_renter_35_64                =    "B25045_014",  # Renter zero-vehicle aged 35-64
+              onep_renter_35_64                =    "B25045_018",  # Renter one-plus vehicle aged 35-64
+
+# 65 plus
+              zero_owner_65p                   =    "B25045_006",  # Owner zero-vehicle aged 65 plus
+              onep_owner_65p                   =    "B25045_010",  # Owner one-plus vehicle aged 65 plus
+              zero_renter_65p                  =    "B25045_015",  # Renter zero-vehicle aged 65 plus
+              onep_renter_65p                  =    "B25045_019")  # Renter one-plus vehicle aged 65 plus
 
 
 
 # Combine all variables into single vector
 
 
-total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability)
+total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability,tenure,vehicles)
 
 
 
@@ -152,7 +227,7 @@ total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disabi
 
 # Import data into single wide dataframe, remove margin of error (any variable with "_M" suffix)
 
-working_data <- get_acs(geography = "county",
+working_county <- get_acs(geography = "county",
                         variables = total_acs_variables,
                         state = statenumber,
                         county = baycounties,
@@ -160,7 +235,14 @@ working_data <- get_acs(geography = "county",
                         survey = acs_product,
                         output = "wide") %>% 
   select(-c(ends_with("_M"),GEOID)) 
-           
 
+working_place <- get_acs(geography = "place",
+                          variables = total_acs_variables,
+                          state = statenumber,
+                          year = acs_year,
+                          survey = acs_product,
+                          output = "wide") %>% 
+  select(-c(ends_with("_M"))) %>% 
+  filter(GEOID %in% baycities)
 
 
