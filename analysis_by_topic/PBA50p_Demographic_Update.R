@@ -173,49 +173,133 @@ disability <- c(tot_dis_universe_              =    "B18101_001",  # Disability 
 
 # Senior tenure (Tenure by Age of Householder)
 
-tenure <- c(owner_75_84                        =    "B25007_010",  # Owner aged 75-85
-            owner_85p                          =    "B25007_011",  # Owner aged 85 plus
-            renter_75_84                       =    "B25007_020",  # Renter aged 75-85
-            renter_85p                         =    "B25007_021")  # Renter aged 85 plus
+tenure <- c(owner_75_84_                       =    "B25007_010",  # Owner aged 75-85
+            owner_85p_                         =    "B25007_011",  # Owner aged 85 plus
+            renter_75_84_                      =    "B25007_020",  # Renter aged 75-85
+            renter_85p_                        =    "B25007_021")  # Renter aged 85 plus
             
 # Vehicles (Tenure by Vehicles Available by Age of Householder)
 # Variables are structured by numvehicles_tenure_agecategory
 
 # Renters
 
-vehicles <- c(all_renter_all                   =    "B25045_011",  # All renter occupied housing units
-              zero_renter_all                  =    "B25045_012",  # All zero-vehicle rented housing units
+vehicles <- c(all_renter_all_                  =    "B25045_011",  # All renter occupied housing units
+              zero_renter_all_                 =    "B25045_012",  # All zero-vehicle rented housing units
               
 # Owners
-              all_owner_all                    =    "B25045_002",  # All renter occupied housing units
-              zero_owner_all                   =    "B25045_003",  # All zero-vehicle rented housing units
+              all_owner_all_                   =    "B25045_002",  # All renter occupied housing units
+              zero_owner_all_                  =    "B25045_003",  # All zero-vehicle rented housing units
 
 # 15 to 34
-              zero_owner_15_34                 =    "B25045_004",  # Owner zero-vehicle aged 15-34
-              onep_owner_15_34                 =    "B25045_008",  # Owner one-plus vehicle aged 15-34
-              zero_renter_15_34                =    "B25045_013",  # Renter zero-vehicle aged 15-34
-              onep_renter_15_34                =    "B25045_017",  # Renter one-plus vehicle aged 15-34
+              zero_owner_15_34_                =    "B25045_004",  # Owner zero-vehicle aged 15-34
+              onep_owner_15_34_                =    "B25045_008",  # Owner one-plus vehicle aged 15-34
+              zero_renter_15_34_               =    "B25045_013",  # Renter zero-vehicle aged 15-34
+              onep_renter_15_34_               =    "B25045_017",  # Renter one-plus vehicle aged 15-34
 
 # 35 to 64
-              zero_owner_35_64                 =    "B25045_005",  # Owner zero-vehicle aged 35-64
-              onep_owner_35_64                 =    "B25045_009",  # Owner one-plus vehicle aged 35-64
-              zero_renter_35_64                =    "B25045_014",  # Renter zero-vehicle aged 35-64
-              onep_renter_35_64                =    "B25045_018",  # Renter one-plus vehicle aged 35-64
+              zero_owner_35_64_                =    "B25045_005",  # Owner zero-vehicle aged 35-64
+              onep_owner_35_64_                =    "B25045_009",  # Owner one-plus vehicle aged 35-64
+              zero_renter_35_64_               =    "B25045_014",  # Renter zero-vehicle aged 35-64
+              onep_renter_35_64_               =    "B25045_018",  # Renter one-plus vehicle aged 35-64
 
 # 65 plus
-              zero_owner_65p                   =    "B25045_006",  # Owner zero-vehicle aged 65 plus
-              onep_owner_65p                   =    "B25045_010",  # Owner one-plus vehicle aged 65 plus
-              zero_renter_65p                  =    "B25045_015",  # Renter zero-vehicle aged 65 plus
-              onep_renter_65p                  =    "B25045_019")  # Renter one-plus vehicle aged 65 plus
+              zero_owner_65p_                  =    "B25045_006",  # Owner zero-vehicle aged 65 plus
+              onep_owner_65p_                  =    "B25045_010",  # Owner one-plus vehicle aged 65 plus
+              zero_renter_65p_                 =    "B25045_015",  # Renter zero-vehicle aged 65 plus
+              onep_renter_65p_                 =    "B25045_019")  # Renter one-plus vehicle aged 65 plus
 
+# Limited-English proficiency (lep)
+# First non-LEP cells then LEP cells
+
+# Non-LEP, ages 5 to 17
+
+nonlep <- c(english_only_5_17_                 =    "B16004_003",  # Speaks English only, ages 5 to 17
+            spanish_vwell_5_17_                =    "B16004_005",  # Speaks Spanish, English very well, ages 5 to 17
+            indo_vwell_5_17_                   =    "B16004_010",  # Speaks Indo-European language, English very well, ages 5 to 17
+            asian_vwell_5_17_                  =    "B16004_015",  # Speaks Asian/Pacific Islander language, English very well, ages 5 to 17
+            other_vwell_5_17_                  =    "B16004_020",  # Speaks other language, English very well, ages 5 to 17
+
+# Non-LEP, ages 18 to 64
+
+            english_only_18_64_                 =    "B16004_025",  # Speaks English only, ages 18 to 64
+            spanish_vwell_18_64_                =    "B16004_027",  # Speaks Spanish, English very well, ages 18 to 64
+            indo_vwell_18_64_                   =    "B16004_032",  # Speaks Indo-European language, English very well, ages 18 to 64
+            asian_vwell_18_64_                  =    "B16004_037",  # Speaks Asian/Pacific Islander language, English very well, ages 18 to 64
+            other_vwell_18_64_                  =    "B16004_042",  # Speaks Spanish, English very well, ages 18 to 64
+
+# Non-LEP, ages 65-plus
+
+            english_only_65p_                   =    "B16004_047",  # Speaks English only, ages 65 plus
+            spanish_vwell_65p_                  =    "B16004_049",  # Speaks Spanish, English very well, ages 65 plus
+            indo_vwell_65p_                     =    "B16004_054",  # Speaks Indo-European language, English very well, ages 65 plus
+            asian_vwell_65p_                    =    "B16004_059",  # Speaks Asian/Pacific Islander language, English very well, ages 65 plus
+            other_vwell_65p_                    =    "B16004_064")  # Speaks Spanish, English very well, ages 65 plus
+
+# LEP, ages 5 to 17
+
+lep <- c(spanish_well_5_17_                     =    "B16004_006",  # Speaks Spanish, English well, ages 5 to 17
+         spanish_notwell_5_17_                  =    "B16004_007",  # Speaks Spanish, English not well, ages 5 to 17
+         spanish_notatall_5_17_                 =    "B16004_008",  # Speaks Spanish, English not at all, ages 5 to 17
+         
+         indo_well_5_17_                        =    "B16004_011",  # Speaks Indo-European language, English well, ages 5 to 17
+         indo_notwell_5_17_                     =    "B16004_012",  # Speaks Indo-European language, English well, ages 5 to 17
+         indo_notatall_5_17_                    =    "B16004_013",  # Speaks Indo-European language, English well, ages 5 to 17
+         
+         asian_well_5_17_                       =    "B16004_016",  # Speaks Asian/Pacific Islander language, English well, ages 5 to 17
+         asian_notwell_5_17_                    =    "B16004_017",  # Speaks Asian/Pacific Islander language, English not well, ages 5 to 17
+         asian_notatall_5_17_                   =    "B16004_018",  # Speaks Asian/Pacific Islander language, English not at all, ages 5 to 17
+         
+         other_well_5_17_                       =    "B16004_021",  # Speaks other language, English well, ages 5 to 17
+         other_notwell_5_17_                    =    "B16004_022",  # Speaks other language, English well, ages 5 to 17
+         other_notatall_5_17_                   =    "B16004_023",  # Speaks other language, English well, ages 5 to 17
+         
+# LEP, ages 18 to 64
+
+         spanish_well_18_64_                    =    "B16004_028",  # Speaks Spanish, English well, ages 18 to 64
+         spanish_notwell_18_64_                 =    "B16004_029",  # Speaks Spanish, English not well, ages 18 to 64
+         spanish_notatall_18_64_                =    "B16004_030",  # Speaks Spanish, English not at all, ages 18 to 64
+        
+         indo_well_18_64_                       =    "B16004_033",  # Speaks Indo-European language, English well, ages 18 to 64
+         indo_notwell_18_64_                    =    "B16004_034",  # Speaks Indo-European language, English well, ages 18 to 64
+         indo_notatall_18_64_                   =    "B16004_035",  # Speaks Indo-European language, English well, ages 18 to 64
+        
+         asian_well_18_64_                      =    "B16004_038",  # Speaks Asian/Pacific Islander language, English well, ages 18 to 64
+         asian_notwell_18_64_                   =    "B16004_039",  # Speaks Asian/Pacific Islander language, English not well, ages 18 to 64
+         asian_notatall_18_64_                  =    "B16004_040",  # Speaks Asian/Pacific Islander language, English not at all, ages 18 to 64
+        
+         other_well_18_64_                      =    "B16004_043",  # Speaks other language, English well, ages 18 to 64
+         other_notwell_18_64_                   =    "B16004_044",  # Speaks other language, English well, ages 18 to 64
+         other_notatall_18_64_                  =    "B16004_045",  # Speaks other language, English well, ages 18 to 64
+
+# LEP, ages 65-plus
+
+         spanish_well_65p_                      =    "B16004_050",  # Speaks Spanish, English well, ages 65 plus
+         spanish_notwell_65p_                   =    "B16004_051",  # Speaks Spanish, English not well, ages 65 plus
+         spanish_notatall_65p_                  =    "B16004_052",  # Speaks Spanish, English not at all, ages 65 plus
+          
+         indo_well_65p_                         =    "B16004_055",  # Speaks Indo-European language, English well, ages 65 plus
+         indo_notwell_65p_                      =    "B16004_056",  # Speaks Indo-European language, English well, ages 65 plus
+         indo_notatall_65p_                     =    "B16004_057",  # Speaks Indo-European language, English well, ages 65 plus
+          
+         asian_well_65p_                        =    "B16004_060",  # Speaks Asian/Pacific Islander language, English well, ages 65 plus
+         asian_notwell_65p_                     =    "B16004_061",  # Speaks Asian/Pacific Islander language, English not well, ages 65 plus
+         asian_notatall_65p_                    =    "B16004_062",  # Speaks Asian/Pacific Islander language, English not at all, ages 65 plus
+          
+         other_well_65p_                        =    "B16004_065",  # Speaks other language, English well, ages 65 plus
+         other_notwell_65p_                     =    "B16004_066",  # Speaks other language, English well, ages 65 plus
+         other_notatall_65p_                    =    "B16004_067")  # Speaks other language, English well, ages 65 plus
 
 
 # Combine all variables into single vector
 
 
-total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability,tenure,vehicles)
+total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability,tenure,vehicles,lep,non-lep)
 
-
+ACS_county_raw <- get_acs(geography = "county",table = "B16004",
+                          state = statenumber, county=baycounties,
+                          year=acs_year,
+                          output="wide",
+                          survey = acs_product )
 
 
 
