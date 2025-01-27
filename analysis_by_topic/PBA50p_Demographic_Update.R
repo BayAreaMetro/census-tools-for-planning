@@ -7,11 +7,17 @@
 
 suppressMessages(library(tidyverse))
 library(tidycensus)
+library(sf)
 
 # Set file directories for input and output
 
-USERPROFILE        <- gsub("\\\\","/", Sys.getenv("USERPROFILE"))
-PBA50p_dir         <- file.path(USERPROFILE, "Box", "Plan Bay Area 2050+","Performance and Equity","Equity Analysis")
+userprofile        <- gsub("\\\\","/", Sys.getenv("USERPROFILE"))
+pba50p_dir         <- file.path(userprofile, "Box", "Plan Bay Area 2050+")
+equity_analysis    <- file.path(pba50p_dir,"Performance and Equity","Equity Analysis")
+hra_directory      <- file.path(pba50p_dir,"Regional Growth Framework","Growth Geographies","Final Blueprint Input data", "HRAs")
+
+epc_2018_in        <- "M:/Crosswalks/Census/EPCs/equity_priority_communities_2020_acs2018_0.csv"
+epc_2022_in        <- "M:/Crosswalks/Census/EPCs/equity_priority_communities_pba2050plus_acs2022_0.csv"
 
 ## Set ACS variables
 
@@ -61,6 +67,20 @@ in_coast_delta = c("0601640", "0602252", "0605290", "0608142", "0609892", "06138
                    "0662546", "0664140", "0668378", "0670098", "0670770", "0672646", 
                    "0675630", "0681554", "0683346", "0685922", "0686930")
 
+# Bring in latest HRA shapefile and EPC data for 2018/2022 vintages and to get appropriate tract metadata for merging
+
+hra_shapefile <- st_read(file.path(hra_directory,"CTCAC_HRAs_2023.shp"))
+hra_metatada  <- st_drop_geometry(hra_shapefile) %>% 
+  select(fipco, tract_geoi, oppcat)
+
+epc_2018      <- read.csv(epc_2018_in, colClasses = c("Geographic.ID"="character")) %>% 
+  filter(PBA.2050.Equity.Priority.Community==1) %>% 
+  select(Geographic.ID, County.FIPS, PBA.2050.Equity.Priority.Community)
+epc_2022      <- read.csv(epc_2022_in,colClasses = c("Geographic.ID"="character")) %>% 
+  filter(Equity.Priority.Community.PBA.2050.Plus==1) %>% 
+  select(Geographic.ID, County.FIPS, 
+         Equity.Priority.Community.PBA.2050.Plus)
+
 ## Assign variables
 
 # Rent burden (Gross Rent as a Percentage of Household Income in the Past 12 Months)
@@ -85,6 +105,22 @@ low_income_families <- c(married_under_1.30_   =    "B17022_004",  # Married wit
                          married_1.85p_        =    "B17022_064",  # Married with children, income > 1.85 ratio to poverty
                          male_1.85p_           =    "B17022_071",  # Male householder with children, income > 1.85 ratio to poverty
                          female_1.85p_         =    "B17022_077")  # Female householder with children, income > 1.85 ratio to poverty
+
+
+# Household income by race
+
+med_inc_race <- c(med_inc_white                =    "B19013H_001", # White alone, not Hispanic median income
+                  med_inc_black                =    "B19013B_001", # Black median income
+                  med_inc__asian               =    "B19013D_001", # Asian median income
+                  med_inc_hispanic             =    "B19013I_001") # Hispanic/Latino median income
+
+# Race of householder (for weighting median household incomes to get regional average)
+# Universe for this is household
+
+hholder_race <- c(hholder_white                =    "B19001H_001", # White alone, not Hispanic householder
+                  hholder_black                =    "B19001B_001", # Black median householder
+                  hholder__asian               =    "B19001D_001", # Asian median householder
+                  hholder_hispanic             =    "B19001I_001") # Hispanic/Latino householder
 
 # Median earnings by disability status (Median Earnings in the Past 12 Months (in ACS Year Inflation-Adjusted Dollars) by Disability Status by Sex for the Civilian Noninstitutionalized Population 16 Years and Over With Earnings)
 # Include worker universe to calculate weighted median for full Bay Area from counties (Employment Status by Disability Status)
@@ -295,8 +331,13 @@ lep <- c(spanish_well_5_17_                     =    "B16004_006",  # Speaks Spa
 race <- c(race_total                            =    "B03002_001",  # Total population
           race_white                            =    "B03002_003",  # White population
           race_black                            =    "B03002_004",  # Black population
+          race_aian                             =    "B03002_005",  # American Indian/Alaska Native population
           race_asian                            =    "B03002_006",  # Asian population
+          race_nhpi                             =    "B03002_007",  # Native Hawaiian/Pacific Islander population
+          race_other                            =    "B03002_008",  # Other population
+          race_twoplus                          =    "B03002_009",  # Black population
           race_hispanic                         =    "B03002_012")  # Hispanic/Latino population
+
 
 
 
