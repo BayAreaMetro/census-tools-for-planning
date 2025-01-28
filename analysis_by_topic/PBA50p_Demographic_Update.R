@@ -259,86 +259,86 @@ non_lep <- c(english_only_5_17_                =    "B16004_003",  # Speaks Engl
 
 # Non-LEP, ages 18 to 64
 
-            english_only_18_64_                 =    "B16004_025",  # Speaks English only, ages 18 to 64
-            spanish_vwell_18_64_                =    "B16004_027",  # Speaks Spanish, English very well, ages 18 to 64
-            indo_vwell_18_64_                   =    "B16004_032",  # Speaks Indo-European language, English very well, ages 18 to 64
-            asian_vwell_18_64_                  =    "B16004_037",  # Speaks Asian/Pacific Islander language, English very well, ages 18 to 64
-            other_vwell_18_64_                  =    "B16004_042",  # Speaks Spanish, English very well, ages 18 to 64
+            english_only_18_64_                =    "B16004_025",  # Speaks English only, ages 18 to 64
+            spanish_vwell_18_64_               =    "B16004_027",  # Speaks Spanish, English very well, ages 18 to 64
+            indo_vwell_18_64_                  =    "B16004_032",  # Speaks Indo-European language, English very well, ages 18 to 64
+            asian_vwell_18_64_                 =    "B16004_037",  # Speaks Asian/Pacific Islander language, English very well, ages 18 to 64
+            other_vwell_18_64_                 =    "B16004_042",  # Speaks Spanish, English very well, ages 18 to 64
 
 # Non-LEP, ages 65-plus
 
-            english_only_65p_                   =    "B16004_047",  # Speaks English only, ages 65 plus
-            spanish_vwell_65p_                  =    "B16004_049",  # Speaks Spanish, English very well, ages 65 plus
-            indo_vwell_65p_                     =    "B16004_054",  # Speaks Indo-European language, English very well, ages 65 plus
-            asian_vwell_65p_                    =    "B16004_059",  # Speaks Asian/Pacific Islander language, English very well, ages 65 plus
-            other_vwell_65p_                    =    "B16004_064")  # Speaks Spanish, English very well, ages 65 plus
+            english_only_65p_                  =    "B16004_047",  # Speaks English only, ages 65 plus
+            spanish_vwell_65p_                 =    "B16004_049",  # Speaks Spanish, English very well, ages 65 plus
+            indo_vwell_65p_                    =    "B16004_054",  # Speaks Indo-European language, English very well, ages 65 plus
+            asian_vwell_65p_                   =    "B16004_059",  # Speaks Asian/Pacific Islander language, English very well, ages 65 plus
+            other_vwell_65p_                   =    "B16004_064")  # Speaks Spanish, English very well, ages 65 plus
 
 # LEP, ages 5 to 17
 
-lep <- c(spanish_well_5_17_                     =    "B16004_006",  # Speaks Spanish, English well, ages 5 to 17
-         spanish_notwell_5_17_                  =    "B16004_007",  # Speaks Spanish, English not well, ages 5 to 17
-         spanish_notatall_5_17_                 =    "B16004_008",  # Speaks Spanish, English not at all, ages 5 to 17
+lep <- c(spanish_well_5_17_                    =    "B16004_006",  # Speaks Spanish, English well, ages 5 to 17
+         spanish_notwell_5_17_                 =    "B16004_007",  # Speaks Spanish, English not well, ages 5 to 17
+         spanish_notatall_5_17_                =    "B16004_008",  # Speaks Spanish, English not at all, ages 5 to 17
          
-         indo_well_5_17_                        =    "B16004_011",  # Speaks Indo-European language, English well, ages 5 to 17
-         indo_notwell_5_17_                     =    "B16004_012",  # Speaks Indo-European language, English well, ages 5 to 17
-         indo_notatall_5_17_                    =    "B16004_013",  # Speaks Indo-European language, English well, ages 5 to 17
+         indo_well_5_17_                       =    "B16004_011",  # Speaks Indo-European language, English well, ages 5 to 17
+         indo_notwell_5_17_                    =    "B16004_012",  # Speaks Indo-European language, English well, ages 5 to 17
+         indo_notatall_5_17_                   =    "B16004_013",  # Speaks Indo-European language, English well, ages 5 to 17
          
-         asian_well_5_17_                       =    "B16004_016",  # Speaks Asian/Pacific Islander language, English well, ages 5 to 17
-         asian_notwell_5_17_                    =    "B16004_017",  # Speaks Asian/Pacific Islander language, English not well, ages 5 to 17
-         asian_notatall_5_17_                   =    "B16004_018",  # Speaks Asian/Pacific Islander language, English not at all, ages 5 to 17
+         asian_well_5_17_                      =    "B16004_016",  # Speaks Asian/Pacific Islander language, English well, ages 5 to 17
+         asian_notwell_5_17_                   =    "B16004_017",  # Speaks Asian/Pacific Islander language, English not well, ages 5 to 17
+         asian_notatall_5_17_                  =    "B16004_018",  # Speaks Asian/Pacific Islander language, English not at all, ages 5 to 17
          
-         other_well_5_17_                       =    "B16004_021",  # Speaks other language, English well, ages 5 to 17
-         other_notwell_5_17_                    =    "B16004_022",  # Speaks other language, English well, ages 5 to 17
-         other_notatall_5_17_                   =    "B16004_023",  # Speaks other language, English well, ages 5 to 17
+         other_well_5_17_                      =    "B16004_021",  # Speaks other language, English well, ages 5 to 17
+         other_notwell_5_17_                   =    "B16004_022",  # Speaks other language, English well, ages 5 to 17
+         other_notatall_5_17_                  =    "B16004_023",  # Speaks other language, English well, ages 5 to 17
          
 # LEP, ages 18 to 64
 
-         spanish_well_18_64_                    =    "B16004_028",  # Speaks Spanish, English well, ages 18 to 64
-         spanish_notwell_18_64_                 =    "B16004_029",  # Speaks Spanish, English not well, ages 18 to 64
-         spanish_notatall_18_64_                =    "B16004_030",  # Speaks Spanish, English not at all, ages 18 to 64
+         spanish_well_18_64_                   =    "B16004_028",  # Speaks Spanish, English well, ages 18 to 64
+         spanish_notwell_18_64_                =    "B16004_029",  # Speaks Spanish, English not well, ages 18 to 64
+         spanish_notatall_18_64_               =    "B16004_030",  # Speaks Spanish, English not at all, ages 18 to 64
         
-         indo_well_18_64_                       =    "B16004_033",  # Speaks Indo-European language, English well, ages 18 to 64
-         indo_notwell_18_64_                    =    "B16004_034",  # Speaks Indo-European language, English well, ages 18 to 64
-         indo_notatall_18_64_                   =    "B16004_035",  # Speaks Indo-European language, English well, ages 18 to 64
+         indo_well_18_64_                      =    "B16004_033",  # Speaks Indo-European language, English well, ages 18 to 64
+         indo_notwell_18_64_                   =    "B16004_034",  # Speaks Indo-European language, English well, ages 18 to 64
+         indo_notatall_18_64_                  =    "B16004_035",  # Speaks Indo-European language, English well, ages 18 to 64
         
-         asian_well_18_64_                      =    "B16004_038",  # Speaks Asian/Pacific Islander language, English well, ages 18 to 64
-         asian_notwell_18_64_                   =    "B16004_039",  # Speaks Asian/Pacific Islander language, English not well, ages 18 to 64
-         asian_notatall_18_64_                  =    "B16004_040",  # Speaks Asian/Pacific Islander language, English not at all, ages 18 to 64
-        
-         other_well_18_64_                      =    "B16004_043",  # Speaks other language, English well, ages 18 to 64
-         other_notwell_18_64_                   =    "B16004_044",  # Speaks other language, English well, ages 18 to 64
-         other_notatall_18_64_                  =    "B16004_045",  # Speaks other language, English well, ages 18 to 64
+         asian_well_18_64_                     =    "B16004_038",  # Speaks Asian/Pacific Islander language, English well, ages 18 to 64
+         asian_notwell_18_64_                  =    "B16004_039",  # Speaks Asian/Pacific Islander language, English not well, ages 18 to 64
+         asian_notatall_18_64_                 =    "B16004_040",  # Speaks Asian/Pacific Islander language, English not at all, ages 18 to 64
+       
+         other_well_18_64_                     =    "B16004_043",  # Speaks other language, English well, ages 18 to 64
+         other_notwell_18_64_                  =    "B16004_044",  # Speaks other language, English well, ages 18 to 64
+         other_notatall_18_64_                 =    "B16004_045",  # Speaks other language, English well, ages 18 to 64
 
 # LEP, ages 65-plus
 
-         spanish_well_65p_                      =    "B16004_050",  # Speaks Spanish, English well, ages 65 plus
-         spanish_notwell_65p_                   =    "B16004_051",  # Speaks Spanish, English not well, ages 65 plus
-         spanish_notatall_65p_                  =    "B16004_052",  # Speaks Spanish, English not at all, ages 65 plus
-          
-         indo_well_65p_                         =    "B16004_055",  # Speaks Indo-European language, English well, ages 65 plus
-         indo_notwell_65p_                      =    "B16004_056",  # Speaks Indo-European language, English well, ages 65 plus
-         indo_notatall_65p_                     =    "B16004_057",  # Speaks Indo-European language, English well, ages 65 plus
-          
-         asian_well_65p_                        =    "B16004_060",  # Speaks Asian/Pacific Islander language, English well, ages 65 plus
-         asian_notwell_65p_                     =    "B16004_061",  # Speaks Asian/Pacific Islander language, English not well, ages 65 plus
-         asian_notatall_65p_                    =    "B16004_062",  # Speaks Asian/Pacific Islander language, English not at all, ages 65 plus
-          
-         other_well_65p_                        =    "B16004_065",  # Speaks other language, English well, ages 65 plus
-         other_notwell_65p_                     =    "B16004_066",  # Speaks other language, English well, ages 65 plus
-         other_notatall_65p_                    =    "B16004_067")  # Speaks other language, English well, ages 65 plus
+         spanish_well_65p_                     =    "B16004_050",  # Speaks Spanish, English well, ages 65 plus
+         spanish_notwell_65p_                  =    "B16004_051",  # Speaks Spanish, English not well, ages 65 plus
+         spanish_notatall_65p_                 =    "B16004_052",  # Speaks Spanish, English not at all, ages 65 plus
+         
+         indo_well_65p_                        =    "B16004_055",  # Speaks Indo-European language, English well, ages 65 plus
+         indo_notwell_65p_                     =    "B16004_056",  # Speaks Indo-European language, English well, ages 65 plus
+         indo_notatall_65p_                    =    "B16004_057",  # Speaks Indo-European language, English well, ages 65 plus
+         
+         asian_well_65p_                       =    "B16004_060",  # Speaks Asian/Pacific Islander language, English well, ages 65 plus
+         asian_notwell_65p_                    =    "B16004_061",  # Speaks Asian/Pacific Islander language, English not well, ages 65 plus
+         asian_notatall_65p_                   =    "B16004_062",  # Speaks Asian/Pacific Islander language, English not at all, ages 65 plus
+         
+         other_well_65p_                       =    "B16004_065",  # Speaks other language, English well, ages 65 plus
+         other_notwell_65p_                    =    "B16004_066",  # Speaks other language, English well, ages 65 plus
+         other_notatall_65p_                   =    "B16004_067")  # Speaks other language, English well, ages 65 plus
 
 
 # Race/Ethnicity
 
-race <- c(race_total_                           =    "B03002_001",  # Total population
-          race_white_                           =    "B03002_003",  # White population
-          race_black_                           =    "B03002_004",  # Black population
-          race_aian_                            =    "B03002_005",  # American Indian/Alaska Native population
-          race_asian_                           =    "B03002_006",  # Asian population
-          race_nhpi_                            =    "B03002_007",  # Native Hawaiian/Pacific Islander population
-          race_other_                           =    "B03002_008",  # Other population
-          race_twoplus_                         =    "B03002_009",  # Black population
-          race_hispanic_                        =    "B03002_012")  # Hispanic/Latino population
+race <- c(race_total_                          =    "B03002_001",  # Total population
+          race_white_                          =    "B03002_003",  # White population
+          race_black_                          =    "B03002_004",  # Black population
+          race_aian_                           =    "B03002_005",  # American Indian/Alaska Native population
+          race_asian_                          =    "B03002_006",  # Asian population
+          race_nhpi_                           =    "B03002_007",  # Native Hawaiian/Pacific Islander population
+          race_other_                          =    "B03002_008",  # Other population
+          race_twoplus_                        =    "B03002_009",  # Black population
+          race_hispanic_                       =    "B03002_012")  # Hispanic/Latino population
 
 # Combine all variables into single vector and make ACS call
 
