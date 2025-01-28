@@ -371,10 +371,11 @@ rent_burden <- working_bay %>%
          share_rent_50plus=round(100*(rent_50p_E)/tot_rent_E))
 
 
-# Low income by family type
+# Pie chart of low income by family type
 
-family <- working_bay %>% 
-  transmute(geography,male_single_parent=male_under_1.30_E+male_1.30_1.49_E+male_1.50_1.84_E,
+pie_family <- working_bay %>% 
+  transmute(geography,
+            male_single_parent=male_under_1.30_E+male_1.30_1.49_E+male_1.50_1.84_E,
             female_single_parent=female_under_1.30_E+female_1.30_1.49_E+female_1.50_1.84_E,
             two_parents=married_under_1.30_E+married_1.30_1.49_E+married_1.50_1.84_E,
             total=male_single_parent+female_single_parent+two_parents,
@@ -382,10 +383,24 @@ family <- working_bay %>%
             share_female_single_parent=round(100*(female_single_parent)/total),
             share_two_parents=round(100*(two_parents)/total))
 
+# Share of families with low incomes
+
+share_family <- working_bay %>% 
+  transmute(geography, 
+            married_under=married_under_1.30_E+married_1.30_1.49_E+married_1.50_1.84_E,
+            male_parent_under=male_under_1.30_E+male_1.30_1.49_E+male_1.50_1.84_E,
+            female_parent_under=female_under_1.30_E+female_1.30_1.49_E+female_1.50_1.84_E,
+            single_parent_under=male_parent_under+female_parent_under,
+            family_under=married_under+single_parent_under,
+            married_total=
+            family_total=family_under+married_1.85p_E+male_1.85p_E+female_1.85p_E,
+            share_family_under=round(100*(family_under/family_total)),            ,
+            share_twoparent_under=)
+
 ## Export CSVs to appropriate project folders
 
 write.csv(rent_burden,file.path(output,"1_rent_burden","rent_burden.csv"),row.names = F) # Rent burden
-write.csv(family,file.path(output,"2_low_income_families","low_income_families.csv"),row.names = F) # Low-income families
+write.csv(pie_family,file.path(output,"2_low_income_families","pie_low_income_families.csv"),row.names = F) # Low-income families
 
   
 
