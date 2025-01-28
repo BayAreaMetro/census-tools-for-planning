@@ -13,11 +13,12 @@ library(sf)
 
 userprofile        <- gsub("\\\\","/", Sys.getenv("USERPROFILE"))
 pba50p_dir         <- file.path(userprofile, "Box", "Plan Bay Area 2050+")
-equity_analysis    <- file.path(pba50p_dir,"Performance and Equity","Equity Analysis")
+output             <- file.path(pba50p_dir,"Performance and Equity","Equity Analysis") 
 hra_directory      <- file.path(pba50p_dir,"Regional Growth Framework","Growth Geographies","Final Blueprint Input data", "HRAs")
 
 epc_2018_in        <- "M:/Crosswalks/Census/EPCs/equity_priority_communities_2020_acs2018_0.csv"
 epc_2022_in        <- "M:/Crosswalks/Census/EPCs/equity_priority_communities_pba2050plus_acs2022_0.csv"
+hra_in             <- file.path(hra_directory,"CTCAC_HRAs_2023.shp")
 
 ## Set ACS variables
 
@@ -68,8 +69,9 @@ in_coast_delta = c("0601640", "0602252", "0605290", "0608142", "0609892", "06138
                    "0675630", "0681554", "0683346", "0685922", "0686930")
 
 # Bring in latest HRA shapefile and EPC data for 2018/2022 vintages and to get appropriate tract metadata for merging
+# Make sure "Geographic.ID" reads as a character from the CSV to retain leading 0.
 
-hra_shapefile <- st_read(file.path(hra_directory,"CTCAC_HRAs_2023.shp"))
+hra_shapefile <- st_read(hra_in)
 hra_metatada  <- st_drop_geometry(hra_shapefile) %>% 
   select(fipco, tract_geoi, oppcat)
 
@@ -85,7 +87,7 @@ epc_2022      <- read.csv(epc_2022_in,colClasses = c("Geographic.ID"="character"
 
 # Rent burden (Gross Rent as a Percentage of Household Income in the Past 12 Months)
 
-rent_burden <- c(tot_rent_                     =    "B25070_002",  # Total renter occupied housing units
+rent_burden <- c(tot_rent_                     =    "B25070_001",  # Total renter occupied housing units
                  rent_30_35_                   =    "B25070_007",  # 30.0 to 34.9 percent
                  rent_35_40_                   =    "B25070_008",  # 35.0 to 39.9 percent
                  rent_40_50_                   =    "B25070_009",  # 40.0 to 49.9 percent
@@ -349,12 +351,30 @@ race <- c(race_total                            =    "B03002_001",  # Total popu
 total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability,tenure,vehicles,lep,non_lep,
                          race)
 
-ACS_county_raw <- get_acs(geography = "county",table = "B16004",
-                          state = statenumber, county=baycounties,
-                          year=acs_year,
-                          output="wide",
-                          survey = acs_product )
+working_county <- get_acs(geography = "county",
+                          variables = total_acs_variables,
+                          state = statenumber,
+                          county = baycounties,
+                          year = acs_year,
+                          survey = acs_product,
+                          output = "wide") %>% 
+  select(-c(ends_with("_M"),GEOID)) 
 
+# Summarize to Bay Area and begin individual analyses for outputs
+
+working_bay     <- working_county %>% 
+  select(where(is.numeric)) %>%                   # Select only numeric columns
+  summarize(across(everything(), sum)) %>%        # Compute sums
+  mutate(geography = "Bay Area") %>%              # Add the geography variable
+  relocate(geography, .before = everything())     # Ensure ID is the first column
+
+# Share rent burden 
+
+rent_burden <- working_bay %>% 
+  mutate(share_rent_30_39=round(100*(rent_30_35_E + rent_35_40_E)/tot_rent_E))
+
+         share_rent_40_50=rent)
+  
 
 
 
