@@ -330,23 +330,17 @@ lep <- c(spanish_well_5_17_                     =    "B16004_006",  # Speaks Spa
 
 # Race/Ethnicity
 
-race <- c(race_total                            =    "B03002_001",  # Total population
-          race_white                            =    "B03002_003",  # White population
-          race_black                            =    "B03002_004",  # Black population
-          race_aian                             =    "B03002_005",  # American Indian/Alaska Native population
-          race_asian                            =    "B03002_006",  # Asian population
-          race_nhpi                             =    "B03002_007",  # Native Hawaiian/Pacific Islander population
-          race_other                            =    "B03002_008",  # Other population
-          race_twoplus                          =    "B03002_009",  # Black population
-          race_hispanic                         =    "B03002_012")  # Hispanic/Latino population
+race <- c(race_total_                           =    "B03002_001",  # Total population
+          race_white_                           =    "B03002_003",  # White population
+          race_black_                           =    "B03002_004",  # Black population
+          race_aian_                            =    "B03002_005",  # American Indian/Alaska Native population
+          race_asian_                           =    "B03002_006",  # Asian population
+          race_nhpi_                            =    "B03002_007",  # Native Hawaiian/Pacific Islander population
+          race_other_                           =    "B03002_008",  # Other population
+          race_twoplus_                         =    "B03002_009",  # Black population
+          race_hispanic_                        =    "B03002_012")  # Hispanic/Latino population
 
-
-
-
-
-
-# Combine all variables into single vector
-
+# Combine all variables into single vector and make ACS call
 
 total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability,tenure,vehicles,lep,non_lep,
                          race)
@@ -365,15 +359,34 @@ working_county <- get_acs(geography = "county",
 working_bay     <- working_county %>% 
   select(where(is.numeric)) %>%                   # Select only numeric columns
   summarize(across(everything(), sum)) %>%        # Compute sums
-  mutate(geography = "Bay Area") %>%              # Add the geography variable
+  mutate(geography = "Bay_Area_2022") %>%              # Add the geography variable
   relocate(geography, .before = everything())     # Ensure ID is the first column
 
 # Share rent burden 
 
 rent_burden <- working_bay %>% 
-  mutate(share_rent_30_39=round(100*(rent_30_35_E + rent_35_40_E)/tot_rent_E))
+  transmute(geography,
+         share_rent_30_39=round(100*(rent_30_35_E + rent_35_40_E)/tot_rent_E),
+         share_rent_40_49=round(100*(rent_40_50_E)/tot_rent_E),
+         share_rent_50plus=round(100*(rent_50p_E)/tot_rent_E))
 
-         share_rent_40_50=rent)
+
+# Low income by family type
+
+family <- working_bay %>% 
+  transmute(geography,male_single_parent=male_under_1.30_E+male_1.30_1.49_E+male_1.50_1.84_E,
+            female_single_parent=female_under_1.30_E+female_1.30_1.49_E+female_1.50_1.84_E,
+            two_parents=married_under_1.30_E+married_1.30_1.49_E+married_1.50_1.84_E,
+            total=male_single_parent+female_single_parent+two_parents,
+            share_male_single_parent=round(100*(male_single_parent)/total),
+            share_female_single_parent=round(100*(female_single_parent)/total),
+            share_two_parents=round(100*(two_parents)/total))
+
+## Export CSVs to appropriate project folders
+
+write.csv(rent_burden,file.path(output,"1_rent_burden","rent_burden.csv"),row.names = F) # Rent burden
+write.csv(family,file.path(output,"2_low_income_families","low_income_families.csv"),row.names = F) # Low-income families
+
   
 
 
@@ -383,16 +396,27 @@ rent_burden <- working_bay %>%
 
 
 
-# Import data into single wide dataframe, remove margin of error (any variable with "_M" suffix)
 
-working_county <- get_acs(geography = "county",
-                        variables = total_acs_variables,
-                        state = statenumber,
-                        county = baycounties,
-                        year = acs_year,
-                        survey = acs_product,
-                        output = "wide") %>% 
-  select(-c(ends_with("_M"),GEOID)) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Import data into single wide dataframe, remove margin of error (any variable with "_M" suffix)
 
 working_place <- get_acs(geography = "place",
                           variables = total_acs_variables,
