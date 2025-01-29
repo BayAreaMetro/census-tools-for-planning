@@ -387,15 +387,15 @@ pie_family <- working_bay %>%
 
 share_family <- working_bay %>% 
   transmute(geography, 
-            married_under=married_under_1.30_E+married_1.30_1.49_E+married_1.50_1.84_E,
+            two_parent_under=married_under_1.30_E+married_1.30_1.49_E+married_1.50_1.84_E,
             male_parent_under=male_under_1.30_E+male_1.30_1.49_E+male_1.50_1.84_E,
             female_parent_under=female_under_1.30_E+female_1.30_1.49_E+female_1.50_1.84_E,
             single_parent_under=male_parent_under+female_parent_under,
-            family_under=married_under+single_parent_under,
-            married_total=
+            family_under=two_parent_under+single_parent_under,
+            two_parent_total=two_parent_under+married_1.85p_E,
             family_total=family_under+married_1.85p_E+male_1.85p_E+female_1.85p_E,
             share_family_under=round(100*(family_under/family_total)),            ,
-            share_twoparent_under=)
+            share_twoparent_under=round(100*(two_parent_under/two_parent_total)))
 
 ## Export CSVs to appropriate project folders
 
