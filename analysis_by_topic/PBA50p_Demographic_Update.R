@@ -453,7 +453,8 @@ med_disability_earnings <- map_dfr(c(2012:2019,2021:2022), get_med_dis) %>% # 20
          med_non_dis_earning_x_non_dis_worker=med_non_dis_earnings_E*non_dis_worker_E) %>% 
   group_by(year) %>% 
   select(where(is.numeric)) %>%                   
-  summarize(across(everything(), sum)) %>%        
+  summarize(across(everything(), sum)) %>%   
+  select(-c(med_dis_earnings_E,med_non_dis_earnings_E)) %>% 
   mutate(geography = "Bay_Area") %>%             
   relocate(geography, .before = everything()) %>% 
   mutate(weighted_med_dis_earnings=round(med_dis_earnings_x_dis_worker/dis_worker_E),
