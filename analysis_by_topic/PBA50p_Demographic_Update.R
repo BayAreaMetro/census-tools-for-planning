@@ -26,8 +26,8 @@ hra_in             <- file.path(hra_directory,"CTCAC_HRAs_2023.shp")
 
 ## Set ACS variables
 
-acs_year    =  2018  # Set ACS year
-acs_product = "acs1" # Set ACS 1- or 5-year dataset
+acs_year    =  2022  # Set ACS year
+acs_product = "acs5" # Set ACS 1- or 5-year dataset
 
 ## Geography for Bay Area counties/places, including place EQ that can be found here: "M:/Crosswalks/Census/PBA50+/Place_Geo_Classification_Plan_EQ.csv"
 
@@ -140,7 +140,7 @@ med_dis_earnings <- c(med_dis_earnings_        =    "B18140_002",  # Median earn
 # First total then iterated by race/ethnicity
 # Note that one should use Table B18101H for "white" because it omits Hispanic/Latino while Table B18101A includes Hispanic/Latino
 
-# Total disability
+# Total disability, first with a disability and then without
 
 disability <- c(tot_dis_universe_              =    "B18101_001",  # Disability universe - Civilian noninstitutionalized population
                 male_dis_under5_               =    "B18101_004",  # Male under 5 with a disability
@@ -156,6 +156,20 @@ disability <- c(tot_dis_universe_              =    "B18101_001",  # Disability 
                 female_dis_35_64_              =    "B18101_032",  # Female 35 to 64 with a disability
                 female_dis_65_74_              =    "B18101_035",  # Female 65 to 74 with a disability
                 female_dis_75p_                =    "B18101_038",  # Female 75 plus with a disability
+                
+                male_non_dis_under5_           =    "B18101_005",  # Male under 5 without a disability
+                male_non_dis_5_17_             =    "B18101_008",  # Male 5 to 17 without a disability
+                male_non_dis_18_34_            =    "B18101_011",  # Male 18 to 34 without a disability
+                male_non_dis_35_64_            =    "B18101_014",  # Male 35 to 64 without a disability
+                male_non_dis_65_74_            =    "B18101_017",  # Male 65 to 74 without a disability
+                male_non_dis_75p_              =    "B18101_020",  # Male 75 plus without a disability
+                
+                female_non_dis_under5_         =    "B18101_024",  # Female under 5 without a disability
+                female_non_dis_5_17_           =    "B18101_027",  # Female 5 to 17 without a disability
+                female_non_dis_18_34_          =    "B18101_030",  # Female 18 to 34 without a disability
+                female_non_dis_35_64_          =    "B18101_033",  # Female 35 to 64 without a disability
+                female_non_dis_65_74_          =    "B18101_036",  # Female 65 to 74 without a disability
+                female_non_dis_75p_            =    "B18101_039",  # Female 75 plus without a disability
 
 # White, not Hispanic/Latino disability
 
@@ -368,7 +382,7 @@ working_bay     <- working_county %>%
   select(-c(med_dis_earnings_E,med_non_dis_earnings_E)) %>% 
   select(where(is.numeric)) %>%                   
   summarize(across(everything(), sum)) %>%        
-  mutate(geography = "Bay_Area_2022") %>%             
+  mutate(geography = paste0("Bay_Area_",acs_year)) %>%             
   relocate(geography, .before = everything()) %>% 
   mutate(weighted_med_dis_earnings=round(med_dis_earnings_x_dis_worker/dis_worker_E),
          weighted_med_non_dis_earnings=round(med_non_dis_earning_x_non_dis_worker/non_dis_worker_E))
@@ -418,7 +432,7 @@ share_family <- working_bay %>%
 # Create function to append years and call function
 # Calculate weighted median for Bay Area for disabled workers and non-disabled workers
 
-get_acs_year <- function(year) {
+get_med_dis <- function(year) {
   get_acs(
     geography = "county", 
     variables = med_dis_earnings, 
@@ -431,7 +445,7 @@ get_acs_year <- function(year) {
     mutate(year = year)  
 }
 
-med_disability_earnings <- map_dfr(c(2012:2019,2021:2022), get_acs_year) %>% # 2020 data not available due to pandemic
+med_disability_earnings <- map_dfr(c(2012:2019,2021:2022), get_med_dis) %>% # 2020 data not available due to pandemic
   select(-c(ends_with("_M"),GEOID))  %>% 
   mutate(med_dis_earnings_x_dis_worker=med_dis_earnings_E*dis_worker_E,
          med_non_dis_earning_x_non_dis_worker=med_non_dis_earnings_E*non_dis_worker_E) %>% 
@@ -443,12 +457,46 @@ med_disability_earnings <- map_dfr(c(2012:2019,2021:2022), get_acs_year) %>% # 2
   mutate(weighted_med_dis_earnings=round(med_dis_earnings_x_dis_worker/dis_worker_E),
          weighted_med_non_dis_earnings=round(med_non_dis_earning_x_non_dis_worker/non_dis_worker_E))
 
+# Share of population with disabilities
+# Some totals are built from component parts and some totals already exist in the data for some groups (e.g., white_dis_universe)
+# "Other" is the sum of American Indian/Alaska Native, Native Hawaiian/PI, other, and two-plus races
+
+share_disabled <- working_bay %>% 
+  transmute(geography,
+            under18_disabled=male_dis_under5_E+male_dis_5_17_E+female_dis_under5_E+female_dis_5_17_E,
+            age18_64_disabled=male_dis_18_34_E+male_dis_35_64_E+female_dis_18_34_E+female_dis_35_64_E,
+            age65p_disabled=male_dis_65_74_E+male_dis_75p_E+female_dis_65_74_E+female_dis_75p_E,
+            under18_total=under18_disabled+male_non_dis_under5_E+male_non_dis_5_17_E+female_non_dis_under5_E+female_non_dis_5_17_E,
+            age18_64_total=age18_64_disabled+male_non_dis_18_34_E+male_non_dis_35_64_E+female_non_dis_18_34_E+female_non_dis_35_64_E,
+            age65p_total=age65p_disabled+male_non_dis_65_74_E+male_non_dis_75p_E+female_non_dis_65_74_E+female_non_dis_75p_E,
+            black_disabled=black_dis_under18_E+black_dis_18_64_E+black_dis_65p_E,
+            hispanic_disabled=hispanic_dis_under18_E+hispanic_dis_18_64_E+hispanic_dis_65p_E,
+            asian_disabled=asian_dis_under18_E+asian_dis_18_64_E+asian_dis_65p_E,
+            white_disabled=white_dis_under18_E+white_dis_18_64_E+white_dis_65p_E,
+            other_disabled=aian_dis_under18_E+aian_dis_18_64_E+aian_dis_65p_E+nhpi_dis_under18_E+nhpi_dis_18_64_E+nhpi_dis_65p_E+
+              other_dis_under18_E+other_dis_18_64_E+other_dis_65p_E+twoplus_dis_under18_E+twoplus_dis_18_64_E+twoplus_dis_65p_E,
+            other_total=aian_dis_universe_E+nhpi_dis_universe_E+other_dis_universe_E+twoplus_dis_universe_E,
+            share_regionwide_disabled=round(100*(under18_disabled+age18_64_disabled+age65p_disabled)/tot_dis_universe_E),
+            share_under18_disabled=round(100*under18_disabled/under18_total),
+            share18_64_disabled=round(100*age18_64_disabled/age18_64_total),
+            share65p_disabled=round(100*age65p_disabled/age65p_total),
+            share_black_disabled=round(100*black_disabled/black_dis_universe_E),
+            share_hispanic_disabled=round(100*hispanic_disabled/hispanic_dis_universe_E),
+            share_asian_disabled=round(100*asian_disabled/asian_dis_universe_E),
+            share_white_disabled=round(100*white_disabled/white_dis_universe_E),
+            share_other_disabled=round(100*other_disabled/other_total))
+         
+         
+
+
+
 ## Export CSVs to appropriate project folders
 
 write.csv(rent_burden,file.path(output,"1_rent_burden","rent_burden.csv"),row.names = F) 
 write.csv(pie_family,file.path(output,"2_low_income_pie_chart","pie_low_income_families.csv"),row.names = F) 
 write.csv(share_family,file.path(output,"3_low_income_families","low_income_families.csv"),row.names = F) 
 write.csv(med_disability_earnings,file.path(output,"4_med_disability_earnings","med_disability_earnings.csv"),row.names = F)
+write.csv(share_disabled,file.path(output,"5_share_disabled","share_disabled.csv"),row.names = F)
 
   
 
