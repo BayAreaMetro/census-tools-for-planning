@@ -9,6 +9,10 @@ suppressMessages(library(tidyverse))
 library(tidycensus)
 library(sf)
 
+# Eliminate scientific notation
+
+options(scipen = 999)
+
 # Set file directories for input and output
 
 userprofile        <- gsub("\\\\","/", Sys.getenv("USERPROFILE"))
@@ -22,8 +26,8 @@ hra_in             <- file.path(hra_directory,"CTCAC_HRAs_2023.shp")
 
 ## Set ACS variables
 
-acs_year    =  2022  # Set ACS year
-acs_product = "acs5" # Set ACS 1- or 5-year dataset
+acs_year    =  2018  # Set ACS year
+acs_product = "acs1" # Set ACS 1- or 5-year dataset
 
 ## Geography for Bay Area counties/places, including place EQ that can be found here: "M:/Crosswalks/Census/PBA50+/Place_Geo_Classification_Plan_EQ.csv"
 
@@ -355,12 +359,19 @@ working_county <- get_acs(geography = "county",
   select(-c(ends_with("_M"),GEOID)) 
 
 # Summarize to Bay Area and begin individual analyses for outputs
+# Multiply median disabled/non-disabled earnings by disabled/non-disabled workers, divide by total workers to get weighted mean earnings for Bay Area
+# After doing a regional summation, do the division to get weighted regional median values
 
 working_bay     <- working_county %>% 
-  select(where(is.numeric)) %>%                   # Select only numeric columns
-  summarize(across(everything(), sum)) %>%        # Compute sums
-  mutate(geography = "Bay_Area_2022") %>%              # Add the geography variable
-  relocate(geography, .before = everything())     # Ensure ID is the first column
+  mutate(med_dis_earnings_x_dis_worker=med_dis_earnings_E*dis_worker_E,
+         med_non_dis_earning_x_non_dis_worker=med_non_dis_earnings_E*non_dis_worker_E) %>% 
+  select(-c(med_dis_earnings_E,med_non_dis_earnings_E)) %>% 
+  select(where(is.numeric)) %>%                   
+  summarize(across(everything(), sum)) %>%        
+  mutate(geography = "Bay_Area_2022") %>%             
+  relocate(geography, .before = everything()) %>% 
+  mutate(weighted_med_dis_earnings=round(med_dis_earnings_x_dis_worker/dis_worker_E),
+         weighted_med_non_dis_earnings=round(med_non_dis_earning_x_non_dis_worker/non_dis_worker_E))
 
 # Share rent burden 
 
@@ -386,21 +397,37 @@ pie_family <- working_bay %>%
 # Share of families with low incomes
 
 share_family <- working_bay %>% 
-  transmute(geography, 
+  transmute(geography,
             two_parent_under=married_under_1.30_E+married_1.30_1.49_E+married_1.50_1.84_E,
             male_parent_under=male_under_1.30_E+male_1.30_1.49_E+male_1.50_1.84_E,
             female_parent_under=female_under_1.30_E+female_1.30_1.49_E+female_1.50_1.84_E,
             single_parent_under=male_parent_under+female_parent_under,
             family_under=two_parent_under+single_parent_under,
             two_parent_total=two_parent_under+married_1.85p_E,
+            male_parent_total=male_parent_under+male_1.85p_E,
+            female_parent_total=female_parent_under+female_1.85p_E,
+            single_parent_total=male_parent_total+female_parent_total,
             family_total=family_under+married_1.85p_E+male_1.85p_E+female_1.85p_E,
-            share_family_under=round(100*(family_under/family_total)),            ,
-            share_twoparent_under=round(100*(two_parent_under/two_parent_total)))
+            share_regionwide_family_under=round(100*(family_under/family_total)),            
+            share_twoparent_under=round(100*(two_parent_under/two_parent_total)),
+            share_singleparent_under=round(100*(single_parent_under/single_parent_total)),
+            share_female_head_under=round(100*(female_parent_under/female_parent_total)),
+            share_male_head_under=round(100*(male_parent_under/male_parent_total)))
+
+# Median earnings by disability status
+
+
+
+
+
+
+
 
 ## Export CSVs to appropriate project folders
 
 write.csv(rent_burden,file.path(output,"1_rent_burden","rent_burden.csv"),row.names = F) # Rent burden
-write.csv(pie_family,file.path(output,"2_low_income_families","pie_low_income_families.csv"),row.names = F) # Low-income families
+write.csv(pie_family,file.path(output,"2_low_income_pie_chart","pie_low_income_families.csv"),row.names = F) # Low-income families
+write.csv(share_family,file.path(output,"3_low_income_families","low_income_families.csv"),row.names = F) # Low-income families
 
   
 
@@ -421,7 +448,26 @@ write.csv(pie_family,file.path(output,"2_low_income_families","pie_low_income_fa
 
 
 
+# Define parameters
+years <- 2015:2023  # Adjust the range of years as needed
+state <- "06"       # FIPS code for California (change as needed)
+variable <- "B01001_001"  # Total population (change as needed)
+survey <- "acs5"    # Choose ACS 5-year estimates
 
+# Function to fetch ACS data for a given year
+get_acs_year <- function(year) {
+  get_acs(
+    geography = "state", 
+    variables = variable, 
+    year = year, 
+    state = state,
+    survey = survey
+  ) %>%
+    mutate(year = year)  # Add year column
+}
+
+# Use map_dfr() to iterate over years and combine results
+acs_data <- map_dfr(years, get_acs_year)
 
 
 
