@@ -359,6 +359,7 @@ race <- c(race_total_                          =    "B03002_001",  # Total popul
           race_hispanic_                       =    "B03002_012")  # Hispanic/Latino population
 
 # Combine all variables into single vector and make ACS call
+# Remove MOE values (variables ending in _M)
 
 total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability,tenure,vehicles,lep,non_lep,
                          race)
@@ -430,6 +431,7 @@ share_family <- working_bay %>%
 
 # Median earnings by disability status, ACS 1-year data 2012-2022, omitting 2020 not available due to Covid
 # Create function to append years and call function
+# Remove MOE values (variables with "_M")
 # Calculate weighted median for Bay Area for disabled workers and non-disabled workers
 
 get_med_dis <- function(year) {
@@ -455,7 +457,8 @@ med_disability_earnings <- map_dfr(c(2012:2019,2021:2022), get_med_dis) %>% # 20
   mutate(geography = "Bay_Area") %>%             
   relocate(geography, .before = everything()) %>% 
   mutate(weighted_med_dis_earnings=round(med_dis_earnings_x_dis_worker/dis_worker_E),
-         weighted_med_non_dis_earnings=round(med_non_dis_earning_x_non_dis_worker/non_dis_worker_E))
+         weighted_med_non_dis_earnings=round(med_non_dis_earning_x_non_dis_worker/non_dis_worker_E)) %>% 
+  ungroup()
 
 # Share of population with disabilities
 # Some totals are built from component parts and some totals already exist in the data for some groups (e.g., white_dis_universe)
@@ -537,5 +540,25 @@ working_place <- get_acs(geography = "place",
                           output = "wide") %>% 
   select(-c(ends_with("_M"))) %>% 
   filter(GEOID %in% baycities)
+
+# Define parameters
+year <- 2000  # Year of Census
+state <- "CA" # Example: California
+geography <- "county" # Options: "state", "county", "tract", etc.
+variables <- c("P001001", "P003002", "P003003", "P003004")  
+# P001001 = Total population
+# P003002 = White alone
+# P003003 = Black or African American alone
+# P003004 = American Indian and Alaska Native alone
+
+# Fetch 2000 Census SF1 data
+census_data <- get_decennial(
+  geography = geography,
+  variables = variables,
+  year = year,
+  sumfile = "sf1",
+  state = state,
+  output = "wide"
+)
 
 
