@@ -26,7 +26,7 @@ hra_in             <- file.path(hra_directory,"CTCAC_HRAs_2023.shp")
 
 ## Set ACS variables
 
-acs_year    =  2022  # Set ACS year
+acs_year    =  2018  # Set ACS year
 acs_product = "acs5" # Set ACS 1- or 5-year dataset
 
 ## Geography for Bay Area counties/places, including place EQ that can be found here: "M:/Crosswalks/Census/PBA50+/Place_Geo_Classification_Plan_EQ.csv"
@@ -235,7 +235,7 @@ tenure <- c(owner_75_84_                       =    "B25007_010",  # Owner aged 
             renter_85p_                        =    "B25007_021")  # Renter aged 85 plus
             
 # Vehicles (Tenure by Vehicles Available by Age of Householder)
-# Variables are structured by numvehicles_tenure_agecategory
+# Variables are structured by numvehicles_tenure_agecategory, "all" is everyone in universe (zero and 1+ vehicle HHs combined)
 
 # Renters
 
@@ -457,8 +457,9 @@ med_disability_earnings <- map_dfr(c(2012:2019,2021:2022), get_med_dis) %>% # 20
   select(-c(med_dis_earnings_E,med_non_dis_earnings_E)) %>% 
   mutate(geography = "Bay_Area") %>%             
   relocate(geography, .before = everything()) %>% 
-  mutate(weighted_med_dis_earnings=round(med_dis_earnings_x_dis_worker/dis_worker_E),
-         weighted_med_non_dis_earnings=round(med_non_dis_earning_x_non_dis_worker/non_dis_worker_E)) %>% 
+  mutate(weighted_med_non_dis_earnings=round(med_non_dis_earning_x_non_dis_worker/non_dis_worker_E),
+         weighted_med_dis_earnings=round(med_dis_earnings_x_dis_worker/dis_worker_E),
+         ) %>% 
   ungroup()
 
 # Share of population with disabilities
@@ -491,8 +492,50 @@ share_disabled <- working_bay %>%
             share_other_disabled=round(100*other_disabled/other_total))
          
          
+# Senior tenure by place type
+# Get regional data from sum of counties (Bay Area file)
+# For city data, call it from an ACS place call, join with equivalencies for place type, summarize
 
+senior_tenure_bay <- working_bay %>% 
+  transmute(geography,
+            share_senior_renter=round(100*(renter_75_84_E+renter_85p_E)/(renter_75_84_E+renter_85p_E+owner_75_84_E+owner_85p_E)))
 
+working_place <- get_acs(geography = "place",
+                         variables = tenure,
+                         state = statenumber,
+                         year = acs_year,
+                         survey = acs_product,
+                         output = "wide") %>% 
+  select(-c(ends_with("_M"))) %>% 
+  filter(GEOID %in% baycities) %>% 
+  mutate(
+    geography=case_when(
+      GEOID %in% big_three      ~ "Big Three Cities",
+      GEOID %in% bayside        ~ "Bayside Cities",
+      GEOID %in% in_coast_delta ~ "Inland_Coastal_Delta Cities",
+      TRUE                      ~ "Mistaken Coding"
+    )
+  )
+
+senior_tenure_place <- working_place %>% 
+  group_by(geography) %>% 
+  summarize(owner_75_84_E=sum(owner_75_84_E),owner_85p_E=sum(owner_85p_E),renter_75_84_E=sum(renter_75_84_E),
+            renter_85p_E=sum(renter_85p_E),.groups = "drop") %>% 
+  transmute(geography=paste0(geography,"_",ACS_year),
+            share_senior_renter=round(100*(renter_75_84_E+renter_85p_E)/(renter_75_84_E+renter_85p_E+owner_75_84_E+owner_85p_E)))
+
+senior_tenure <- bind_rows(senior_tenure_bay,senior_tenure_place)
+
+# Zero-vehicle households
+
+zero_vehicles <- working_bay %>% 
+  transmute(geography,
+            share_zero_veh_renters=round(100*(zero_renter_all_E/all_renter_all_E)),
+            share_zero_veh_homeowners=round(100*(zero_owner_all_E/all_owner_all_E)),
+            share_zero_veh_15_34=round(100*((zero_owner_15_34_E+zero_renter_15_34_E)/(zero_owner_15_34_E+zero_renter_15_34_E+onep_owner_15_34_E+onep_renter_15_34_E))),
+            share_zero_veh_35_64=round(100*((zero_owner_35_64_E+zero_renter_35_64_E)/(zero_owner_35_64_E+zero_renter_35_64_E+onep_owner_35_64_E+onep_renter_35_64_E))),
+            share_zero_veh_65p=round(100*((zero_owner_65p_E+zero_renter_65p_E)/(zero_owner_65p_E+zero_renter_65p_E+onep_owner_65p_E+onep_renter_65p_E)))                           
+  )
 
 ## Export CSVs to appropriate project folders
 
@@ -501,7 +544,8 @@ write.csv(pie_family,file.path(output,"2_low_income_pie_chart","pie_low_income_f
 write.csv(share_family,file.path(output,"3_low_income_families","low_income_families.csv"),row.names = F) 
 write.csv(med_disability_earnings,file.path(output,"4_med_disability_earnings","med_disability_earnings.csv"),row.names = F)
 write.csv(share_disabled,file.path(output,"5_share_disabled","share_disabled.csv"),row.names = F)
-
+write.csv(share_disabled,file.path(output,"6_share_senior_renter","share_senior_renter.csv"),row.names = F)
+write.csv(share_disabled,file.path(output,"7_zero_vehicles","zero_vehicles.csv"),row.names = F)
   
 
 
