@@ -606,9 +606,7 @@ english_proficiency <- working_bay %>%
 
 # Race/ethnicity by place type
 
-historical_race_acs <- map_dfr(c(2009,2014,2018,2022),~ get_historical_place_acs(.x, race))
-
-%>% 
+historical_race_acs <- map_dfr(c(2009,2014,2018,2022),~ get_historical_place_acs(.x, race)) %>% 
   group_by(geography,year) %>% 
   summarize(race_total=sum(race_total_E),race_white=sum(race_white_E),race_black=sum(race_black_E),race_asian=sum(race_asian_E),
             race_hispanic=sum(race_hispanic_E),.groups = "drop") %>% 
