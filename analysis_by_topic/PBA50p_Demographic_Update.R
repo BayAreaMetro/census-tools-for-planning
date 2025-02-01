@@ -388,6 +388,63 @@ working_bay     <- working_county %>%
   mutate(weighted_med_dis_earnings=round(med_dis_earnings_x_dis_worker/dis_worker_E),
          weighted_med_non_dis_earnings=round(med_non_dis_earning_x_non_dis_worker/non_dis_worker_E))
 
+# Create function for place data and join place type (big three cities, bayside cities, and inland/coastal/delta cities)
+
+get_historical_place_acs <- function(year,variables) {
+  get_acs(
+    geography = "place", 
+    variables = variables, 
+    year = year, 
+    state = statenumber,
+    survey = "acs5",
+    output = "wide"
+  ) %>%
+    select(-c(ends_with("_M"))) %>% 
+    filter(GEOID %in% baycities) %>% 
+    mutate(
+      geography=case_when(
+        GEOID %in% big_three      ~ "Big Three Cities",
+        GEOID %in% bayside        ~ "Bayside Cities",
+        GEOID %in% in_coast_delta ~ "Inland_Coastal_Delta Cities",
+        TRUE                      ~ "Mistaken Coding"
+      ),
+      year=year
+    ) 
+}
+
+# Create function for annual median disability earnings data
+    
+get_med_dis <- function(year) {
+  get_acs(
+    geography = "county", 
+    variables = med_dis_earnings, 
+    year = year, 
+    state = statenumber,
+    county = baycounties,
+    survey = "acs1",
+    output = "wide"
+  ) %>%
+    mutate(year = year)  
+}
+
+
+working_place <- get_acs(geography = "place",
+                         variables = tenure,
+                         state = statenumber,
+                         year = acs_year,
+                         survey = acs_product,
+                         output = "wide") %>% 
+  select(-c(ends_with("_M"))) %>% 
+  filter(GEOID %in% baycities) %>% 
+  mutate(
+    geography=case_when(
+      GEOID %in% big_three      ~ "Big Three Cities",
+      GEOID %in% bayside        ~ "Bayside Cities",
+      GEOID %in% in_coast_delta ~ "Inland_Coastal_Delta Cities",
+      TRUE                      ~ "Mistaken Coding"
+    )
+  )
+
 # Share rent burden 
 
 rent_burden <- working_bay %>% 
@@ -500,23 +557,6 @@ senior_tenure_bay <- working_bay %>%
   transmute(geography,
             share_senior_renter=round(100*(renter_75_84_E+renter_85p_E)/(renter_75_84_E+renter_85p_E+owner_75_84_E+owner_85p_E)))
 
-working_place <- get_acs(geography = "place",
-                         variables = tenure,
-                         state = statenumber,
-                         year = acs_year,
-                         survey = acs_product,
-                         output = "wide") %>% 
-  select(-c(ends_with("_M"))) %>% 
-  filter(GEOID %in% baycities) %>% 
-  mutate(
-    geography=case_when(
-      GEOID %in% big_three      ~ "Big Three Cities",
-      GEOID %in% bayside        ~ "Bayside Cities",
-      GEOID %in% in_coast_delta ~ "Inland_Coastal_Delta Cities",
-      TRUE                      ~ "Mistaken Coding"
-    )
-  )
-
 senior_tenure_place <- working_place %>% 
   group_by(geography) %>% 
   summarize(owner_75_84_E=sum(owner_75_84_E),owner_85p_E=sum(owner_85p_E),renter_75_84_E=sum(renter_75_84_E),
@@ -537,6 +577,44 @@ zero_vehicles <- working_bay %>%
             share_zero_veh_65p=round(100*((zero_owner_65p_E+zero_renter_65p_E)/(zero_owner_65p_E+zero_renter_65p_E+onep_owner_65p_E+onep_renter_65p_E)))                           
   )
 
+# English proficiency
+
+english_proficiency <- working_bay %>% 
+  transmute(geography,
+            lep_5_17=spanish_notwell_5_17_E+spanish_notatall_5_17_E+indo_notwell_5_17_E+indo_notatall_5_17_E+
+              asian_notwell_5_17_E+asian_notatall_5_17_E+other_notwell_5_17_E+other_notatall_5_17_E,
+            
+            lep_18_64=spanish_notwell_18_64_E+spanish_notatall_18_64_E+indo_notwell_18_64_E+indo_notatall_18_64_E+
+              asian_notwell_18_64_E+asian_notatall_18_64_E+other_notwell_18_64_E+other_notatall_18_64_E,
+            
+            lep_65p=spanish_notwell_65p_E+spanish_notatall_65p_E+indo_notwell_65p_E+indo_notatall_65p_E+
+              asian_notwell_65p_E+asian_notatall_65p_E+other_notwell_65p_E+other_notatall_65p_E,
+            
+            non_lep_5_17=english_only_5_17_E+spanish_vwell_5_17_E+indo_vwell_5_17_E+asian_vwell_5_17_E+other_vwell_5_17_E+
+              spanish_well_5_17_E+indo_well_5_17_E+asian_well_5_17_E+other_well_5_17_E,
+            
+            non_lep_18_64=english_only_18_64_E+spanish_vwell_18_64_E+indo_vwell_18_64_E+asian_vwell_18_64_E+other_vwell_18_64_E+
+              spanish_well_18_64_E+indo_well_18_64_E+asian_well_18_64_E+other_well_18_64_E,
+            
+            non_lep_65p=english_only_65p_E+spanish_vwell_65p_E+indo_vwell_65p_E+asian_vwell_65p_E+other_vwell_65p_E+
+              spanish_well_65p_E+indo_well_65p_E+asian_well_65p_E+other_well_65p_E,
+            
+            share5_17_lep=round(100*(lep_5_17/(lep_5_17+non_lep_5_17))),
+            share18_64_lep=round(100*(lep_18_64/(lep_18_64+non_lep_18_64))),
+            share65p_lep=round(100*(lep_65p/(lep_65p+non_lep_65p)))
+            )
+
+# Race/ethnicity by place type
+
+historical_race_acs <- map_dfr(c(2009,2014,2018,2022),~ get_historical_place_acs(.x, race))
+
+%>% 
+  group_by(geography,year) %>% 
+  summarize(race_total=sum(race_total_E),race_white=sum(race_white_E),race_black=sum(race_black_E),race_asian=sum(race_asian_E),
+            race_hispanic=sum(race_hispanic_E),.groups = "drop") %>% 
+  mutate(year=year) %>% 
+  relocate(year,.after = geography)
+            
 ## Export CSVs to appropriate project folders
 
 write.csv(rent_burden,file.path(output,"1_rent_burden","rent_burden.csv"),row.names = F) 
@@ -544,8 +622,9 @@ write.csv(pie_family,file.path(output,"2_low_income_pie_chart","pie_low_income_f
 write.csv(share_family,file.path(output,"3_low_income_families","low_income_families.csv"),row.names = F) 
 write.csv(med_disability_earnings,file.path(output,"4_med_disability_earnings","med_disability_earnings.csv"),row.names = F)
 write.csv(share_disabled,file.path(output,"5_share_disabled","share_disabled.csv"),row.names = F)
-write.csv(share_disabled,file.path(output,"6_share_senior_renter","share_senior_renter.csv"),row.names = F)
-write.csv(share_disabled,file.path(output,"7_zero_vehicles","zero_vehicles.csv"),row.names = F)
+write.csv(senior_tenure,file.path(output,"6_share_senior_renter","share_senior_renter.csv"),row.names = F)
+write.csv(zero_vehicles,file.path(output,"7_zero_vehicles","zero_vehicles.csv"),row.names = F)
+write.csv(english_proficiency,file.path(output,"8_english_proficiency","english_proficiency.csv"),row.names = F)
   
 
 
