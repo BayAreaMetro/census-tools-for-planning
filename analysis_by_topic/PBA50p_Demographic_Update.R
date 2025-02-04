@@ -30,6 +30,7 @@ acs_year    =  2018  # Set ACS year
 acs_product = "acs5" # Set ACS 1- or 5-year dataset
 
 ## Geography for Bay Area counties/places, including place EQ that can be found here: "M:/Crosswalks/Census/PBA50+/Place_Geo_Classification_Plan_EQ.csv"
+# Note that FIPS code changed for Moraga Town (Contra Costa County), Census 2000 to ACS years, from "0649194" to "0649187". Both values are included below. 
 
 statenumber="06"
 
@@ -47,9 +48,10 @@ baycities = c("0600562","0600674","0601640","0602252","0603092","0605108","06051
               "0662980","0664434","0665028","0665070","0667000","0668000","0668084","0668252",
               "0668294","0668364","0668378","0669084","0670098","0670280","0670364","0670770",
               "0672646","0673262","0664140","0675630","0677000","0678666","0681204","0681554",
-              "0681666","0683346","0685922","0686440","0686930")
+              "0681666","0683346","0685922","0686440","0686930","0649194")
 
 # Bayside cities, big three cities, inland/coastal/delta
+# Note that FIPS code changed for Moraga Town (Contra Costa County), Census 2000 to ACS years, from "0649194" to "0649187". Both values are included below.
 
 bayside = c("0600562", "0600674", "0603092", "0605108", "0605164", "0606000", 
             "0608310", "0609066", "0610345", "0614736", "0616462", "0617610", 
@@ -70,7 +72,7 @@ in_coast_delta = c("0601640", "0602252", "0605290", "0608142", "0609892", "06138
                    "0646114", "0649187", "0649278", "0650258", "0652582", "0653070", 
                    "0654232", "0656784", "0657456", "0657764", "0657792", "0660984", 
                    "0662546", "0664140", "0668378", "0670098", "0670770", "0672646", 
-                   "0675630", "0681554", "0683346", "0685922", "0686930")
+                   "0675630", "0681554", "0683346", "0685922", "0686930","0649194")
 
 # Bring in latest HRA shapefile and EPC data for 2018/2022 vintages and to get appropriate tract metadata for merging
 # Make sure "Geographic.ID" reads as a character from the CSV to retain leading 0.
@@ -346,23 +348,33 @@ lep <- c(spanish_well_5_17_                    =    "B16004_006",  # Speaks Span
          other_notatall_65p_                   =    "B16004_067")  # Speaks other language, English well, ages 65 plus
 
 
-# Race/Ethnicity
+# Race/Ethnicity - ACS
 
-race <- c(race_total_                          =    "B03002_001",  # Total population
+race_acs <- c(race_total_                      =    "B03002_001",  # Total population
           race_white_                          =    "B03002_003",  # White population
           race_black_                          =    "B03002_004",  # Black population
           race_aian_                           =    "B03002_005",  # American Indian/Alaska Native population
           race_asian_                          =    "B03002_006",  # Asian population
           race_nhpi_                           =    "B03002_007",  # Native Hawaiian/Pacific Islander population
           race_other_                          =    "B03002_008",  # Other population
-          race_twoplus_                        =    "B03002_009",  # Black population
+          race_twoplus_                        =    "B03002_009",  # Two-plus races
           race_hispanic_                       =    "B03002_012")  # Hispanic/Latino population
+
+race_decennial <- c(race_total_E               =    "P008001",  # Total population    # Added "_E" for easier joining with ACS data, though not an "estimate"
+              race_white_E                     =    "P008003",  # White population
+              race_black_E                     =    "P008004",  # Black population
+              race_aian_E                      =    "P008005",  # American Indian/Alaska Native population
+              race_asian_E                     =    "P008006",  # Asian population
+              race_nhpi_E                      =    "P008007",  # Native Hawaiian/Pacific Islander population
+              race_other_E                     =    "P008008",  # Other population
+              race_twoplus_E                   =    "P008009",  # Black population
+              race_hispanic_E                  =    "P008010")  # Hispanic/Latino population
 
 # Combine all variables into single vector and make ACS call
 # Remove MOE values (variables ending in _M)
 
 total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability,tenure,vehicles,lep,non_lep,
-                         race)
+                         race_acs)
 
 working_county <- get_acs(geography = "county",
                           variables = total_acs_variables,
@@ -388,7 +400,7 @@ working_bay     <- working_county %>%
   mutate(weighted_med_dis_earnings=round(med_dis_earnings_x_dis_worker/dis_worker_E),
          weighted_med_non_dis_earnings=round(med_non_dis_earning_x_non_dis_worker/non_dis_worker_E))
 
-# Create function for place data and join place type (big three cities, bayside cities, and inland/coastal/delta cities)
+# Create ACS function for place data and join place type (big three cities, bayside cities, and inland/coastal/delta cities)
 
 get_historical_place_acs <- function(year,variables) {
   get_acs(
@@ -400,6 +412,29 @@ get_historical_place_acs <- function(year,variables) {
     output = "wide"
   ) %>%
     select(-c(ends_with("_M"))) %>% 
+    filter(GEOID %in% baycities) %>% 
+    mutate(
+      geography=case_when(
+        GEOID %in% big_three      ~ "Big Three Cities",
+        GEOID %in% bayside        ~ "Bayside Cities",
+        GEOID %in% in_coast_delta ~ "Inland_Coastal_Delta Cities",
+        TRUE                      ~ "Mistaken Coding"
+      ),
+      year=year
+    ) 
+}
+
+# Create decennial function for place data and join place type (big three cities, bayside cities, and inland/coastal/delta cities)
+
+get_historical_place_decennial <- function(year,variables){
+  get_decennial(
+    geography = "place",
+    variables = variables,
+    year = year,
+    sumfile = "sf1",
+    state = statenumber,
+    output = "wide"
+  ) %>%
     filter(GEOID %in% baycities) %>% 
     mutate(
       geography=case_when(
@@ -604,14 +639,47 @@ english_proficiency <- working_bay %>%
             share65p_lep=round(100*(lep_65p/(lep_65p+non_lep_65p)))
             )
 
-# Race/ethnicity by place type
+# Race/ethnicity by place type, first ACS for 2009-2022 and then decennial for 2000
 
-historical_race_acs <- map_dfr(c(2009,2014,2018,2022),~ get_historical_place_acs(.x, race)) %>% 
+historical_race_acs <- map_dfr(c(2009,2014,2018,2022),~ get_historical_place_acs(.x, race)) 
+historical_race_decennial <- get_historical_place_decennial(2000,race_decennial) 
+historical_race_composite <- bind_rows(historical_race_decennial,historical_race_acs) %>% arrange(geography,year)
+
+historical_race_bay_total <- historical_race_composite %>% 
+  group_by(year) %>% 
+  summarize(geography="Bay Places",race_total=sum(race_total_E),race_white=sum(race_white_E),race_black=sum(race_black_E),race_asian=sum(race_asian_E),
+            race_hispanic=sum(race_hispanic_E),.groups = "drop")
+
+historical_race_area_total <- historical_race_composite %>% 
+  group_by(year,geography) %>% 
+  summarize(race_total=sum(race_total_E),race_white=sum(race_white_E),race_black=sum(race_black_E),race_asian=sum(race_asian_E),
+            race_hispanic=sum(race_hispanic_E),.groups = "drop")
+
+historical_race_combined_total <- bind_rows(historical_race_area_total,historical_race_bay_total) %>% 
+  group_by(year) %>% 
+  mutate(race_white_share=round(100*race_white/race_white[geography=="Bay Places"]))
+
+%>% 
   group_by(geography,year) %>% 
   summarize(race_total=sum(race_total_E),race_white=sum(race_white_E),race_black=sum(race_black_E),race_asian=sum(race_asian_E),
             race_hispanic=sum(race_hispanic_E),.groups = "drop") %>% 
   mutate(year=year) %>% 
   relocate(year,.after = geography)
+
+%>% 
+  mutate(share_white=round(100*(race_white/race_total)),
+         share_asian=round(100*(race_asian/race_total)),
+         share_hispanic=round(100*(race_hispanic/race_total)),
+         share_black=round(100*(race_black/race_total))
+         )
+
+%>% 
+  group_by(geography,year) %>% 
+  summarize(race_total=sum(race_total),race_white=sum(race_white),race_black=sum(race_black),race_asian=sum(race_asian),
+            race_hispanic=sum(race_hispanic),.groups = "drop") %>% 
+  mutate(year=year) %>% 
+  relocate(year,.after = geography)
+  
             
 ## Export CSVs to appropriate project folders
 
@@ -632,6 +700,15 @@ write.csv(english_proficiency,file.path(output,"8_english_proficiency","english_
 
 
 
+ trial <- get_decennial(
+    geography = "county",
+    variables = race_decennial,
+    county=baycounties,
+    year = 2000,
+    sumfile = "sf1",
+    state = statenumber,
+    output = "wide"
+  ) 
 
 
 
@@ -652,35 +729,5 @@ write.csv(english_proficiency,file.path(output,"8_english_proficiency","english_
 
 
 
-# Import data into single wide dataframe, remove margin of error (any variable with "_M" suffix)
-
-working_place <- get_acs(geography = "place",
-                          variables = total_acs_variables,
-                          state = statenumber,
-                          year = acs_year,
-                          survey = acs_product,
-                          output = "wide") %>% 
-  select(-c(ends_with("_M"))) %>% 
-  filter(GEOID %in% baycities)
-
-# Define parameters
-year <- 2000  # Year of Census
-state <- "CA" # Example: California
-geography <- "county" # Options: "state", "county", "tract", etc.
-variables <- c("P001001", "P003002", "P003003", "P003004")  
-# P001001 = Total population
-# P003002 = White alone
-# P003003 = Black or African American alone
-# P003004 = American Indian and Alaska Native alone
-
-# Fetch 2000 Census SF1 data
-census_data <- get_decennial(
-  geography = geography,
-  variables = variables,
-  year = year,
-  sumfile = "sf1",
-  state = state,
-  output = "wide"
-)
 
 
