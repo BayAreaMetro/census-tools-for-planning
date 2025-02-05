@@ -26,8 +26,8 @@ hra_in             <- file.path(hra_directory,"CTCAC_HRAs_2023.shp")
 
 ## Set ACS variables
 
-acs_year    =  2018  # Set ACS year
-acs_product = "acs5" # Set ACS 1- or 5-year dataset
+#acs_year    =  2018  # Set ACS year
+#acs_product = "acs5" # Set ACS 1- or 5-year dataset
 
 ## Geography for Bay Area counties/places, including place EQ that can be found here: "M:/Crosswalks/Census/PBA50+/Place_Geo_Classification_Plan_EQ.csv"
 # Note that FIPS code changed for Moraga Town (Contra Costa County), Census 2000 to ACS years, from "0649194" to "0649187". Both values are included below. 
@@ -117,18 +117,18 @@ low_income_families <- c(married_under_1.30_   =    "B17022_004",  # Married wit
 
 # Household income by race
 
-med_inc_race <- c(med_inc_white                =    "B19013H_001", # White alone, not Hispanic median income
-                  med_inc_black                =    "B19013B_001", # Black median income
-                  med_inc__asian               =    "B19013D_001", # Asian median income
-                  med_inc_hispanic             =    "B19013I_001") # Hispanic/Latino median income
+med_inc_race <- c(med_inc_white_               =    "B19013H_001", # White alone, not Hispanic median income
+                  med_inc_black_               =    "B19013B_001", # Black median income
+                  med_inc_asian_               =    "B19013D_001", # Asian median income
+                  med_inc_hispanic_            =    "B19013I_001") # Hispanic/Latino median income
 
 # Race of householder (for weighting median household incomes to get regional average)
 # Universe for this is household
 
-hholder_race <- c(hholder_white                =    "B19001H_001", # White alone, not Hispanic householder
-                  hholder_black                =    "B19001B_001", # Black median householder
-                  hholder__asian               =    "B19001D_001", # Asian median householder
-                  hholder_hispanic             =    "B19001I_001") # Hispanic/Latino householder
+hholder_race <- c(hholder_white_               =    "B22005H_001", # White alone, not Hispanic householder
+                  hholder_black_               =    "B22005B_001", # Black median householder
+                  hholder_asian_               =    "B22005D_001", # Asian median householder
+                  hholder_hispanic_            =    "B22005I_001") # Hispanic/Latino householder
 
 # Median earnings by disability status (Median Earnings in the Past 12 Months (in ACS Year Inflation-Adjusted Dollars) by Disability Status by Sex for the Civilian Noninstitutionalized Population 16 Years and Over With Earnings)
 # Include worker universe to calculate weighted median for full Bay Area from counties (Employment Status by Disability Status)
@@ -370,39 +370,26 @@ race_decennial <- c(race_total_E               =    "P008001",  # Total populati
               race_twoplus_E                   =    "P008009",  # Black population
               race_hispanic_E                  =    "P008010")  # Hispanic/Latino population
 
-# Combine all variables into single vector and make ACS call
-# Remove MOE values (variables ending in _M)
+# Create functions for extracting data
+# Create master county file used for most of the work
+# Create ACS function for place data and join place type (big three cities, bayside cities, and inland/coastal/delta cities)
+# Create decennial function for place data and join place type (big three cities, bayside cities, and inland/coastal/delta cities)
+# In each case, remove MOE variables ("_M")
 
-total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability,tenure,vehicles,lep,non_lep,
-                         race_acs)
-
+get_acs_county <- function(acs_year,acs_product,variables){
 working_county <- get_acs(geography = "county",
-                          variables = total_acs_variables,
+                          variables = variables,
                           state = statenumber,
                           county = baycounties,
                           year = acs_year,
                           survey = acs_product,
                           output = "wide") %>% 
-  select(-c(ends_with("_M"),GEOID)) 
+  select(-c(ends_with("_M"),GEOID)) %>% 
+  mutate(year=acs_year)
+}
 
-# Summarize to Bay Area and begin individual analyses for outputs
-# Multiply median disabled/non-disabled earnings by disabled/non-disabled workers, divide by total workers to get weighted mean earnings for Bay Area
-# After doing a regional summation, do the division to get weighted regional median values
 
-working_bay     <- working_county %>% 
-  mutate(med_dis_earnings_x_dis_worker=med_dis_earnings_E*dis_worker_E,
-         med_non_dis_earning_x_non_dis_worker=med_non_dis_earnings_E*non_dis_worker_E) %>% 
-  select(-c(med_dis_earnings_E,med_non_dis_earnings_E)) %>% 
-  select(where(is.numeric)) %>%                   
-  summarize(across(everything(), sum)) %>%        
-  mutate(geography = paste0("Bay_Area_",acs_year)) %>%             
-  relocate(geography, .before = everything()) %>% 
-  mutate(weighted_med_dis_earnings=round(med_dis_earnings_x_dis_worker/dis_worker_E),
-         weighted_med_non_dis_earnings=round(med_non_dis_earning_x_non_dis_worker/non_dis_worker_E))
-
-# Create ACS function for place data and join place type (big three cities, bayside cities, and inland/coastal/delta cities)
-
-get_historical_place_acs <- function(year,variables) {
+get_historical_place_acs <- function(acs_year,variables) {
   get_acs(
     geography = "place", 
     variables = variables, 
@@ -423,8 +410,6 @@ get_historical_place_acs <- function(year,variables) {
       year=year
     ) 
 }
-
-# Create decennial function for place data and join place type (big three cities, bayside cities, and inland/coastal/delta cities)
 
 get_historical_place_decennial <- function(year,variables){
   get_decennial(
@@ -447,9 +432,37 @@ get_historical_place_decennial <- function(year,variables){
     ) 
 }
 
+# Combine all variables into single vector and make ACS call
+# Remove MOE values (variables ending in _M)
+
+total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability,tenure,vehicles,lep,non_lep,
+                         race_acs,med_inc_race,hholder_race)
+
+acs_year=2018
+working_county <- get_acs_county(acs_year,"acs5")
+
+# Summarize to Bay Area and begin individual analyses for outputs
+# Multiply median disabled/non-disabled earnings by disabled/non-disabled workers, divide by total workers to get weighted mean earnings for Bay Area
+# After doing a regional summation, do the division to get weighted regional median values
+
+working_bay     <- working_county %>% 
+  mutate(med_dis_earnings_x_dis_worker=med_dis_earnings_E*dis_worker_E,
+         med_non_dis_earning_x_non_dis_worker=med_non_dis_earnings_E*non_dis_worker_E) %>% 
+  select(-c(med_dis_earnings_E,med_non_dis_earnings_E,med_inc_white_E,med_inc_black_E,med_inc_asian_E,med_inc_hispanic_E)) %>% 
+  select(where(is.numeric)) %>%                   
+  summarize(across(everything(), sum)) %>%        
+  mutate(geography = paste0("Bay_Area_",acs_year)) %>%             
+  relocate(geography, .before = everything()) %>% 
+  mutate(weighted_med_dis_earnings=round(med_dis_earnings_x_dis_worker/dis_worker_E),
+         weighted_med_non_dis_earnings=round(med_non_dis_earning_x_non_dis_worker/non_dis_worker_E))
+
+
+
+
+
 # Create function for annual median disability earnings data
     
-get_med_dis <- function(year) {
+get_med_dis <- function(acs_year) {
   get_acs(
     geography = "county", 
     variables = med_dis_earnings, 
@@ -522,37 +535,21 @@ share_family <- working_bay %>%
             share_male_head_under=round(100*(male_parent_under/male_parent_total)))
 
 # Median earnings by disability status, ACS 1-year data 2012-2022, omitting 2020 not available due to Covid
-# Create function to append years and call function
-# Remove MOE values (variables with "_M")
 # Calculate weighted median for Bay Area for disabled workers and non-disabled workers
 
-get_med_dis <- function(year) {
-  get_acs(
-    geography = "county", 
-    variables = med_dis_earnings, 
-    year = year, 
-    state = statenumber,
-    county = baycounties,
-    survey = "acs1",
-    output = "wide"
-  ) %>%
-    mutate(year = year)  
-}
-
-med_disability_earnings <- map_dfr(c(2012:2019,2021:2022), get_med_dis) %>% # 2020 data not available due to pandemic
-  select(-c(ends_with("_M"),GEOID))  %>% 
+med_disability_earnings <- map_dfr(c(2012:2019,2021:2022),~ get_acs_county (.x,"acs1",med_dis_earnings)) %>% # 2020 data not available due to pandemic
   mutate(med_dis_earnings_x_dis_worker=med_dis_earnings_E*dis_worker_E,
          med_non_dis_earning_x_non_dis_worker=med_non_dis_earnings_E*non_dis_worker_E) %>% 
   group_by(year) %>% 
   select(where(is.numeric)) %>%                   
-  summarize(across(everything(), sum)) %>%   
+  summarize(across(everything(), sum),.groups = "drop") %>%   
   select(-c(med_dis_earnings_E,med_non_dis_earnings_E)) %>% 
   mutate(geography = "Bay_Area") %>%             
   relocate(geography, .before = everything()) %>% 
   mutate(weighted_med_non_dis_earnings=round(med_non_dis_earning_x_non_dis_worker/non_dis_worker_E),
          weighted_med_dis_earnings=round(med_dis_earnings_x_dis_worker/dis_worker_E),
-         ) %>% 
-  ungroup()
+         ) 
+
 
 # Share of population with disabilities
 # Some totals are built from component parts and some totals already exist in the data for some groups (e.g., white_dis_universe)
@@ -596,7 +593,7 @@ senior_tenure_place <- working_place %>%
   group_by(geography) %>% 
   summarize(owner_75_84_E=sum(owner_75_84_E),owner_85p_E=sum(owner_85p_E),renter_75_84_E=sum(renter_75_84_E),
             renter_85p_E=sum(renter_85p_E),.groups = "drop") %>% 
-  transmute(geography=paste0(geography,"_",ACS_year),
+  transmute(geography=paste0(geography,"_",acs_year),
             share_senior_renter=round(100*(renter_75_84_E+renter_85p_E)/(renter_75_84_E+renter_85p_E+owner_75_84_E+owner_85p_E)))
 
 senior_tenure <- bind_rows(senior_tenure_bay,senior_tenure_place)
@@ -640,47 +637,62 @@ english_proficiency <- working_bay %>%
             )
 
 # Race/ethnicity by place type, first ACS for 2009-2022 and then decennial for 2000
+# Combine datasets, calculate racial category shares within each geography type (sum to 100 percent for all Bay Area places/cities)
+# Order data frame by year, geography type
 
-historical_race_acs <- map_dfr(c(2009,2014,2018,2022),~ get_historical_place_acs(.x, race)) 
+historical_race_acs <- map_dfr(c(2009,2014,2018,2022),~ get_historical_place_acs(.x, race_acs)) 
 historical_race_decennial <- get_historical_place_decennial(2000,race_decennial) 
 historical_race_composite <- bind_rows(historical_race_decennial,historical_race_acs) %>% arrange(geography,year)
 
-historical_race_bay_total <- historical_race_composite %>% 
+historical_race_bay <- historical_race_composite %>% 
   group_by(year) %>% 
-  summarize(geography="Bay Places",race_total=sum(race_total_E),race_white=sum(race_white_E),race_black=sum(race_black_E),race_asian=sum(race_asian_E),
+  summarize(geography="Sum of All Bay Places (Cities and Towns)",race_total=sum(race_total_E),race_white=sum(race_white_E),race_black=sum(race_black_E),race_asian=sum(race_asian_E),
             race_hispanic=sum(race_hispanic_E),.groups = "drop")
 
-historical_race_area_total <- historical_race_composite %>% 
+historical_race_grouped_places <- historical_race_composite %>% 
   group_by(year,geography) %>% 
   summarize(race_total=sum(race_total_E),race_white=sum(race_white_E),race_black=sum(race_black_E),race_asian=sum(race_asian_E),
             race_hispanic=sum(race_hispanic_E),.groups = "drop")
 
-historical_race_combined_total <- bind_rows(historical_race_area_total,historical_race_bay_total) %>% 
+custom_order <- c("Big Three Cities", "Bayside Cities", 
+                  "Inland_Coastal_Delta Cities", "Sum of All Bay Places (Cities and Towns)") # For sorting below data frame
+
+
+historical_race_final <- bind_rows(historical_race_grouped_places,historical_race_bay) %>% 
   group_by(year) %>% 
-  mutate(race_white_share=round(100*race_white/race_white[geography=="Bay Places"]))
+  mutate(share_white=round(100*race_white/race_white[geography=="Sum of All Bay Places (Cities and Towns)"]),
+         share_asian=round(100*race_asian/race_asian[geography=="Sum of All Bay Places (Cities and Towns)"]),
+         share_hispanic=round(100*race_hispanic/race_hispanic[geography=="Sum of All Bay Places (Cities and Towns)"]),
+         share_black=round(100*race_black/race_black[geography=="Sum of All Bay Places (Cities and Towns)"])
+         ) %>% 
+  mutate(geography = factor(geography, levels = custom_order)) %>%
+  arrange(year,geography)
 
-%>% 
-  group_by(geography,year) %>% 
-  summarize(race_total=sum(race_total_E),race_white=sum(race_white_E),race_black=sum(race_black_E),race_asian=sum(race_asian_E),
-            race_hispanic=sum(race_hispanic_E),.groups = "drop") %>% 
-  mutate(year=year) %>% 
-  relocate(year,.after = geography)
+# Median household income by race of householder
+# Some counties don't have enough households of particular groups for representative data and NAs are in the dataset - changed NA values to 0
+# This was particularly an issue with Napa County. Using 5-year data would likely solve the problem. 
 
-%>% 
-  mutate(share_white=round(100*(race_white/race_total)),
-         share_asian=round(100*(race_asian/race_total)),
-         share_hispanic=round(100*(race_hispanic/race_total)),
-         share_black=round(100*(race_black/race_total))
-         )
+acs_year <- 2018
+income_county <- get_acs_county(acs_year, "acs1")
 
-%>% 
-  group_by(geography,year) %>% 
-  summarize(race_total=sum(race_total),race_white=sum(race_white),race_black=sum(race_black),race_asian=sum(race_asian),
-            race_hispanic=sum(race_hispanic),.groups = "drop") %>% 
-  mutate(year=year) %>% 
-  relocate(year,.after = geography)
-  
-            
+med_household_income <- income_county %>% 
+  mutate(med_inc_asian_x_hholder_asian = med_inc_asian_E * hholder_asian_E,
+         med_inc_white_x_hholder_white = med_inc_white_E * hholder_white_E,
+         med_inc_hispanic_x_hholder_hispanic = med_inc_hispanic_E * hholder_hispanic_E,
+         med_inc_black_x_hholder_black = med_inc_black_E * hholder_black_E
+  ) %>% 
+  select(-c(med_inc_asian_E, med_inc_white_E, med_inc_hispanic_E, med_inc_black_E)) %>% 
+  mutate(across(everything(), ~ replace_na(.x, 0))) %>%  # Replace NAs with 0
+  select(where(is.numeric)) %>%                   
+  summarize(across(everything(), sum), .groups = "drop") %>%
+  transmute(geography = paste0("Bay_Area_", acs_year),
+            weighted_med_inc_asian = round(med_inc_asian_x_hholder_asian / hholder_asian_E,-2),
+            weighted_med_inc_white = round(med_inc_white_x_hholder_white / hholder_white_E,-2),
+            weighted_med_inc_hispanic = round(med_inc_hispanic_x_hholder_hispanic / hholder_hispanic_E,-2),
+            weighted_med_inc_black = round(med_inc_black_x_hholder_black / hholder_black_E,-2)) %>%
+  relocate(geography, .before = everything())
+
+
 ## Export CSVs to appropriate project folders
 
 write.csv(rent_burden,file.path(output,"1_rent_burden","rent_burden.csv"),row.names = F) 
@@ -691,26 +703,23 @@ write.csv(share_disabled,file.path(output,"5_share_disabled","share_disabled.csv
 write.csv(senior_tenure,file.path(output,"6_share_senior_renter","share_senior_renter.csv"),row.names = F)
 write.csv(zero_vehicles,file.path(output,"7_zero_vehicles","zero_vehicles.csv"),row.names = F)
 write.csv(english_proficiency,file.path(output,"8_english_proficiency","english_proficiency.csv"),row.names = F)
-  
+write.csv(historical_race_final,file.path(output,"9_historical_race_place_type","historical_race_place_type.csv"),row.names = F)
+write.csv(med_household_income,file.path(output,"10_med_household_income","med_household_income.csv"),row.names = F)  
 
+# Household income by race
 
+med_inc_race <- c(med_inc_white                =    "B19013H_001", # White alone, not Hispanic median income
+                  med_inc_black                =    "B19013B_001", # Black median income
+                  med_inc_asian               =    "B19013D_001", # Asian median income
+                  med_inc_hispanic             =    "B19013I_001") # Hispanic/Latino median income
 
+# Race of householder (for weighting median household incomes to get regional average)
+# Universe for this is household
 
-
-
-
-
- trial <- get_decennial(
-    geography = "county",
-    variables = race_decennial,
-    county=baycounties,
-    year = 2000,
-    sumfile = "sf1",
-    state = statenumber,
-    output = "wide"
-  ) 
-
-
+hholder_race <- c(hholder_white                =    "B19001H_001", # White alone, not Hispanic householder
+                  hholder_black                =    "B19001B_001", # Black median householder
+                  hholder__asian               =    "B19001D_001", # Asian median householder
+                  hholder_hispanic             =    "B19001I_001") # Hispanic/Latino householder
 
 
 
