@@ -370,13 +370,25 @@ race_decennial <- c(race_total_E               =    "P008001",  # Total populati
               race_twoplus_E                   =    "P008009",  # Black population
               race_hispanic_E                  =    "P008010")  # Hispanic/Latino population
 
-# Compile all the variables for use
+# Persons in poverty (less than 200 percent)
+
+poverty_persons <- c(poverty_total_            =    "B17002_001", # Total poverty universe (population for whom poverty status is determined)
+                     poverty_under_.50_        =    "B17002_002", # Persons under 0.50 income to poverty ratio
+                     poverty_.50_.74_          =    "B17002_003", # Persons 0.50 to 0.74 income to poverty ratio
+                     poverty_.75_.99_          =    "B17002_004", # Persons 0.75 to 0.99 income to poverty ratio
+                     poverty_1.00_1.24         =    "B17002_005", # Persons 1.00 to 1.24 income to poverty ratio 
+                     poverty_1.25_1.49_        =    "B17002_006", # Persons 1.25 to 1.49 income to poverty ratio
+                     poverty_1.50_1.74_        =    "B17002_007", # Persons 1.50 to 1.74 income to poverty ratio
+                     poverty_1.75_1.84_        =    "B17002_008", # Persons 1.75 to 1.84 income to poverty ratio
+                     poverty_1.85_1.99_        =    "B17002_009") # Persons 1.85 to 1.99 income to poverty ratio
+                     
+
+# Compile all the variables for use with county table (used for most of analyses)
 
 total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability,tenure,vehicles,lep,non_lep,
                          race_acs,med_inc_race,hholder_race)
 
-# Create functions for extracting data
-# Create master county file used for most of the work
+# Create functions for extracting data, including ACS and decennial data functions by county, place, and tract
 # Create ACS function for place data and join place type (big three cities, bayside cities, and inland/coastal/delta cities)
 # Create decennial function for place data and join place type (big three cities, bayside cities, and inland/coastal/delta cities)
 # In each case, remove MOE variables ("_M")
@@ -405,7 +417,7 @@ get_decennial_county <- function(year,variables){
     mutate(year=year)
 }
 
-get_historical_place_acs <- function(acs_year,variables) {
+get_historical_place_acs <- function(year,variables) {
   get_acs(
     geography = "place", 
     variables = variables, 
@@ -448,6 +460,23 @@ get_historical_place_decennial <- function(year,variables){
     ) 
 }
 
+get_historical_tract_acs <- function(year,variables) {
+  get_acs(
+    geography = "tract", 
+    variables = variables, 
+    year = year, 
+    state = statenumber,
+    county=baycounties,
+    survey = "acs5",
+    output = "wide"
+  ) %>%
+    select(-c(ends_with("_M"))) %>% 
+    mutate(year=year
+    ) 
+}
+
+
+
 # Create working_county dataframe for most of the outputs
 
 acs_year=2018
@@ -467,25 +496,6 @@ working_bay     <- working_county %>%
   relocate(geography, .before = everything()) %>% 
   mutate(weighted_med_dis_earnings=round(med_dis_earnings_x_dis_worker/dis_worker_E),
          weighted_med_non_dis_earnings=round(med_non_dis_earning_x_non_dis_worker/non_dis_worker_E))
-
-# Create function for annual median disability earnings data
-    
-working_place <- get_acs(geography = "place",
-                         variables = tenure,
-                         state = statenumber,
-                         year = acs_year,
-                         survey = acs_product,
-                         output = "wide") %>% 
-  select(-c(ends_with("_M"))) %>% 
-  filter(GEOID %in% baycities) %>% 
-  mutate(
-    geography=case_when(
-      GEOID %in% big_three      ~ "Big Three Cities",
-      GEOID %in% bayside        ~ "Bayside Cities",
-      GEOID %in% in_coast_delta ~ "Inland_Coastal_Delta Cities",
-      TRUE                      ~ "Mistaken Coding"
-    )
-  )
 
 # Share rent burden 
 
@@ -583,7 +593,8 @@ senior_tenure_bay <- working_bay %>%
   transmute(geography,
             share_senior_renter=round(100*(renter_75_84_E+renter_85p_E)/(renter_75_84_E+renter_85p_E+owner_75_84_E+owner_85p_E)))
 
-senior_tenure_place <- working_place %>% 
+acs_year=2022
+senior_tenure_place <- get_historical_place_acs(acs_year,tenure) %>% 
   group_by(geography) %>% 
   summarize(owner_75_84_E=sum(owner_75_84_E),owner_85p_E=sum(owner_85p_E),renter_75_84_E=sum(renter_75_84_E),
             renter_85p_E=sum(renter_85p_E),.groups = "drop") %>% 
@@ -667,9 +678,9 @@ historical_race_final <- bind_rows(historical_race_grouped_places,historical_rac
 # This was particularly an issue with Napa County. Using 5-year ACS data would likely solve the problem. 
 
 acs_year <- 2018
-income_county <- get_acs_county(acs_year, "acs1")
+race_income_vars <- c(med_inc_race,hholder_race)
 
-med_household_income <- income_county %>% 
+med_household_income <- get_acs_county(acs_year, "acs1",race_income_vars) %>% 
   mutate(med_inc_asian_x_hholder_asian = med_inc_asian_E * hholder_asian_E,
          med_inc_white_x_hholder_white = med_inc_white_E * hholder_white_E,
          med_inc_hispanic_x_hholder_hispanic = med_inc_hispanic_E * hholder_hispanic_E,
@@ -688,15 +699,24 @@ med_household_income <- income_county %>%
 
 # Share of population by race, Census 2000 and ACS 2014/2018 5-year
 
-historical_race_acs_county <- map_dfr(c(2014,2018),~ get_acs_county(.x, "acs5",race_acs))
+historical_race_acs_county <- map_dfr(c(2014,2018,2022),~ get_acs_county(.x, "acs5",race_acs))
 historical_race_decennial_county <- get_decennial_county(2000,race_decennial)
 
-historical_race_composite_county <- bind_rows(historical_race_decennial_county,historical_race_acs_county)
+historical_race_composite_county <- bind_rows(historical_race_decennial_county,historical_race_acs_county) %>% 
+  group_by(year) %>% 
+  mutate(race_other=race_aian_E+race_nhpi_E+race_other_E+race_twoplus_E) %>% 
+  summarize(geography="Bay Area",race_other=sum(race_other),race_black=sum(race_black_E),race_asian=sum(race_asian_E),
+            race_hispanic=sum(race_hispanic_E),race_white=sum(race_white_E),race_total=sum(race_total_E)) %>% 
+  transmute(geography=paste(geography,"_",year),share_other=round(100*race_other/race_total),share_black=round(100*race_black/race_total),share_asian=round(100*race_asian/race_total),
+            share_hispanic=round(100*race_hispanic/race_total),share_white=round(100*race_white/race_total),race_total)
+
+# Extract tract data for 2018 and 2022 and join EPCs/HRAs with respective years
+
+tract_vars <- c(race_acs,poverty_persons,lep,non_lep,vehicles,age,disability,family,rent_burden)
 
 
-
-historical_race_acs_place <- map_dfr(c(2009,2014,2018,2022),~ get_historical_place_acs(.x, race_acs)) 
-
+"Geographic.ID"
+"tract_geoi"
 
 ## Export CSVs to appropriate project folders
 
@@ -709,26 +729,8 @@ write.csv(senior_tenure,file.path(output,"6_share_senior_renter","share_senior_r
 write.csv(zero_vehicles,file.path(output,"7_zero_vehicles","zero_vehicles.csv"),row.names = F)
 write.csv(english_proficiency,file.path(output,"8_english_proficiency","english_proficiency.csv"),row.names = F)
 write.csv(historical_race_final,file.path(output,"9_historical_race_place_type","historical_race_place_type.csv"),row.names = F)
-write.csv(med_household_income,file.path(output,"10_med_household_income","med_household_income.csv"),row.names = F)  
-
-# Household income by race
-
-med_inc_race <- c(med_inc_white                =    "B19013H_001", # White alone, not Hispanic median income
-                  med_inc_black                =    "B19013B_001", # Black median income
-                  med_inc_asian               =    "B19013D_001", # Asian median income
-                  med_inc_hispanic             =    "B19013I_001") # Hispanic/Latino median income
-
-# Race of householder (for weighting median household incomes to get regional average)
-# Universe for this is household
-
-hholder_race <- c(hholder_white                =    "B19001H_001", # White alone, not Hispanic householder
-                  hholder_black                =    "B19001B_001", # Black median householder
-                  hholder__asian               =    "B19001D_001", # Asian median householder
-                  hholder_hispanic             =    "B19001I_001") # Hispanic/Latino householder
-
-
-
-
+write.csv(med_household_income,file.path(output,"10_med_household_income","med_household_income.csv"),row.names = F) 
+write.csv(historical_race_composite_county,file.path(output,"11_share_race_historical","share_race_historical.csv"),row.names = F) 
 
 
 
