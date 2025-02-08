@@ -76,10 +76,13 @@ in_coast_delta = c("0601640", "0602252", "0605290", "0608142", "0609892", "06138
 
 # Bring in latest HRA shapefile and EPC data for 2018/2022 vintages and to get appropriate tract metadata for merging
 # Make sure "Geographic.ID" reads as a character from the CSV to retain leading 0.
+# HRAs include census tracts and block groups. Split those into respective files for downloading data (later to be merged)
 
 hra_shapefile <- st_read(hra_in)
 hra_metatada  <- st_drop_geometry(hra_shapefile) %>% 
-  select(fipco, tract_geoi, oppcat)
+  select(fipco, tract_geoi, blkgp_geoi,oppcat)
+hra_tracts <- hra_metatada %>% filter(!is.na(tract_geoi))
+hra_bgs <- hra_metatada %>% filter(!is.na(blkgp_geoi))
 
 epc_2018      <- read.csv(epc_2018_in, colClasses = c("Geographic.ID"="character")) %>% 
   filter(PBA.2050.Equity.Priority.Community==1) %>% 
@@ -372,16 +375,18 @@ race_decennial <- c(race_total_E               =    "P008001",  # Total populati
 
 # Persons in poverty (less than 200 percent)
 
-poverty_persons <- c(poverty_total_            =    "B17002_001", # Total poverty universe (population for whom poverty status is determined)
-                     poverty_under_.50_        =    "B17002_002", # Persons under 0.50 income to poverty ratio
-                     poverty_.50_.74_          =    "B17002_003", # Persons 0.50 to 0.74 income to poverty ratio
-                     poverty_.75_.99_          =    "B17002_004", # Persons 0.75 to 0.99 income to poverty ratio
-                     poverty_1.00_1.24         =    "B17002_005", # Persons 1.00 to 1.24 income to poverty ratio 
-                     poverty_1.25_1.49_        =    "B17002_006", # Persons 1.25 to 1.49 income to poverty ratio
-                     poverty_1.50_1.74_        =    "B17002_007", # Persons 1.50 to 1.74 income to poverty ratio
-                     poverty_1.75_1.84_        =    "B17002_008", # Persons 1.75 to 1.84 income to poverty ratio
-                     poverty_1.85_1.99_        =    "B17002_009") # Persons 1.85 to 1.99 income to poverty ratio
-                     
+poverty_persons <- c(poverty_total_            =    "C17002_001", # Total poverty universe (population for whom poverty status is determined)
+                     poverty_2.00p             =    "C17002_008") # Persons 200+ percent income to poverty ratio
+
+# Older adults
+
+older_adult     <- c(age_total_                =    "B01001_001", # Total population of any age or sex
+                     male_75_79_               =    "B01001_023", # Male ages 75 to 79
+                     male_80_84_               =    "B01001_024", # Male ages 75 to 79
+                     male_85p_                 =    "B01001_025", # Male ages 75 to 79
+                     female_75_79_             =    "B01001_047", # Female ages 75 to 79
+                     female_80_84_             =    "B01001_048", # Female ages 75 to 79
+                     female_85p_               =    "B01001_049") # Female ages 75 to 79
 
 # Compile all the variables for use with county table (used for most of analyses)
 
@@ -460,9 +465,9 @@ get_historical_place_decennial <- function(year,variables){
     ) 
 }
 
-get_historical_tract_acs <- function(year,variables) {
+get_historical_tract_bg_acs <- function(year,variables,tract_bg) {
   get_acs(
-    geography = "tract", 
+    geography = tract_bg, 
     variables = variables, 
     year = year, 
     state = statenumber,
@@ -499,7 +504,7 @@ working_bay     <- working_county %>%
 
 # Share rent burden 
 
-rent_burden <- working_bay %>% 
+rent_burden_df <- working_bay %>% 
   transmute(geography,
          share_rent_30_39=round(100*(rent_30_35_E + rent_35_40_E)/tot_rent_E),
          share_rent_40_49=round(100*(rent_40_50_E)/tot_rent_E),
@@ -712,15 +717,44 @@ historical_race_composite_county <- bind_rows(historical_race_decennial_county,h
 
 # Extract tract data for 2018 and 2022 and join EPCs/HRAs with respective years
 
-tract_vars <- c(race_acs,poverty_persons,lep,non_lep,vehicles,age,disability,family,rent_burden)
+tract_vars <- c(race_acs,poverty_persons,lep,non_lep,vehicles,older_adult,disability,low_income_families,rent_burden)
+
+historical_tracts_2018 <- get_historical_tract_acs(2018,tract_vars) %>% left_join(.,epc_2018 %>% select(-County.FIPS),by=c("GEOID"="Geographic.ID")) %>% 
+  mutate(PBA.2050.Equity.Priority.Community=if_else(is.na(PBA.2050.Equity.Priority.Community),0,PBA.2050.Equity.Priority.Community)) %>% 
+  relocate(PBA.2050.Equity.Priority.Community,.after = "NAME") 
+
+
+historical_tracts_2022 <- get_historical_tract_acs(2022,tract_vars) %>% left_join(.,epc_2022 %>% select(-County.FIPS),by=c("GEOID"="Geographic.ID")) %>% 
+  mutate(Equity.Priority.Community.PBA.2050.Plus=if_else(is.na(Equity.Priority.Community.PBA.2050.Plus),0,Equity.Priority.Community.PBA.2050.Plus)) %>% 
+  relocate(Equity.Priority.Community.PBA.2050.Plus,.after = "NAME") %>% 
+  left_join(.,hra_metatada %>% select(-c(fipco,blkgp_geoi)),by=c("GEOID"="tract_geoi")) 
+%>% 
+  mutate(hra_status=if_else(is.na(oppcat),0,1)) %>% 
+  relocate(c(hra_status,oppcat),.after = "NAME")
+
 
 
 "Geographic.ID"
 "tract_geoi"
 
+get_historical_tract_bg_acs <- function(year,variables,tract_bg) {
+  get_acs(
+    geography = tract_bg, 
+    variables = variables, 
+    year = year, 
+    state = statenumber,
+    county=baycounties,
+    survey = "acs5",
+    output = "wide"
+  ) %>%
+    select(-c(ends_with("_M"))) %>% 
+    mutate(year=year
+    ) 
+}
+
 ## Export CSVs to appropriate project folders
 
-write.csv(rent_burden,file.path(output,"1_rent_burden","rent_burden.csv"),row.names = F) 
+write.csv(rent_burden_df,file.path(output,"1_rent_burden","rent_burden.csv"),row.names = F) 
 write.csv(pie_family,file.path(output,"2_low_income_pie_chart","pie_low_income_families.csv"),row.names = F) 
 write.csv(share_family,file.path(output,"3_low_income_families","low_income_families.csv"),row.names = F) 
 write.csv(med_disability_earnings,file.path(output,"4_med_disability_earnings","med_disability_earnings.csv"),row.names = F)
@@ -733,7 +767,15 @@ write.csv(med_household_income,file.path(output,"10_med_household_income","med_h
 write.csv(historical_race_composite_county,file.path(output,"11_share_race_historical","share_race_historical.csv"),row.names = F) 
 
 
-
+trial <- get_acs(
+  geography = "tract", 
+  variables = tract_vars, 
+  year = 2018, 
+  state = statenumber,
+  county=baycounties,
+  survey = "acs5",
+  output = "wide"
+)
 
 
 
