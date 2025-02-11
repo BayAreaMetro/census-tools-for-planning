@@ -118,6 +118,13 @@ low_income_families <- c(married_under_1.30_   =    "B17022_004",  # Married wit
                          female_1.85p_         =    "B17022_077")  # Female householder with children, income > 1.85 ratio to poverty
 
 
+# Families by sex of householder
+
+families <- c(married_family_                  =    "B11004_003",  # Married with children under 18
+              male_householder_                =    "B11004_010",  # Male householder with children under 18
+              female_householder_              =    "B11004_016")  # Married with children under 18
+
+
 # Household income by race
 
 med_inc_race <- c(med_inc_white_               =    "B19013H_001", # White alone, not Hispanic median income
@@ -375,8 +382,8 @@ race_decennial <- c(race_total_E               =    "P008001",  # Total populati
 
 # Persons in poverty (less than 200 percent)
 
-poverty_persons <- c(poverty_total_            =    "C17002_001", # Total poverty universe (population for whom poverty status is determined)
-                     poverty_2.00p             =    "C17002_008") # Persons 200+ percent income to poverty ratio
+poverty_persons <- c(poverty_universe_         =    "C17002_001", # Total poverty universe (population for whom poverty status is determined)
+                     poverty_2.00p_            =    "C17002_008") # Persons 200+ percent income to poverty ratio
 
 # Older adults
 
@@ -388,6 +395,22 @@ older_adult     <- c(age_total_                =    "B01001_001", # Total popula
                      female_80_84_             =    "B01001_048", # Female ages 75 to 79
                      female_85p_               =    "B01001_049") # Female ages 75 to 79
 
+# Collapsed disability categories. Variable below is num_disabilities, age category
+
+disability_collapsed  <- c(tot_dis_universe_   =    "C18108_001",
+                           tot_under_18_       =    "C18108_002",
+                           one_under_18_       =    "C18108_003",
+                           twop_under_18_      =    "C18108_004",
+                           nondis_under_18_    =    "C18108_005",
+                           tot_18_64_          =    "C18108_006",
+                           one_18_64_          =    "C18108_007",
+                           twop_18_64_         =    "C18108_008", 
+                           nondis_18_64_       =    "C18108_009",                  
+                           tot_65p_            =    "C18108_010",
+                           one_65p_            =    "C18108_011",
+                           twop_65p_           =    "C18108_012",
+                           nondis_65p_         =    "C18108_013")            
+                                               
 # Compile all the variables for use with county table (used for most of analyses)
 
 total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability,tenure,vehicles,lep,non_lep,
@@ -716,26 +739,65 @@ historical_race_composite_county <- bind_rows(historical_race_decennial_county,h
             share_hispanic=round(100*race_hispanic/race_total),share_white=round(100*race_white/race_total),race_total)
 
 # Extract tract data for 2018 and 2022 and join EPCs/HRAs with respective years
+# Extract block group data for 2018 HRAs, join with HRA tract data
+# Calculate share of population by demographic, 2022
 
-tract_vars <- c(race_acs,poverty_persons,lep,non_lep,vehicles,older_adult,disability,low_income_families,rent_burden)
+tract_bg_vars <- c(race_acs,poverty_persons,lep,non_lep,vehicles,older_adult,disability_collapsed,families,rent_burden)
 
-historical_tracts_2018 <- get_historical_tract_acs(2018,tract_vars) %>% left_join(.,epc_2018 %>% select(-County.FIPS),by=c("GEOID"="Geographic.ID")) %>% 
+region_collapsed <- get_acs_county(2018,"acs5",tract_bg_vars) %>% 
+  select(where(is.numeric)) %>%                   
+  summarize(across(everything(), sum), .groups = "drop") %>%
+  mutate(geography="Bay Area_2018") %>% 
+  relocate(geography,.before = everything()) %>% 
+  mutate(
+    lep_5_17=spanish_notwell_5_17_E+spanish_notatall_5_17_E+indo_notwell_5_17_E+indo_notatall_5_17_E+
+      asian_notwell_5_17_E+asian_notatall_5_17_E+other_notwell_5_17_E+other_notatall_5_17_E,
+    
+    lep_18_64=spanish_notwell_18_64_E+spanish_notatall_18_64_E+indo_notwell_18_64_E+indo_notatall_18_64_E+
+      asian_notwell_18_64_E+asian_notatall_18_64_E+other_notwell_18_64_E+other_notatall_18_64_E,
+    
+    lep_65p=spanish_notwell_65p_E+spanish_notatall_65p_E+indo_notwell_65p_E+indo_notatall_65p_E+
+      asian_notwell_65p_E+asian_notatall_65p_E+other_notwell_65p_E+other_notatall_65p_E,
+    
+    non_lep_5_17=english_only_5_17_E+spanish_vwell_5_17_E+indo_vwell_5_17_E+asian_vwell_5_17_E+other_vwell_5_17_E+
+      spanish_well_5_17_E+indo_well_5_17_E+asian_well_5_17_E+other_well_5_17_E,
+    
+    non_lep_18_64=english_only_18_64_E+spanish_vwell_18_64_E+indo_vwell_18_64_E+asian_vwell_18_64_E+other_vwell_18_64_E+
+      spanish_well_18_64_E+indo_well_18_64_E+asian_well_18_64_E+other_well_18_64_E,
+    
+    non_lep_65p=english_only_65p_E+spanish_vwell_65p_E+indo_vwell_65p_E+asian_vwell_65p_E+other_vwell_65p_E+
+      spanish_well_65p_E+indo_well_65p_E+asian_well_65p_E+other_well_65p_E,
+    
+    lep_total=lep_5_17+lep_18_64+lep_65p,
+    non_lep_total=non_lep_5_17+non_lep_18_64+non_lep_65p,
+    lep_universe=lep_total+non_lep_total
+  )
+
+historical_tracts_2018 <- get_historical_tract_bg_acs(2018,tract_bg_vars,"tract") %>% left_join(.,epc_2018 %>% select(-County.FIPS),by=c("GEOID"="Geographic.ID")) %>% 
   mutate(PBA.2050.Equity.Priority.Community=if_else(is.na(PBA.2050.Equity.Priority.Community),0,PBA.2050.Equity.Priority.Community)) %>% 
-  relocate(PBA.2050.Equity.Priority.Community,.after = "NAME") 
+  relocate(PBA.2050.Equity.Priority.Community,.after = "NAME") %>% 
+  left_join(.,hra_tracts %>% select(-c(fipco,blkgp_geoi)),by=c("GEOID"="tract_geoi")) %>% 
+  mutate(hra_status=if_else(is.na(oppcat),0,1)) %>% 
+  relocate(c(hra_status,oppcat),.after = "NAME")
 
-
-historical_tracts_2022 <- get_historical_tract_acs(2022,tract_vars) %>% left_join(.,epc_2022 %>% select(-County.FIPS),by=c("GEOID"="Geographic.ID")) %>% 
-  mutate(Equity.Priority.Community.PBA.2050.Plus=if_else(is.na(Equity.Priority.Community.PBA.2050.Plus),0,Equity.Priority.Community.PBA.2050.Plus)) %>% 
-  relocate(Equity.Priority.Community.PBA.2050.Plus,.after = "NAME") %>% 
-  left_join(.,hra_metatada %>% select(-c(fipco,blkgp_geoi)),by=c("GEOID"="tract_geoi")) 
-%>% 
+historical_bg_2018 <- get_historical_tract_bg_acs(2018,tract_bg_vars,"block group") %>%  
+  left_join(.,hra_bgs %>% select(-c(fipco,tract_geoi)),by=c("GEOID"="blkgp_geoi")) %>% 
   mutate(hra_status=if_else(is.na(oppcat),0,1)) %>% 
   relocate(c(hra_status,oppcat),.after = "NAME")
 
 
+historical_tracts_2022 <- get_historical_tract_bg_acs(2022,tract_bg_vars,"tract") %>% left_join(.,epc_2022 %>% select(-County.FIPS),by=c("GEOID"="Geographic.ID")) %>% 
+  mutate(Equity.Priority.Community.PBA.2050.Plus=if_else(is.na(Equity.Priority.Community.PBA.2050.Plus),0,Equity.Priority.Community.PBA.2050.Plus)) %>% 
+  relocate(Equity.Priority.Community.PBA.2050.Plus,.after = "NAME") 
 
-"Geographic.ID"
-"tract_geoi"
+share_population_bay_area <- region_collapsed %>% 
+  transmute(geography,
+            share_poc=round(100*((race_total_E-race_white_E)/race_total_E)),
+            share_low_income=round(100*((poverty_universe_E-poverty_2.00p_E)/poverty_universe_E)),
+            share_lep=round(100*(lep_total/lep_universe))
+  )
+
+
 
 get_historical_tract_bg_acs <- function(year,variables,tract_bg) {
   get_acs(
@@ -768,8 +830,8 @@ write.csv(historical_race_composite_county,file.path(output,"11_share_race_histo
 
 
 trial <- get_acs(
-  geography = "tract", 
-  variables = tract_vars, 
+  geography = "block group", 
+  variables = disability_collapsed,
   year = 2018, 
   state = statenumber,
   county=baycounties,
@@ -781,7 +843,7 @@ trial <- get_acs(
 
 
 
-
+trial <- get_historical_tract_bg_acs(2018,disability_collapsed,"block group")
 
 
 
