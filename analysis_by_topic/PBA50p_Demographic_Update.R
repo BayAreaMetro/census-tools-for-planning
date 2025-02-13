@@ -794,25 +794,95 @@ share_population_bay_area <- region_collapsed %>%
   transmute(geography,
             share_poc=round(100*((race_total_E-race_white_E)/race_total_E)),
             share_low_income=round(100*((poverty_universe_E-poverty_2.00p_E)/poverty_universe_E)),
-            share_lep=round(100*(lep_total/lep_universe))
+            share_lep=round(100*(lep_total/lep_universe)),
+            share_zero_veh=round(100*((zero_renter_all_E+zero_owner_all_E)/(all_owner_all_E+all_renter_all_E))),
+            share_older_adult=round(100*((male_75_79_E+male_80_84_E+male_85p_E+female_75_79_E+female_80_84_E+female_85p_E)/age_total_E)),
+            share_disabled=round(100*((one_under_18_E+twop_under_18_E+one_18_64_E+twop_18_64_E+one_65p_E+twop_65p_E)/tot_dis_universe_E)),
+            share_single_parent=round(100*((male_householder_E+female_householder_E)/(male_householder_E+female_householder_E+married_family_E))),
+            share_rent_burdened=round(100*(rent_50p_E/tot_rent_E))
+            )
+
+share_epc_2018 <- historical_tracts_2018 %>% 
+  filter(PBA.2050.Equity.Priority.Community==1) %>% 
+  select(-c(GEOID,hra_status,oppcat,PBA.2050.Equity.Priority.Community,year)) %>% 
+  select(where(is.numeric)) %>%                   
+  summarize(across(everything(), sum), .groups = "drop") %>%
+  mutate(geography="EPC_2018") %>% 
+  relocate(geography,.before = everything()) %>% 
+  mutate(
+    lep_5_17=spanish_notwell_5_17_E+spanish_notatall_5_17_E+indo_notwell_5_17_E+indo_notatall_5_17_E+
+      asian_notwell_5_17_E+asian_notatall_5_17_E+other_notwell_5_17_E+other_notatall_5_17_E,
+    
+    lep_18_64=spanish_notwell_18_64_E+spanish_notatall_18_64_E+indo_notwell_18_64_E+indo_notatall_18_64_E+
+      asian_notwell_18_64_E+asian_notatall_18_64_E+other_notwell_18_64_E+other_notatall_18_64_E,
+    
+    lep_65p=spanish_notwell_65p_E+spanish_notatall_65p_E+indo_notwell_65p_E+indo_notatall_65p_E+
+      asian_notwell_65p_E+asian_notatall_65p_E+other_notwell_65p_E+other_notatall_65p_E,
+    
+    non_lep_5_17=english_only_5_17_E+spanish_vwell_5_17_E+indo_vwell_5_17_E+asian_vwell_5_17_E+other_vwell_5_17_E+
+      spanish_well_5_17_E+indo_well_5_17_E+asian_well_5_17_E+other_well_5_17_E,
+    
+    non_lep_18_64=english_only_18_64_E+spanish_vwell_18_64_E+indo_vwell_18_64_E+asian_vwell_18_64_E+other_vwell_18_64_E+
+      spanish_well_18_64_E+indo_well_18_64_E+asian_well_18_64_E+other_well_18_64_E,
+    
+    non_lep_65p=english_only_65p_E+spanish_vwell_65p_E+indo_vwell_65p_E+asian_vwell_65p_E+other_vwell_65p_E+
+      spanish_well_65p_E+indo_well_65p_E+asian_well_65p_E+other_well_65p_E,
+    
+    lep_total=lep_5_17+lep_18_64+lep_65p,
+    non_lep_total=non_lep_5_17+non_lep_18_64+non_lep_65p,
+    lep_universe=lep_total+non_lep_total
+  ) %>% 
+  transmute(geography,
+            share_poc=round(100*((race_total_E-race_white_E)/race_total_E)),
+            share_low_income=round(100*((poverty_universe_E-poverty_2.00p_E)/poverty_universe_E)),
+            share_lep=round(100*(lep_total/lep_universe)),
+            share_zero_veh=round(100*((zero_renter_all_E+zero_owner_all_E)/(all_owner_all_E+all_renter_all_E))),
+            share_older_adult=round(100*((male_75_79_E+male_80_84_E+male_85p_E+female_75_79_E+female_80_84_E+female_85p_E)/age_total_E)),
+            share_disabled=round(100*((one_under_18_E+twop_under_18_E+one_18_64_E+twop_18_64_E+one_65p_E+twop_65p_E)/tot_dis_universe_E)),
+            share_single_parent=round(100*((male_householder_E+female_householder_E)/(male_householder_E+female_householder_E+married_family_E))),
+            share_rent_burdened=round(100*(rent_50p_E/tot_rent_E))
   )
 
-
-
-get_historical_tract_bg_acs <- function(year,variables,tract_bg) {
-  get_acs(
-    geography = tract_bg, 
-    variables = variables, 
-    year = year, 
-    state = statenumber,
-    county=baycounties,
-    survey = "acs5",
-    output = "wide"
-  ) %>%
-    select(-c(ends_with("_M"))) %>% 
-    mutate(year=year
-    ) 
-}
+share_epc_2022 <- historical_tracts_2022 %>% 
+  filter(Equity.Priority.Community.PBA.2050.Plus==1) %>% 
+  select(-c(GEOID,Equity.Priority.Community.PBA.2050.Plus,year)) %>% 
+  select(where(is.numeric)) %>%                   
+  summarize(across(everything(), sum), .groups = "drop") %>%
+  mutate(geography="EPC_2022") %>% 
+  relocate(geography,.before = everything()) %>% 
+  mutate(
+    lep_5_17=spanish_notwell_5_17_E+spanish_notatall_5_17_E+indo_notwell_5_17_E+indo_notatall_5_17_E+
+      asian_notwell_5_17_E+asian_notatall_5_17_E+other_notwell_5_17_E+other_notatall_5_17_E,
+    
+    lep_18_64=spanish_notwell_18_64_E+spanish_notatall_18_64_E+indo_notwell_18_64_E+indo_notatall_18_64_E+
+      asian_notwell_18_64_E+asian_notatall_18_64_E+other_notwell_18_64_E+other_notatall_18_64_E,
+    
+    lep_65p=spanish_notwell_65p_E+spanish_notatall_65p_E+indo_notwell_65p_E+indo_notatall_65p_E+
+      asian_notwell_65p_E+asian_notatall_65p_E+other_notwell_65p_E+other_notatall_65p_E,
+    
+    non_lep_5_17=english_only_5_17_E+spanish_vwell_5_17_E+indo_vwell_5_17_E+asian_vwell_5_17_E+other_vwell_5_17_E+
+      spanish_well_5_17_E+indo_well_5_17_E+asian_well_5_17_E+other_well_5_17_E,
+    
+    non_lep_18_64=english_only_18_64_E+spanish_vwell_18_64_E+indo_vwell_18_64_E+asian_vwell_18_64_E+other_vwell_18_64_E+
+      spanish_well_18_64_E+indo_well_18_64_E+asian_well_18_64_E+other_well_18_64_E,
+    
+    non_lep_65p=english_only_65p_E+spanish_vwell_65p_E+indo_vwell_65p_E+asian_vwell_65p_E+other_vwell_65p_E+
+      spanish_well_65p_E+indo_well_65p_E+asian_well_65p_E+other_well_65p_E,
+    
+    lep_total=lep_5_17+lep_18_64+lep_65p,
+    non_lep_total=non_lep_5_17+non_lep_18_64+non_lep_65p,
+    lep_universe=lep_total+non_lep_total
+  ) %>% 
+  transmute(geography,
+            share_poc=round(100*((race_total_E-race_white_E)/race_total_E)),
+            share_low_income=round(100*((poverty_universe_E-poverty_2.00p_E)/poverty_universe_E)),
+            share_lep=round(100*(lep_total/lep_universe)),
+            share_zero_veh=round(100*((zero_renter_all_E+zero_owner_all_E)/(all_owner_all_E+all_renter_all_E))),
+            share_older_adult=round(100*((male_75_79_E+male_80_84_E+male_85p_E+female_75_79_E+female_80_84_E+female_85p_E)/age_total_E)),
+            share_disabled=round(100*((one_under_18_E+twop_under_18_E+one_18_64_E+twop_18_64_E+one_65p_E+twop_65p_E)/tot_dis_universe_E)),
+            share_single_parent=round(100*((male_householder_E+female_householder_E)/(male_householder_E+female_householder_E+married_family_E))),
+            share_rent_burdened=round(100*(rent_50p_E/tot_rent_E))
+  )
 
 ## Export CSVs to appropriate project folders
 
@@ -827,6 +897,7 @@ write.csv(english_proficiency,file.path(output,"8_english_proficiency","english_
 write.csv(historical_race_final,file.path(output,"9_historical_race_place_type","historical_race_place_type.csv"),row.names = F)
 write.csv(med_household_income,file.path(output,"10_med_household_income","med_household_income.csv"),row.names = F) 
 write.csv(historical_race_composite_county,file.path(output,"11_share_race_historical","share_race_historical.csv"),row.names = F) 
+write.csv(share_population_bay_area,file.path(output,"12_share_population_by_demographic","share_population_bay_area.csv"),row.names = F) 
 
 
 trial <- get_acs(
