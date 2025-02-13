@@ -884,6 +884,11 @@ share_epc_2022 <- historical_tracts_2022 %>%
             share_rent_burdened=round(100*(rent_50p_E/tot_rent_E))
   )
 
+# High resource areas
+
+hra_2018_full_tracts <- historical_tracts_2018 %>% 
+  filter(hra_status==1)
+
 ## Export CSVs to appropriate project folders
 
 write.csv(rent_burden_df,file.path(output,"1_rent_burden","rent_burden.csv"),row.names = F) 
@@ -898,6 +903,8 @@ write.csv(historical_race_final,file.path(output,"9_historical_race_place_type",
 write.csv(med_household_income,file.path(output,"10_med_household_income","med_household_income.csv"),row.names = F) 
 write.csv(historical_race_composite_county,file.path(output,"11_share_race_historical","share_race_historical.csv"),row.names = F) 
 write.csv(share_population_bay_area,file.path(output,"12_share_population_by_demographic","share_population_bay_area.csv"),row.names = F) 
+write.csv(share_epc_2018,file.path(output,"12_share_population_by_demographic","share_epc_2018.csv"),row.names = F) 
+write.csv(share_epc_2022,file.path(output,"12_share_population_by_demographic","share_epc_2022.csv"),row.names = F) 
 
 
 trial <- get_acs(
