@@ -2,6 +2,8 @@
 # Import all the appropriate variables for PBA50+ demographic update
 # Write out data into individual CSVs for updating relevant charts/tables
 # Note that variables are assigned a "_" suffix for easier removal of MOE variables and clearer naming conventions
+# Note that different ACS data vintages (years) are used throughout this script because there are different needs. 
+# As such, it's probably best to search on years 2018 and 2022 to ensure the right years. This will change if script is used next plan.
 
 # Bring in libraries
 
@@ -23,11 +25,6 @@ hra_directory      <- file.path(pba50p_dir,"Regional Growth Framework","Growth G
 epc_2018_in        <- "M:/Crosswalks/Census/EPCs/equity_priority_communities_2020_acs2018_0.csv"
 epc_2022_in        <- "M:/Crosswalks/Census/EPCs/equity_priority_communities_pba2050plus_acs2022_0.csv"
 hra_in             <- file.path(hra_directory,"CTCAC_HRAs_2023.shp")
-
-## Set ACS variables
-
-#acs_year    =  2018  # Set ACS year
-#acs_product = "acs5" # Set ACS 1- or 5-year dataset
 
 ## Geography for Bay Area counties/places, including place EQ that can be found here: "M:/Crosswalks/Census/PBA50+/Place_Geo_Classification_Plan_EQ.csv"
 # Note that FIPS code changed for Moraga Town (Contra Costa County), Census 2000 to ACS years, from "0649194" to "0649187". Both values are included below. 
@@ -503,9 +500,7 @@ get_historical_tract_bg_acs <- function(year,variables,tract_bg) {
     ) 
 }
 
-
-
-# Create working_county dataframe for most of the outputs
+# Create working_county dataframe for most of the outputs/chart updates
 
 acs_year=2018
 working_county <- get_acs_county(acs_year,"acs5",total_acs_variables)
@@ -581,7 +576,6 @@ med_disability_earnings <- map_dfr(c(2012:2019,2021:2022),~ get_acs_county (.x,"
   mutate(weighted_med_non_dis_earnings=round(med_non_dis_earning_x_non_dis_worker/non_dis_worker_E),
          weighted_med_dis_earnings=round(med_dis_earnings_x_dis_worker/dis_worker_E),
          ) 
-
 
 # Share of population with disabilities
 # Some totals are built from component parts and some totals already exist in the data for some groups (e.g., white_dis_universe)
@@ -959,7 +953,8 @@ share_hra_disability <- hra_disability_data %>%
     share_disabled=round(100*((one_under_18_E+twop_under_18_E+one_18_64_E+twop_18_64_E+one_65p_E+twop_65p_E)/tot_dis_universe_E)),
 )
 
-share_hra_final_2018 <- left_join(share_hra_non_disability_data,share_hra_disability,by="geography")
+share_hra_final_2018 <- left_join(share_hra_non_disability_data,share_hra_disability,by="geography") %>% 
+  relocate(share_disabled,.after = share_older_adult)
 
 ## Export CSVs to appropriate project folders
 
