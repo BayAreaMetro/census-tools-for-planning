@@ -742,9 +742,10 @@ historical_race_composite_county <- bind_rows(historical_race_decennial_county,h
 # Extract block group data for 2018 HRAs, join with HRA tract data
 # Calculate share of population by demographic, 2022
 
-tract_bg_vars <- c(race_acs,poverty_persons,lep,non_lep,vehicles,older_adult,disability_collapsed,families,rent_burden)
+tract_vars <- c(race_acs,poverty_persons,lep,non_lep,vehicles,older_adult,disability_collapsed,families,rent_burden)
+bg_vars <- c(race_acs,poverty_persons,lep,non_lep,vehicles,older_adult,families,rent_burden)
 
-region_collapsed <- get_acs_county(2018,"acs5",tract_bg_vars) %>% 
+region_collapsed <- get_acs_county(2018,"acs5",tract_vars) %>% 
   select(where(is.numeric)) %>%                   
   summarize(across(everything(), sum), .groups = "drop") %>%
   mutate(geography="Bay Area_2018") %>% 
@@ -773,20 +774,20 @@ region_collapsed <- get_acs_county(2018,"acs5",tract_bg_vars) %>%
     lep_universe=lep_total+non_lep_total
   )
 
-historical_tracts_2018 <- get_historical_tract_bg_acs(2018,tract_bg_vars,"tract") %>% left_join(.,epc_2018 %>% select(-County.FIPS),by=c("GEOID"="Geographic.ID")) %>% 
+historical_tracts_2018 <- get_historical_tract_bg_acs(2018,tract_vars,"tract") %>% left_join(.,epc_2018 %>% select(-County.FIPS),by=c("GEOID"="Geographic.ID")) %>% 
   mutate(PBA.2050.Equity.Priority.Community=if_else(is.na(PBA.2050.Equity.Priority.Community),0,PBA.2050.Equity.Priority.Community)) %>% 
   relocate(PBA.2050.Equity.Priority.Community,.after = "NAME") %>% 
   left_join(.,hra_tracts %>% select(-c(fipco,blkgp_geoi)),by=c("GEOID"="tract_geoi")) %>% 
   mutate(hra_status=if_else(is.na(oppcat),0,1)) %>% 
   relocate(c(hra_status,oppcat),.after = "NAME")
 
-historical_bg_2018 <- get_historical_tract_bg_acs(2018,tract_bg_vars,"block group") %>%  
+historical_bgs_2018 <- get_historical_tract_bg_acs(2018,bg_vars,"block group") %>%  
   left_join(.,hra_bgs %>% select(-c(fipco,tract_geoi)),by=c("GEOID"="blkgp_geoi")) %>% 
   mutate(hra_status=if_else(is.na(oppcat),0,1)) %>% 
   relocate(c(hra_status,oppcat),.after = "NAME")
 
 
-historical_tracts_2022 <- get_historical_tract_bg_acs(2022,tract_bg_vars,"tract") %>% left_join(.,epc_2022 %>% select(-County.FIPS),by=c("GEOID"="Geographic.ID")) %>% 
+historical_tracts_2022 <- get_historical_tract_bg_acs(2022,tract_vars,"tract") %>% left_join(.,epc_2022 %>% select(-County.FIPS),by=c("GEOID"="Geographic.ID")) %>% 
   mutate(Equity.Priority.Community.PBA.2050.Plus=if_else(is.na(Equity.Priority.Community.PBA.2050.Plus),0,Equity.Priority.Community.PBA.2050.Plus)) %>% 
   relocate(Equity.Priority.Community.PBA.2050.Plus,.after = "NAME") 
 
@@ -884,10 +885,81 @@ share_epc_2022 <- historical_tracts_2022 %>%
             share_rent_burdened=round(100*(rent_50p_E/tot_rent_E))
   )
 
-# High resource areas
+# High resource areas (other than disability, which didn't have block group data and has a different process below)
 
-hra_2018_full_tracts <- historical_tracts_2018 %>% 
+hra_2018_tracts_data <- historical_tracts_2018 %>% 
   filter(hra_status==1)
+
+hra_2018_bgs_data <- historical_bgs_2018 %>% 
+  filter(hra_status==1)
+
+share_hra_non_disability_data <- bind_rows(hra_2018_tracts_data,hra_2018_bgs_data) %>% 
+  select(-c(GEOID,hra_status,oppcat,PBA.2050.Equity.Priority.Community,year)) %>% 
+  select(where(is.numeric)) %>%                   
+  summarize(across(everything(), sum), .groups = "drop") %>%
+  mutate(geography="HRA_2018") %>% 
+  relocate(geography,.before = everything()) %>% 
+  mutate(
+    lep_5_17=spanish_notwell_5_17_E+spanish_notatall_5_17_E+indo_notwell_5_17_E+indo_notatall_5_17_E+
+      asian_notwell_5_17_E+asian_notatall_5_17_E+other_notwell_5_17_E+other_notatall_5_17_E,
+    
+    lep_18_64=spanish_notwell_18_64_E+spanish_notatall_18_64_E+indo_notwell_18_64_E+indo_notatall_18_64_E+
+      asian_notwell_18_64_E+asian_notatall_18_64_E+other_notwell_18_64_E+other_notatall_18_64_E,
+    
+    lep_65p=spanish_notwell_65p_E+spanish_notatall_65p_E+indo_notwell_65p_E+indo_notatall_65p_E+
+      asian_notwell_65p_E+asian_notatall_65p_E+other_notwell_65p_E+other_notatall_65p_E,
+    
+    non_lep_5_17=english_only_5_17_E+spanish_vwell_5_17_E+indo_vwell_5_17_E+asian_vwell_5_17_E+other_vwell_5_17_E+
+      spanish_well_5_17_E+indo_well_5_17_E+asian_well_5_17_E+other_well_5_17_E,
+    
+    non_lep_18_64=english_only_18_64_E+spanish_vwell_18_64_E+indo_vwell_18_64_E+asian_vwell_18_64_E+other_vwell_18_64_E+
+      spanish_well_18_64_E+indo_well_18_64_E+asian_well_18_64_E+other_well_18_64_E,
+    
+    non_lep_65p=english_only_65p_E+spanish_vwell_65p_E+indo_vwell_65p_E+asian_vwell_65p_E+other_vwell_65p_E+
+      spanish_well_65p_E+indo_well_65p_E+asian_well_65p_E+other_well_65p_E,
+    
+    lep_total=lep_5_17+lep_18_64+lep_65p,
+    non_lep_total=non_lep_5_17+non_lep_18_64+non_lep_65p,
+    lep_universe=lep_total+non_lep_total
+  ) %>% 
+  transmute(geography,
+            share_poc=round(100*((race_total_E-race_white_E)/race_total_E)),
+            share_low_income=round(100*((poverty_universe_E-poverty_2.00p_E)/poverty_universe_E)),
+            share_lep=round(100*(lep_total/lep_universe)),
+            share_zero_veh=round(100*((zero_renter_all_E+zero_owner_all_E)/(all_owner_all_E+all_renter_all_E))),
+            share_older_adult=round(100*((male_75_79_E+male_80_84_E+male_85p_E+female_75_79_E+female_80_84_E+female_85p_E)/age_total_E)),
+            share_single_parent=round(100*((male_householder_E+female_householder_E)/(male_householder_E+female_householder_E+married_family_E))),
+            share_rent_burdened=round(100*(rent_50p_E/tot_rent_E))
+  )
+
+# Now work with disability data. Because we don't have block group level disability data, use the tract data that comprise the missing block groups
+# Last digit is block group, so remove that
+
+hra_bgs_as_tracts <- hra_bgs %>% 
+  mutate(tract_geoi=substr(blkgp_geoi, 1, nchar(blkgp_geoi) - 1))
+
+hra_tracts_and_bgs_as_tracts <- bind_rows(hra_tracts,hra_bgs_as_tracts) %>% 
+  mutate(hra_status=1) %>% 
+  select(tract_geoi,hra_status)
+
+historical_tracts_2018_join <- historical_tracts_2018 %>% 
+  select(GEOID,NAME,tot_dis_universe_E,tot_under_18_E,one_under_18_E,twop_under_18_E,nondis_under_18_E,
+         tot_18_64_E,one_18_64_E,twop_18_64_E,nondis_18_64_E, tot_65p_E,one_65p_E,twop_65p_E,nondis_65p_E,year)
+
+hra_disability_data <- left_join(hra_tracts_and_bgs_as_tracts,historical_tracts_2018_join, by=c("tract_geoi"="GEOID"))
+
+share_hra_disability <- hra_disability_data %>% 
+  select(-c(hra_status,year)) %>% 
+  select(where(is.numeric)) %>%                   
+  summarize(across(everything(), sum), .groups = "drop") %>%
+  mutate(geography="HRA_2018") %>% 
+  relocate(geography,.before = everything()) %>% 
+  transmute(
+    geography,
+    share_disabled=round(100*((one_under_18_E+twop_under_18_E+one_18_64_E+twop_18_64_E+one_65p_E+twop_65p_E)/tot_dis_universe_E)),
+)
+
+share_hra_final_2018 <- left_join(share_hra_non_disability_data,share_hra_disability,by="geography")
 
 ## Export CSVs to appropriate project folders
 
@@ -905,23 +977,9 @@ write.csv(historical_race_composite_county,file.path(output,"11_share_race_histo
 write.csv(share_population_bay_area,file.path(output,"12_share_population_by_demographic","share_population_bay_area.csv"),row.names = F) 
 write.csv(share_epc_2018,file.path(output,"12_share_population_by_demographic","share_epc_2018.csv"),row.names = F) 
 write.csv(share_epc_2022,file.path(output,"12_share_population_by_demographic","share_epc_2022.csv"),row.names = F) 
+write.csv(share_hra_final_2018,file.path(output,"12_share_population_by_demographic","share_hra_2018.csv"),row.names = F) 
 
 
-trial <- get_acs(
-  geography = "block group", 
-  variables = disability_collapsed,
-  year = 2018, 
-  state = statenumber,
-  county=baycounties,
-  survey = "acs5",
-  output = "wide"
-)
-
-
-
-
-
-trial <- get_historical_tract_bg_acs(2018,disability_collapsed,"block group")
 
 
 
