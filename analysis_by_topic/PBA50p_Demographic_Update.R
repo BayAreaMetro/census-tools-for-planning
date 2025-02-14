@@ -2,8 +2,10 @@
 # Import all the appropriate variables for PBA50+ demographic update
 # Write out data into individual CSVs for updating relevant charts/tables
 # Note that variables are assigned a "_" suffix for easier removal of MOE variables and clearer naming conventions
-# Note that different ACS data vintages (years) are used throughout this script because there are different needs. 
-# As such, it's probably best to search on years 2018 and 2022 to ensure the right years. This will change if script is used next plan.
+# Note that different ACS data vintages (years) are used throughout this script because there are different needs
+# As such, it's probably best to update years as appropriate
+# For ease of searching, the expression "replace_year" (without the quotes) is placed by each year instance that should be updated 
+# In some instances there may be multiple years or year vectors to update
 
 # Bring in libraries
 
@@ -11,11 +13,11 @@ suppressMessages(library(tidyverse))
 library(tidycensus)
 library(sf)
 
-# Eliminate scientific notation
+# Eliminate scientific notation in dataframes
 
 options(scipen = 999)
 
-# Set file directories for input and output
+# Set file directories for input and output, identify locations for epc/hra file inputs too
 
 userprofile        <- gsub("\\\\","/", Sys.getenv("USERPROFILE"))
 pba50p_dir         <- file.path(userprofile, "Box", "Plan Bay Area 2050+")
@@ -26,7 +28,7 @@ epc_2018_in        <- "M:/Crosswalks/Census/EPCs/equity_priority_communities_202
 epc_2022_in        <- "M:/Crosswalks/Census/EPCs/equity_priority_communities_pba2050plus_acs2022_0.csv"
 hra_in             <- file.path(hra_directory,"CTCAC_HRAs_2023.shp")
 
-## Geography for Bay Area counties/places, including place EQ that can be found here: "M:/Crosswalks/Census/PBA50+/Place_Geo_Classification_Plan_EQ.csv"
+# Geography for state of California, Bay Area counties/places, including place EQ that can be found here: "M:/Crosswalks/Census/PBA50+/Place_Geo_Classification_Plan_EQ.csv"
 # Note that FIPS code changed for Moraga Town (Contra Costa County), Census 2000 to ACS years, from "0649194" to "0649187". Both values are included below. 
 
 statenumber="06"
@@ -78,12 +80,14 @@ in_coast_delta = c("0601640", "0602252", "0605290", "0608142", "0609892", "06138
 hra_shapefile <- st_read(hra_in)
 hra_metatada  <- st_drop_geometry(hra_shapefile) %>% 
   select(fipco, tract_geoi, blkgp_geoi,oppcat)
+
 hra_tracts <- hra_metatada %>% filter(!is.na(tract_geoi))
 hra_bgs <- hra_metatada %>% filter(!is.na(blkgp_geoi))
 
 epc_2018      <- read.csv(epc_2018_in, colClasses = c("Geographic.ID"="character")) %>% 
   filter(PBA.2050.Equity.Priority.Community==1) %>% 
   select(Geographic.ID, County.FIPS, PBA.2050.Equity.Priority.Community)
+
 epc_2022      <- read.csv(epc_2022_in,colClasses = c("Geographic.ID"="character")) %>% 
   filter(Equity.Priority.Community.PBA.2050.Plus==1) %>% 
   select(Geographic.ID, County.FIPS, 
@@ -93,7 +97,8 @@ epc_2022      <- read.csv(epc_2022_in,colClasses = c("Geographic.ID"="character"
 
 # Rent burden (Gross Rent as a Percentage of Household Income in the Past 12 Months)
 
-rent_burden <- c(tot_rent_                     =    "B25070_001",  # Total renter occupied housing units
+rent_burden <- c(tenure_universe_              =    "B25003_001",  # Total tenure universe (includes both renters and owners)
+                 tot_rent_                     =    "B25070_001",  # Total renter occupied housing units
                  rent_30_35_                   =    "B25070_007",  # 30.0 to 34.9 percent
                  rent_35_40_                   =    "B25070_008",  # 35.0 to 39.9 percent
                  rent_40_50_                   =    "B25070_009",  # 40.0 to 49.9 percent
@@ -115,9 +120,10 @@ low_income_families <- c(married_under_1.30_   =    "B17022_004",  # Married wit
                          female_1.85p_         =    "B17022_077")  # Female householder with children, income > 1.85 ratio to poverty
 
 
-# Families by sex of householder
+# Families with children by sex of householder
 
-families <- c(married_family_                  =    "B11004_003",  # Married with children under 18
+families <- c(family_universe_                 =    "B11004_001",  # Family universe, including families with and without children
+              married_family_                  =    "B11004_003",  # Married with children under 18
               male_householder_                =    "B11004_010",  # Male householder with children under 18
               female_householder_              =    "B11004_016")  # Married with children under 18
 
@@ -355,7 +361,7 @@ lep <- c(spanish_well_5_17_                    =    "B16004_006",  # Speaks Span
          other_notatall_65p_                   =    "B16004_067")  # Speaks other language, English well, ages 65 plus
 
 
-# Race/Ethnicity - ACS
+# Race/Ethnicity - ACS and decennial
 
 race_acs <- c(race_total_                      =    "B03002_001",  # Total population
           race_white_                          =    "B03002_003",  # White population
@@ -408,15 +414,15 @@ disability_collapsed  <- c(tot_dis_universe_   =    "C18108_001",
                            twop_65p_           =    "C18108_012",
                            nondis_65p_         =    "C18108_013")            
                                                
-# Compile all the variables for use with county table (used for most of analyses)
+# Compile all the variables for use with county table (used for most of analyses). Some variables not used here but used later. 
 
 total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability,tenure,vehicles,lep,non_lep,
                          race_acs,med_inc_race,hholder_race)
 
-# Create functions for extracting data, including ACS and decennial data functions by county, place, and tract
+# Create functions for extracting data, including ACS and decennial data functions by county, place, and tract/block group
 # Create ACS function for place data and join place type (big three cities, bayside cities, and inland/coastal/delta cities)
 # Create decennial function for place data and join place type (big three cities, bayside cities, and inland/coastal/delta cities)
-# In each case, remove MOE variables ("_M")
+# In each case for ACS data, remove MOE variables ("_M")
 
 get_acs_county <- function(acs_year,acs_product,variables){
   get_acs(geography = "county",
@@ -502,7 +508,7 @@ get_historical_tract_bg_acs <- function(year,variables,tract_bg) {
 
 # Create working_county dataframe for most of the outputs/chart updates
 
-acs_year=2018
+acs_year=2018 # As appropriate, replace_year
 working_county <- get_acs_county(acs_year,"acs5",total_acs_variables)
 
 # Summarize to Bay Area and begin individual analyses for outputs
