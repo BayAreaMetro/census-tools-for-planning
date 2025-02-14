@@ -97,7 +97,7 @@ epc_2022      <- read.csv(epc_2022_in,colClasses = c("Geographic.ID"="character"
 
 # Rent burden (Gross Rent as a Percentage of Household Income in the Past 12 Months)
 
-rent_burden <- c(tenure_universe_              =    "B25003_001",  # Total tenure universe (includes both renters and owners)
+rent_burden <- c(tenure_universe_              =    "B25003_001",  # Total tenure universe (all occupied housing units, includes both renters and owners)
                  tot_rent_                     =    "B25070_001",  # Total renter occupied housing units
                  rent_30_35_                   =    "B25070_007",  # 30.0 to 34.9 percent
                  rent_35_40_                   =    "B25070_008",  # 35.0 to 39.9 percent
