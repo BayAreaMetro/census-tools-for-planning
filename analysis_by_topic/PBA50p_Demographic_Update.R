@@ -2,10 +2,13 @@
 # Import all the appropriate variables for PBA50+ demographic update
 # Write out data into individual CSVs for updating relevant charts/tables
 # Note that variables are assigned a "_" suffix for easier removal of MOE variables and clearer naming conventions
-# Note that different ACS data vintages (years) are used throughout this script because there are different needs
-# As such, it's probably best to update years as appropriate
-# For ease of searching, the expression "replace_year" (without the quotes) is placed by each year instance that should be updated 
-# In some instances there may be multiple years or year vectors to update
+
+#######################################################################################################################################
+# Note that different ACS data vintages (years) are used throughout this script because there are different needs                   ###
+# As such, it's probably best to update years as appropriate                                                                        ###
+# For ease of searching, the expression "replace_year" (without the quotes) is placed by each year instance that should be updated  ###
+# In some instances there may be multiple years or year vectors to update                                                           ###
+#######################################################################################################################################
 
 # Bring in libraries
 
@@ -570,7 +573,9 @@ share_family <- working_bay %>%
 # Median earnings by disability status, ACS 1-year data 2012-2022, omitting 2020 not available due to Covid
 # Calculate weighted median for Bay Area for disabled workers and non-disabled workers
 
-med_disability_earnings <- map_dfr(c(2012:2019,2021:2022),~ get_acs_county (.x,"acs1",med_dis_earnings)) %>% # 2020 data not available due to pandemic
+acs_years <- c(2012:2019,2021:2022) # As appropriate, replace_year. 2020 data not available due to pandemic
+
+med_disability_earnings <- map_dfr(acs_years,~ get_acs_county (.x,"acs1",med_dis_earnings)) %>% 
   mutate(med_dis_earnings_x_dis_worker=med_dis_earnings_E*dis_worker_E,
          med_non_dis_earning_x_non_dis_worker=med_non_dis_earnings_E*non_dis_worker_E) %>% 
   group_by(year) %>% 
@@ -621,7 +626,7 @@ senior_tenure_bay <- working_bay %>%
   transmute(geography,
             share_senior_renter=round(100*(renter_75_84_E+renter_85p_E)/(renter_75_84_E+renter_85p_E+owner_75_84_E+owner_85p_E)))
 
-acs_year=2022
+acs_year=2022 # As appropriate, replace_year
 senior_tenure_place <- get_historical_place_acs(acs_year,tenure) %>% 
   group_by(geography) %>% 
   summarize(owner_75_84_E=sum(owner_75_84_E),owner_85p_E=sum(owner_85p_E),renter_75_84_E=sum(renter_75_84_E),
@@ -673,8 +678,10 @@ english_proficiency <- working_bay %>%
 # Combine datasets, calculate racial category shares within each geography type (sum to 100 percent for all Bay Area places/cities)
 # Order data frame by year, geography type
 
-historical_race_acs_place <- map_dfr(c(2009,2014,2018,2022),~ get_historical_place_acs(.x, race_acs)) 
-historical_race_decennial_place <- get_historical_place_decennial(2000,race_decennial) 
+acs_years <- c(2009,2014,2018,2022)  # As appropriate, replace_year
+
+historical_race_acs_place <- map_dfr(acs_years,~ get_historical_place_acs(.x, race_acs)) 
+historical_race_decennial_place <- get_historical_place_decennial(2000,race_decennial)  # As appropriate, replace_year
 historical_race_composite_place <- bind_rows(historical_race_decennial_place,historical_race_acs_place) %>% arrange(geography,year)
 
 historical_race_bay_place <- historical_race_composite_place %>% 
@@ -705,7 +712,7 @@ historical_race_final <- bind_rows(historical_race_grouped_places,historical_rac
 # Some counties don't have enough households of particular groups for representative data and NAs are in the dataset - changed NA values to 0
 # This was particularly an issue with Napa County. Using 5-year ACS data would likely solve the problem. 
 
-acs_year <- 2018
+acs_year <- 2018  # As appropriate, replace_year
 race_income_vars <- c(med_inc_race,hholder_race)
 
 med_household_income <- get_acs_county(acs_year, "acs1",race_income_vars) %>% 
@@ -727,8 +734,9 @@ med_household_income <- get_acs_county(acs_year, "acs1",race_income_vars) %>%
 
 # Share of population by race, Census 2000 and ACS 2014/2018 5-year
 
-historical_race_acs_county <- map_dfr(c(2014,2018,2022),~ get_acs_county(.x, "acs5",race_acs))
-historical_race_decennial_county <- get_decennial_county(2000,race_decennial)
+acs_years <- c(2014,2018,2022) # As appropriate, replace_year
+historical_race_acs_county <- map_dfr(acs_years,~ get_acs_county(.x, "acs5",race_acs))
+historical_race_decennial_county <- get_decennial_county(2000,race_decennial) # As appropriate, replace_year
 
 historical_race_composite_county <- bind_rows(historical_race_decennial_county,historical_race_acs_county) %>% 
   group_by(year) %>% 
@@ -745,10 +753,12 @@ historical_race_composite_county <- bind_rows(historical_race_decennial_county,h
 tract_vars <- c(race_acs,poverty_persons,lep,non_lep,vehicles,older_adult,disability_collapsed,families,rent_burden)
 bg_vars <- c(race_acs,poverty_persons,lep,non_lep,vehicles,older_adult,families,rent_burden)
 
-region_collapsed <- get_acs_county(2018,"acs5",tract_vars) %>% 
+acs_year <- 2018 # As appropriate, replace_year
+
+region_collapsed <- get_acs_county(acs_year,"acs5",tract_vars) %>% 
   select(where(is.numeric)) %>%                   
   summarize(across(everything(), sum), .groups = "drop") %>%
-  mutate(geography="Bay Area_2018") %>% 
+  mutate(geography=paste0("Bay Area_",acs_year)) %>% 
   relocate(geography,.before = everything()) %>% 
   mutate(
     lep_5_17=spanish_notwell_5_17_E+spanish_notatall_5_17_E+indo_notwell_5_17_E+indo_notatall_5_17_E+
@@ -774,20 +784,21 @@ region_collapsed <- get_acs_county(2018,"acs5",tract_vars) %>%
     lep_universe=lep_total+non_lep_total
   )
 
-historical_tracts_2018 <- get_historical_tract_bg_acs(2018,tract_vars,"tract") %>% left_join(.,epc_2018 %>% select(-County.FIPS),by=c("GEOID"="Geographic.ID")) %>% 
+historical_tracts_2018 <- get_historical_tract_bg_acs(acs_year,tract_vars,"tract") %>% left_join(.,epc_2018 %>% select(-County.FIPS),by=c("GEOID"="Geographic.ID")) %>% 
   mutate(PBA.2050.Equity.Priority.Community=if_else(is.na(PBA.2050.Equity.Priority.Community),0,PBA.2050.Equity.Priority.Community)) %>% 
   relocate(PBA.2050.Equity.Priority.Community,.after = "NAME") %>% 
   left_join(.,hra_tracts %>% select(-c(fipco,blkgp_geoi)),by=c("GEOID"="tract_geoi")) %>% 
   mutate(hra_status=if_else(is.na(oppcat),0,1)) %>% 
   relocate(c(hra_status,oppcat),.after = "NAME")
 
-historical_bgs_2018 <- get_historical_tract_bg_acs(2018,bg_vars,"block group") %>%  
+historical_bgs_2018 <- get_historical_tract_bg_acs(acs_year,bg_vars,"block group") %>%  
   left_join(.,hra_bgs %>% select(-c(fipco,tract_geoi)),by=c("GEOID"="blkgp_geoi")) %>% 
   mutate(hra_status=if_else(is.na(oppcat),0,1)) %>% 
   relocate(c(hra_status,oppcat),.after = "NAME")
 
+acs_year <- 2022 # As appropriate, replace_year
 
-historical_tracts_2022 <- get_historical_tract_bg_acs(2022,tract_vars,"tract") %>% left_join(.,epc_2022 %>% select(-County.FIPS),by=c("GEOID"="Geographic.ID")) %>% 
+historical_tracts_2022 <- get_historical_tract_bg_acs(acs_year,tract_vars,"tract") %>% left_join(.,epc_2022 %>% select(-County.FIPS),by=c("GEOID"="Geographic.ID")) %>% 
   mutate(Equity.Priority.Community.PBA.2050.Plus=if_else(is.na(Equity.Priority.Community.PBA.2050.Plus),0,Equity.Priority.Community.PBA.2050.Plus)) %>% 
   relocate(Equity.Priority.Community.PBA.2050.Plus,.after = "NAME") 
 
@@ -799,8 +810,8 @@ share_population_bay_area <- region_collapsed %>%
             share_zero_veh=round(100*((zero_renter_all_E+zero_owner_all_E)/(all_owner_all_E+all_renter_all_E))),
             share_older_adult=round(100*((male_75_79_E+male_80_84_E+male_85p_E+female_75_79_E+female_80_84_E+female_85p_E)/age_total_E)),
             share_disabled=round(100*((one_under_18_E+twop_under_18_E+one_18_64_E+twop_18_64_E+one_65p_E+twop_65p_E)/tot_dis_universe_E)),
-            share_single_parent=round(100*((male_householder_E+female_householder_E)/(male_householder_E+female_householder_E+married_family_E))),
-            share_rent_burdened=round(100*(rent_50p_E/tot_rent_E))
+            share_single_parent=round(100*((male_householder_E+female_householder_E)/family_universe_E)),
+            share_rent_burdened=round(100*(rent_50p_E/tenure_universe_E))
             )
 
 share_epc_2018 <- historical_tracts_2018 %>% 
@@ -840,8 +851,8 @@ share_epc_2018 <- historical_tracts_2018 %>%
             share_zero_veh=round(100*((zero_renter_all_E+zero_owner_all_E)/(all_owner_all_E+all_renter_all_E))),
             share_older_adult=round(100*((male_75_79_E+male_80_84_E+male_85p_E+female_75_79_E+female_80_84_E+female_85p_E)/age_total_E)),
             share_disabled=round(100*((one_under_18_E+twop_under_18_E+one_18_64_E+twop_18_64_E+one_65p_E+twop_65p_E)/tot_dis_universe_E)),
-            share_single_parent=round(100*((male_householder_E+female_householder_E)/(male_householder_E+female_householder_E+married_family_E))),
-            share_rent_burdened=round(100*(rent_50p_E/tot_rent_E))
+            share_single_parent=round(100*((male_householder_E+female_householder_E)/family_universe_E)),
+            share_rent_burdened=round(100*(rent_50p_E/tenure_universe_E))
   )
 
 share_epc_2022 <- historical_tracts_2022 %>% 
@@ -881,8 +892,8 @@ share_epc_2022 <- historical_tracts_2022 %>%
             share_zero_veh=round(100*((zero_renter_all_E+zero_owner_all_E)/(all_owner_all_E+all_renter_all_E))),
             share_older_adult=round(100*((male_75_79_E+male_80_84_E+male_85p_E+female_75_79_E+female_80_84_E+female_85p_E)/age_total_E)),
             share_disabled=round(100*((one_under_18_E+twop_under_18_E+one_18_64_E+twop_18_64_E+one_65p_E+twop_65p_E)/tot_dis_universe_E)),
-            share_single_parent=round(100*((male_householder_E+female_householder_E)/(male_householder_E+female_householder_E+married_family_E))),
-            share_rent_burdened=round(100*(rent_50p_E/tot_rent_E))
+            share_single_parent=round(100*((male_householder_E+female_householder_E)/family_universe_E)),
+            share_rent_burdened=round(100*(rent_50p_E/tenure_universe_E))
   )
 
 # High resource areas (other than disability, which didn't have block group data and has a different process below)
@@ -928,8 +939,8 @@ share_hra_non_disability_data <- bind_rows(hra_2018_tracts_data,hra_2018_bgs_dat
             share_lep=round(100*(lep_total/lep_universe)),
             share_zero_veh=round(100*((zero_renter_all_E+zero_owner_all_E)/(all_owner_all_E+all_renter_all_E))),
             share_older_adult=round(100*((male_75_79_E+male_80_84_E+male_85p_E+female_75_79_E+female_80_84_E+female_85p_E)/age_total_E)),
-            share_single_parent=round(100*((male_householder_E+female_householder_E)/(male_householder_E+female_householder_E+married_family_E))),
-            share_rent_burdened=round(100*(rent_50p_E/tot_rent_E))
+            share_single_parent=round(100*((male_householder_E+female_householder_E)/family_universe_E)),
+            share_rent_burdened=round(100*(rent_50p_E/tenure_universe_E))
   )
 
 # Now work with disability data. Because we don't have block group level disability data, use the tract data that comprise the missing block groups
