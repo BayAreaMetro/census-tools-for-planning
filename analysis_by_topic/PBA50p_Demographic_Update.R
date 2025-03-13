@@ -749,6 +749,7 @@ historical_race_composite_county <- bind_rows(historical_race_decennial_county,h
 # Extract tract data for 2018 and 2022 and join EPCs/HRAs with respective years
 # Extract block group data for 2018 HRAs, join with HRA tract data
 # Calculate share of population by demographic, 2022
+# replace_year - some of the data frames have year values included in the names below (e.g., historical_tracts_2018). This should be updated as needed, if the script is updated.
 
 tract_vars <- c(race_acs,poverty_persons,lep,non_lep,vehicles,older_adult,disability_collapsed,families,rent_burden)
 bg_vars <- c(race_acs,poverty_persons,lep,non_lep,vehicles,older_adult,families,rent_burden)
