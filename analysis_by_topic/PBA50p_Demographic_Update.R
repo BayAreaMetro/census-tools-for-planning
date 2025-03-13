@@ -511,7 +511,7 @@ get_historical_tract_bg_acs <- function(year,variables,tract_bg) {
 
 # Create working_county dataframe for most of the outputs/chart updates
 
-acs_year=2018 # As appropriate, replace_year
+acs_year=2022 # As appropriate, replace_year
 working_county <- get_acs_county(acs_year,"acs5",total_acs_variables)
 
 # Summarize to Bay Area and begin individual analyses for outputs
@@ -712,7 +712,7 @@ historical_race_final <- bind_rows(historical_race_grouped_places,historical_rac
 # Some counties don't have enough households of particular groups for representative data and NAs are in the dataset - changed NA values to 0
 # This was particularly an issue with Napa County. Using 5-year ACS data would likely solve the problem. 
 
-acs_year <- 2018  # As appropriate, replace_year
+acs_year <- 2022  # As appropriate, replace_year
 race_income_vars <- c(med_inc_race,hholder_race)
 
 med_household_income <- get_acs_county(acs_year, "acs1",race_income_vars) %>% 
@@ -753,7 +753,7 @@ historical_race_composite_county <- bind_rows(historical_race_decennial_county,h
 tract_vars <- c(race_acs,poverty_persons,lep,non_lep,vehicles,older_adult,disability_collapsed,families,rent_burden)
 bg_vars <- c(race_acs,poverty_persons,lep,non_lep,vehicles,older_adult,families,rent_burden)
 
-acs_year <- 2018 # As appropriate, replace_year
+acs_year <- 2022 # As appropriate, replace_year
 
 region_collapsed <- get_acs_county(acs_year,"acs5",tract_vars) %>% 
   select(where(is.numeric)) %>%                   
@@ -784,6 +784,8 @@ region_collapsed <- get_acs_county(acs_year,"acs5",tract_vars) %>%
     lep_universe=lep_total+non_lep_total
   )
 
+acs_year <- 2018 # As appropriate, replace_year
+
 historical_tracts_2018 <- get_historical_tract_bg_acs(acs_year,tract_vars,"tract") %>% left_join(.,epc_2018 %>% select(-County.FIPS),by=c("GEOID"="Geographic.ID")) %>% 
   mutate(PBA.2050.Equity.Priority.Community=if_else(is.na(PBA.2050.Equity.Priority.Community),0,PBA.2050.Equity.Priority.Community)) %>% 
   relocate(PBA.2050.Equity.Priority.Community,.after = "NAME") %>% 
@@ -802,8 +804,19 @@ historical_tracts_2022 <- get_historical_tract_bg_acs(acs_year,tract_vars,"tract
   mutate(Equity.Priority.Community.PBA.2050.Plus=if_else(is.na(Equity.Priority.Community.PBA.2050.Plus),0,Equity.Priority.Community.PBA.2050.Plus)) %>% 
   relocate(Equity.Priority.Community.PBA.2050.Plus,.after = "NAME") 
 
+# Create shares for Bay Area region as a whole
+
 share_population_bay_area <- region_collapsed %>% 
   transmute(geography,
+            poc_total=race_total_E-race_white_E,
+            low_income_total=poverty_universe_E-poverty_2.00p_E,
+            lep_total,
+            zero_vehicle_total=zero_renter_all_E+zero_owner_all_E,
+            older_adult_total=male_75_79_E+male_80_84_E+male_85p_E+female_75_79_E+female_80_84_E+female_85p_E,
+            disabled_total=one_under_18_E+twop_under_18_E+one_18_64_E+twop_18_64_E+one_65p_E+twop_65p_E,
+            single_parent_total=male_householder_E+female_householder_E,
+            rent_burdened_total=rent_50p_E,
+            population_total=race_total_E,
             share_poc=round(100*((race_total_E-race_white_E)/race_total_E)),
             share_low_income=round(100*((poverty_universe_E-poverty_2.00p_E)/poverty_universe_E)),
             share_lep=round(100*(lep_total/lep_universe)),
@@ -845,6 +858,15 @@ share_epc_2018 <- historical_tracts_2018 %>%
     lep_universe=lep_total+non_lep_total
   ) %>% 
   transmute(geography,
+            poc_total=race_total_E-race_white_E,
+            low_income_total=poverty_universe_E-poverty_2.00p_E,
+            lep_total,
+            zero_vehicle_total=zero_renter_all_E+zero_owner_all_E,
+            older_adult_total=male_75_79_E+male_80_84_E+male_85p_E+female_75_79_E+female_80_84_E+female_85p_E,
+            disabled_total=one_under_18_E+twop_under_18_E+one_18_64_E+twop_18_64_E+one_65p_E+twop_65p_E,
+            single_parent_total=male_householder_E+female_householder_E,
+            rent_burdened_total=rent_50p_E,
+            population_total=race_total_E,
             share_poc=round(100*((race_total_E-race_white_E)/race_total_E)),
             share_low_income=round(100*((poverty_universe_E-poverty_2.00p_E)/poverty_universe_E)),
             share_lep=round(100*(lep_total/lep_universe)),
@@ -886,6 +908,15 @@ share_epc_2022 <- historical_tracts_2022 %>%
     lep_universe=lep_total+non_lep_total
   ) %>% 
   transmute(geography,
+            poc_total=race_total_E-race_white_E,
+            low_income_total=poverty_universe_E-poverty_2.00p_E,
+            lep_total,
+            zero_vehicle_total=zero_renter_all_E+zero_owner_all_E,
+            older_adult_total=male_75_79_E+male_80_84_E+male_85p_E+female_75_79_E+female_80_84_E+female_85p_E,
+            disabled_total=one_under_18_E+twop_under_18_E+one_18_64_E+twop_18_64_E+one_65p_E+twop_65p_E,
+            single_parent_total=male_householder_E+female_householder_E,
+            rent_burdened_total=rent_50p_E,
+            population_total=race_total_E,
             share_poc=round(100*((race_total_E-race_white_E)/race_total_E)),
             share_low_income=round(100*((poverty_universe_E-poverty_2.00p_E)/poverty_universe_E)),
             share_lep=round(100*(lep_total/lep_universe)),
@@ -934,6 +965,14 @@ share_hra_non_disability_data <- bind_rows(hra_2018_tracts_data,hra_2018_bgs_dat
     lep_universe=lep_total+non_lep_total
   ) %>% 
   transmute(geography,
+            poc_total=race_total_E-race_white_E,
+            low_income_total=poverty_universe_E-poverty_2.00p_E,
+            lep_total,
+            zero_vehicle_total=zero_renter_all_E+zero_owner_all_E,
+            older_adult_total=male_75_79_E+male_80_84_E+male_85p_E+female_75_79_E+female_80_84_E+female_85p_E,
+            single_parent_total=male_householder_E+female_householder_E,
+            rent_burdened_total=rent_50p_E,
+            population_total=race_total_E,
             share_poc=round(100*((race_total_E-race_white_E)/race_total_E)),
             share_low_income=round(100*((poverty_universe_E-poverty_2.00p_E)/poverty_universe_E)),
             share_lep=round(100*(lep_total/lep_universe)),
@@ -967,11 +1006,13 @@ share_hra_disability <- hra_disability_data %>%
   relocate(geography,.before = everything()) %>% 
   transmute(
     geography,
+    disabled_total=one_under_18_E+twop_under_18_E+one_18_64_E+twop_18_64_E+one_65p_E+twop_65p_E,
     share_disabled=round(100*((one_under_18_E+twop_under_18_E+one_18_64_E+twop_18_64_E+one_65p_E+twop_65p_E)/tot_dis_universe_E)),
 )
 
 share_hra_final_2018 <- left_join(share_hra_non_disability_data,share_hra_disability,by="geography") %>% 
-  relocate(share_disabled,.after = share_older_adult)
+  relocate(share_disabled,.after = share_older_adult) %>% 
+  relocate(disabled_total,.before = population_total)
 
 ## Export CSVs to appropriate project folders
 
@@ -989,13 +1030,7 @@ write.csv(historical_race_composite_county,file.path(output,"11_share_race_histo
 write.csv(share_population_bay_area,file.path(output,"12_share_population_by_demographic","share_population_bay_area.csv"),row.names = F) 
 write.csv(share_epc_2018,file.path(output,"12_share_population_by_demographic","share_epc_2018.csv"),row.names = F) 
 write.csv(share_epc_2022,file.path(output,"12_share_population_by_demographic","share_epc_2022.csv"),row.names = F) 
-write.csv(share_hra_final_2018,file.path(output,"12_share_population_by_demographic","share_hra_2018.csv"),row.names = F) 
+write.csv(share_hra_final_2018,file.path(output,"12_share_population_by_demographic","share_hra_2023.csv"),row.names = F) # See below notes
 
-
-
-
-
-
-
-
+# HRAs are built on 2018 ACS data for different years. The shapefile used here is for 2023, refreshed for different HRAs but still using 2018 data as a starting place
 
