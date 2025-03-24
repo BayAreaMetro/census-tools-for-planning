@@ -10,6 +10,25 @@
 # In some instances there may be multiple years or year vectors to update                                                           ###
 #######################################################################################################################################
 
+# Output datasets are summarized below and follow the order in this task: https://app.asana.com/0/1208513652070028/1208543782145686/f
+
+"
+
+1.  Share of Bay Area renters by rent burden, ACS 2022
+2.  Share of low-income families with children by parent category, ACS 2022
+3.  Share of each family type that is low income, ACS 2022
+4.  Meidan annual earnings for employed persons by disability status, ACS 2022
+5.  Share of population by category that has a disability, ACS 2022
+6.  Share of older adults that rent by geographic strata, ACS 2022
+7.  Share of population living in zero-vehicle households by tenure and householder type, ACS 2022
+8.  Share of population by age that is limited-English proficient, ACS 2022
+9.  Share of race/ethnicity by Bay Area place type, Census 2000 to ACS 2022
+10. Annual household income by race of householder, ACS 2022
+11. Share of Bay Area population by race/ethnicity, Census 2000 to ACS 2022
+12. Totals and share of population by equity demographic for geography type (Bay Area, EPC 2018/2022, HRA 2023), ACS 2018 and 2022
+
+"
+
 # Bring in libraries
 
 suppressMessages(library(tidyverse))
