@@ -121,9 +121,9 @@ epc_2022      <- read.csv(epc_2022_in,colClasses = c("Geographic.ID"="character"
 
 rent_burden <- c(tenure_universe_              =    "B25003_001",  # Total tenure universe (all occupied housing units, includes both renters and owners)
                  tot_rent_                     =    "B25070_001",  # Total renter occupied housing units
-                 rent_30_35_                   =    "B25070_007",  # 30.0 to 34.9 percent
-                 rent_35_40_                   =    "B25070_008",  # 35.0 to 39.9 percent
-                 rent_40_50_                   =    "B25070_009",  # 40.0 to 49.9 percent
+                 rent_30_34_                   =    "B25070_007",  # 30.0 to 34.9 percent
+                 rent_35_39_                   =    "B25070_008",  # 35.0 to 39.9 percent
+                 rent_40_49_                   =    "B25070_009",  # 40.0 to 49.9 percent
                  rent_50p_                     =    "B25070_010")  # 50.0 percent or more
 
 # Families with low income (Ratio of Income to Poverty Level in the Past 12 Months of Families by Family Type by Presence of Related Children Under 18 Years by Age of Related Children)
@@ -552,9 +552,14 @@ working_bay     <- working_county %>%
 
 rent_burden_df <- working_bay %>% 
   transmute(geography,
-         share_rent_30_39=round(100*(rent_30_35_E + rent_35_40_E)/tot_rent_E),
-         share_rent_40_49=round(100*(rent_40_50_E)/tot_rent_E),
-         share_rent_50plus=round(100*(rent_50p_E)/tot_rent_E))
+            rent_30_34_E,
+            rent_35_39_E,
+            rent_40_49_E,
+            rent_50p_E,
+            tot_rent_E,
+            share_rent_30_39=round(100*(rent_30_34_E + rent_35_39_E)/tot_rent_E),
+            share_rent_40_49=round(100*(rent_40_49_E)/tot_rent_E),
+            share_rent_50plus=round(100*(rent_50p_E)/tot_rent_E))
 
 
 # Pie chart of low income by family type
