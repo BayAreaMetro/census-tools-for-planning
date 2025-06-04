@@ -35,6 +35,7 @@ suppressMessages(library(tidyverse))
 library(tidycensus)
 library(sf)
 
+
 # Eliminate scientific notation in dataframes
 
 options(scipen = 999)
@@ -116,6 +117,12 @@ epc_2022      <- read.csv(epc_2022_in,colClasses = c("Geographic.ID"="character"
          Equity.Priority.Community.PBA.2050.Plus)
 
 ## Assign variables
+
+# Totals
+
+total_universe <- c(tot_household_universe_    =     "B08201_001", # Total households
+                    tot_family_universe_       =     "B11003_001", # Total families
+                    )
 
 # Rent burden (Gross Rent as a Percentage of Household Income in the Past 12 Months)
 
