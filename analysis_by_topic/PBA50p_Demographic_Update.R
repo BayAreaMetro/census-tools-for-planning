@@ -117,13 +117,23 @@ epc_2022      <- read.csv(epc_2022_in,colClasses = c("Geographic.ID"="character"
          Equity.Priority.Community.PBA.2050.Plus)
 
 ## Assign variables
+# Extra variables added just for text, not included in charts
 
-# Totals
-
-total_universe <- c(tot_household_universe_    =     "B08201_001", # Total households
+extra_universe <- c(tot_household_universe_    =     "B25003_001", # Total households
+                    rent_household_            =     "B25003_003", # Total households that rent
                     tot_family_universe_       =     "B11003_001", # Total families
+                    married_fam_children_      =     "B11003_003", # Married couple family with own children under 18
+                    male_single_children_      =     "B11003_010", # Male single parent family with own children under 18
+                    female_single_children_    =     "B11003_016", # Male single parent family with own children under 18
+                    zero_veh_noworkers_        =     "B08203_008", # Zero-vehicle household with no workers
+                    zero_veh_oneworker_        =     "B08203_014", # Zero-vehicle household with one worker
+                    zero_veh_twoworkers_       =     "B08203_020", # Zero-vehicle household with two workers
+                    zero_veh_3pworkers_        =     "B08203_026", # Zero-vehicle household with three-plus workers
+                    rent_age_75_84_            =     "B25007_020", # Renters age 75 to 84
+                    rent_age_85p_              =     "B25007_021", # Renters age 85-plus
                     )
 
+# Now variables for charts (and often text too)
 # Rent burden (Gross Rent as a Percentage of Household Income in the Past 12 Months)
 
 rent_burden <- c(tenure_universe_              =    "B25003_001",  # Total tenure universe (all occupied housing units, includes both renters and owners)
