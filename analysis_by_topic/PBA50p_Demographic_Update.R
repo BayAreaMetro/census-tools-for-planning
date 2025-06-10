@@ -117,23 +117,7 @@ epc_2022      <- read.csv(epc_2022_in,colClasses = c("Geographic.ID"="character"
          Equity.Priority.Community.PBA.2050.Plus)
 
 ## Assign variables
-# Extra variables added just for text, not included in charts
 
-extra_universe <- c(tot_household_universe_    =     "B25003_001", # Total households
-                    rent_household_            =     "B25003_003", # Total households that rent
-                    tot_family_universe_       =     "B11003_001", # Total families
-                    married_fam_children_      =     "B11003_003", # Married couple family with own children under 18
-                    male_single_children_      =     "B11003_010", # Male single parent family with own children under 18
-                    female_single_children_    =     "B11003_016", # Male single parent family with own children under 18
-                    zero_veh_noworkers_        =     "B08203_008", # Zero-vehicle household with no workers
-                    zero_veh_oneworker_        =     "B08203_014", # Zero-vehicle household with one worker
-                    zero_veh_twoworkers_       =     "B08203_020", # Zero-vehicle household with two workers
-                    zero_veh_3pworkers_        =     "B08203_026", # Zero-vehicle household with three-plus workers
-                    rent_age_75_84_            =     "B25007_020", # Renters age 75 to 84
-                    rent_age_85p_              =     "B25007_021", # Renters age 85-plus
-                    )
-
-# Now variables for charts (and often text too)
 # Rent burden (Gross Rent as a Percentage of Household Income in the Past 12 Months)
 
 rent_burden <- c(tenure_universe_              =    "B25003_001",  # Total tenure universe (all occupied housing units, includes both renters and owners)
@@ -451,7 +435,93 @@ disability_collapsed  <- c(tot_dis_universe_   =    "C18108_001",
                            tot_65p_            =    "C18108_010",
                            one_65p_            =    "C18108_011",
                            twop_65p_           =    "C18108_012",
-                           nondis_65p_         =    "C18108_013")            
+                           nondis_65p_         =    "C18108_013")   
+
+# Extra variables added just for text, not included in charts
+# First 1-year data variables, then 5-year ones
+
+extra_1year <-    c(dis_employ_universe_       =     "B18120_001", # Total disability employment universe - civillian noninst. pop 18 to 64
+                    dis_employed_18_64_        =     "B18120_004", # Employed with a disability
+                    dis_unemployed_18_64_      =     "B18120_013", # Unemployed with a disability
+                    dis_notinlaborforce_18_64_ =     "B18120_022" # Not in labor force with a disability
+)
+
+extra_5year <-c(tot_household_universe_        =     "B25003_001", # Total households
+                renter_household_              =     "B25003_003", # Total households that rent
+                owner_household_               =     "B25003_002", # Total households that own
+                tot_family_universe_           =     "B11003_001", # Total families
+                married_fam_children_          =     "B11003_003", # Married couple family with own children under 18
+                male_single_parent_            =     "B11003_010", # Male single parent family with own children under 18
+                female_single_parent_          =     "B11003_016", # Male single parent family with own children under 18
+                
+                black_married_par_povty_       =     "B17010B_004",# Black married couple family with related children under 18
+                black_male_par_povty_          =     "B17010B_011",# Black single dad with related children under 18
+                black_female_par_povty_        =     "B17010B_017",# Black single mom with related children under 18
+                black_married_par_nopovty_     =     "B17010B_024",# Black married couple family with related children under 18
+                black_male_par_nopovty_        =     "B17010B_031",# Black single dad with related children under 18
+                black_female_par_nopovty_      =     "B17010B_037",# Black single mom with related children under 18
+                
+                aian_married_par_povty_        =     "B17010C_004",# American Indian Alaska Native married couple family with related children under 18
+                aian_male_par_povty_           =     "B17010C_011",# American Indian Alaska Native single dad with related children under 18
+                aian_female_par_povty_         =     "B17010C_017",# American Indian Alaska Native single mom with related children under 18
+                aian_married_par_nopovty_      =     "B17010C_024",# American Indian Alaska Native married couple family with related children under 18
+                aian_male_par_nopovty_         =     "B17010C_031",# American Indian Alaska Native single dad with related children under 18
+                aian_female_par_nopovty_       =     "B17010C_037",# American Indian Alaska Native single mom with related children under 18
+                
+                asian_married_par_povty_       =     "B17010D_004",# Asian married couple family with related children under 18
+                asian_male_par_povty_          =     "B17010D_011",# Asian single dad with related children under 18
+                asian_female_par_povty_        =     "B17010D_017",# Asian single mom with related children under 18
+                asian_married_par_nopovty_     =     "B17010D_024",# Asian married couple family with related children under 18
+                asian_male_par_nopovty_        =     "B17010D_031",# Asian single dad with related children under 18
+                asian_female_par_nopovty_      =     "B17010D_037",# Asian single mom with related children under 18
+                
+                nhpi_married_par_povty_        =     "B17010E_004",# Native Hawaiian Pacific Islander married couple family with related children under 18
+                nhpi_male_par_povty_           =     "B17010E_011",# Native Hawaiian Pacific Islander single dad with related children under 18
+                nhpi_female_par_povty_         =     "B17010E_017",# Native Hawaiian Pacific Islander single mom with related children under 18
+                nhpi_married_par_nopovty_      =     "B17010E_024",# Native Hawaiian Pacific Islander married couple family with related children under 18
+                nhpi_male_par_nopovty_         =     "B17010E_031",# Native Hawaiian Pacific Islander single dad with related children under 18
+                nhpi_female_par_nopovty_       =     "B17010E_037",# Native Hawaiian Pacific Islander single mom with related children under 18
+                
+                other_married_par_povty_       =     "B17010F_004",# Some other race alone married couple family with related children under 18
+                other_male_par_povty_          =     "B17010F_011",# Some other race alone single dad with related children under 18
+                other_female_par_povty_        =     "B17010F_017",# Some other race alone single mom with related children under 18
+                other_married_par_nopovty_     =     "B17010F_024",# Some other race alone married couple family with related children under 18
+                other_male_par_nopovty_        =     "B17010F_031",# Some other race alone single dad with related children under 18
+                other_female_par_nopovty_      =     "B17010F_037",# Some other race alone single mom with related children under 18
+                
+                race2p_married_par_povty_      =     "B17010G_004",# Two or more races married couple family with related children under 18
+                race2p_male_par_povty_         =     "B17010G_011",# Two or more races single dad with related children under 18
+                race2p_female_par_povty_       =     "B17010G_017",# Two or more races single mom with related children under 18
+                race2p_married_par_nopovty_    =     "B17010G_024",# Two or more races married couple family with related children under 18
+                race2p_male_par_nopovty_       =     "B17010G_031",# Two or more races single dad with related children under 18
+                race2p_female_par_nopovty_     =     "B17010G_037",# Two or more races single mom with related children under 18
+                
+                white_married_par_povty_       =     "B17010H_004",# White alone, not Hispanic/Latino married couple family with related children under 18
+                white_male_par_povty_          =     "B17010H_011",# White alone, not Hispanic/Latino single dad with related children under 18
+                white_female_par_povty_        =     "B17010H_017",# White alone, not Hispanic/Latino single mom with related children under 18
+                white_married_par_nopovty_     =     "B17010H_024",# White alone, not Hispanic/Latino married couple family with related children under 18
+                white_male_par_nopovty_        =     "B17010H_031",# White alone, not Hispanic/Latino single dad with related children under 18
+                white_female_par_nopovty_      =     "B17010H_037",# White alone, not Hispanic/Latino single mom with related children under 18
+                
+                hispanic_married_par_povty_    =     "B17010I_004",# Hispanic/Latino married couple family with related children under 18
+                hispanic_male_par_povty_       =     "B17010I_011",# Hispanic/Latino single dad with related children under 18
+                hispanic_female_par_povty_     =     "B17010I_017",# Hispanic/Latino single mom with related children under 18
+                hispanic_married_par_nopovty_  =     "B17010I_024",# Hispanic/Latino married couple family with related children under 18
+                hispanic_male_par_nopovty_     =     "B17010I_031",# Hispanic/Latino single dad with related children under 18
+                hispanic_female_par_nopovty_   =     "B17010I_037",# Hispanic/Latino single mom with related children under 18
+                
+                zero_veh_noworkers_            =     "B08203_008", # Zero-vehicle household with no workers
+                zero_veh_oneworker_            =     "B08203_014", # Zero-vehicle household with one worker
+                zero_veh_twoworkers_           =     "B08203_020", # Zero-vehicle household with two workers
+                zero_veh_3pworkers_            =     "B08203_026", # Zero-vehicle household with three-plus workers
+                rent_age_75_84_                =     "B25007_020", # Renters age 75 to 84
+                rent_age_85p_                  =     "B25007_021", # Renters age 85-plus
+                #dis_employ_universe_          =     "B18120_001", # Total disability employment universe - civillian noninst. pop 18 to 64
+                #dis_employed_18_64_           =     "B18120_004", # Employed with a disability
+                #dis_unemployed_18_64_         =     "B18120_013", # Unemployed with a disability
+                #dis_notinlaborforce_18_64_    =     "B18120_022", # Not in labor force with a disability
+                rent_50p_percent_              =     "B25070_010" # Over 50 percent paid in rent, "severely" rent-burdened
+)
                                                
 # Compile all the variables for use with county table (used for most of analyses). Some variables not used here but used later. 
 
@@ -1056,6 +1126,87 @@ share_hra_final_2018 <- left_join(share_hra_non_disability_data,share_hra_disabi
   relocate(share_disabled,.after = share_older_adult) %>% 
   relocate(disabled_total,.before = population_total)
 
+# Extra variables for region and other geographies, as needed
+# First run the ACS 1-year dataset and then the 5-year one
+
+acs_years <- c(2010) # As appropriate, replace_year. 
+extra_output_1year <- map_dfr(acs_years,~ get_acs_county (.x,"acs1",extra_1year))
+
+acs_years <- c(2010,2018,2022) # As appropriate, replace_year. 
+extra_output_5year <- map_dfr(acs_years,~ get_acs_county (.x,"acs5",c(extra_5year,lep,non_lep))) %>% 
+  mutate(single_parent_families=male_single_parent_E+female_single_parent_E,
+         black_single_parent=black_male_par_povty_E+black_male_par_nopovty_E+black_female_par_povty_E+black_female_par_nopovty_E,
+         black_families_w_children=black_single_parent+black_married_par_povty_E+black_married_par_nopovty_E,
+         
+         aian_single_parent=aian_male_par_povty_E+aian_male_par_nopovty_E+aian_female_par_povty_E+aian_female_par_nopovty_E,
+         aian_families_w_children=aian_single_parent+aian_married_par_povty_E+aian_married_par_nopovty_E,
+         
+         asian_single_parent=asian_male_par_povty_E+asian_male_par_nopovty_E+asian_female_par_povty_E+asian_female_par_nopovty_E,
+         asian_families_w_children=asian_single_parent+asian_married_par_povty_E+asian_married_par_nopovty_E,
+         
+         nhpi_single_parent=nhpi_male_par_povty_E+nhpi_male_par_nopovty_E+nhpi_female_par_povty_E+nhpi_female_par_nopovty_E,
+         nhpi_families_w_children=nhpi_single_parent+nhpi_married_par_povty_E+nhpi_married_par_nopovty_E,
+         
+         other_single_parent=other_male_par_povty_E+other_male_par_nopovty_E+other_female_par_povty_E+other_female_par_nopovty_E,
+         other_families_w_children=other_single_parent+other_married_par_povty_E+other_married_par_nopovty_E,
+         
+         race2p_single_parent=race2p_male_par_povty_E+race2p_male_par_nopovty_E+race2p_female_par_povty_E+race2p_female_par_nopovty_E,
+         race2p_families_w_children=race2p_single_parent+race2p_married_par_povty_E+race2p_married_par_nopovty_E,
+         
+         white_single_parent=white_male_par_povty_E+white_male_par_nopovty_E+white_female_par_povty_E+white_female_par_nopovty_E,
+         white_families_w_children=white_single_parent+white_married_par_povty_E+white_married_par_nopovty_E,
+         
+         hispanic_single_parent=hispanic_male_par_povty_E+hispanic_male_par_nopovty_E+hispanic_female_par_povty_E+hispanic_female_par_nopovty_E,
+         hispanic_families_w_children=hispanic_single_parent+hispanic_married_par_povty_E+hispanic_married_par_nopovty_E,
+         
+         lep_5_17=spanish_notwell_5_17_E+spanish_notatall_5_17_E+indo_notwell_5_17_E+indo_notatall_5_17_E+
+           asian_notwell_5_17_E+asian_notatall_5_17_E+other_notwell_5_17_E+other_notatall_5_17_E,
+         
+         lep_18_64=spanish_notwell_18_64_E+spanish_notatall_18_64_E+indo_notwell_18_64_E+indo_notatall_18_64_E+
+           asian_notwell_18_64_E+asian_notatall_18_64_E+other_notwell_18_64_E+other_notatall_18_64_E,
+         
+         lep_65p=spanish_notwell_65p_E+spanish_notatall_65p_E+indo_notwell_65p_E+indo_notatall_65p_E+
+           asian_notwell_65p_E+asian_notatall_65p_E+other_notwell_65p_E+other_notatall_65p_E,
+         
+         non_lep_5_17=english_only_5_17_E+spanish_vwell_5_17_E+indo_vwell_5_17_E+asian_vwell_5_17_E+other_vwell_5_17_E+
+           spanish_well_5_17_E+indo_well_5_17_E+asian_well_5_17_E+other_well_5_17_E,
+         
+         non_lep_18_64=english_only_18_64_E+spanish_vwell_18_64_E+indo_vwell_18_64_E+asian_vwell_18_64_E+other_vwell_18_64_E+
+           spanish_well_18_64_E+indo_well_18_64_E+asian_well_18_64_E+other_well_18_64_E,
+         
+         non_lep_65p=english_only_65p_E+spanish_vwell_65p_E+indo_vwell_65p_E+asian_vwell_65p_E+other_vwell_65p_E+
+           spanish_well_65p_E+indo_well_65p_E+asian_well_65p_E+other_well_65p_E,
+         
+         lep_total=lep_5_17+lep_18_64+lep_65p,
+         non_lep_total=non_lep_5_17+non_lep_18_64+non_lep_65p,
+         lep_universe=lep_total+non_lep_total,
+         
+         spanish_lep_65p=spanish_notwell_65p_E+spanish_notatall_65p_E,
+         asian_pacific_lep_65p=asian_notwell_65p_E+asian_notatall_65p_E,
+         other_lep_65p=indo_notwell_65p_E+indo_notatall_65p_E+other_notwell_65p_E+other_notatall_65p_E,
+         
+         total_zero_veh_hhs=zero_renter_all+zero_owner_all,
+         
+         zero_vehicle_no_workers            =  zero_veh_noworkers_E,   
+         zero_vehicle_one_worker            =  zero_veh_oneworker_E,   
+         zero_vehicle_two_workers           =  zero_veh_twoworkers_E, 
+         zero_vehicle_3plus_workers         =  zero_veh_3pworkers_E,   
+         
+  )
+
+%>% 
+  mutate(med_dis_earnings_x_dis_worker=med_dis_earnings_E*dis_worker_E,
+         med_non_dis_earning_x_non_dis_worker=med_non_dis_earnings_E*non_dis_worker_E) %>% 
+  group_by(year) %>% 
+  select(where(is.numeric)) %>%                   
+  summarize(across(everything(), sum),.groups = "drop") %>%   
+  select(-c(med_dis_earnings_E,med_non_dis_earnings_E)) %>% 
+  mutate(geography = "Bay_Area") %>%             
+  relocate(geography, .before = everything()) %>% 
+  mutate(weighted_med_non_dis_earnings=round(med_non_dis_earning_x_non_dis_worker/non_dis_worker_E),
+         weighted_med_dis_earnings=round(med_dis_earnings_x_dis_worker/dis_worker_E),
+  ) 
+
 ## Export CSVs to appropriate project folders
 
 write.csv(rent_burden_df,file.path(output,"1_rent_burden","rent_burden.csv"),row.names = F) 
@@ -1073,6 +1224,10 @@ write.csv(share_population_bay_area,file.path(output,"12_share_population_by_dem
 write.csv(share_epc_2018,file.path(output,"12_share_population_by_demographic","share_epc_2018.csv"),row.names = F) 
 write.csv(share_epc_2022,file.path(output,"12_share_population_by_demographic","share_epc_2022.csv"),row.names = F) 
 write.csv(share_hra_final_2018,file.path(output,"12_share_population_by_demographic","share_hra_2023.csv"),row.names = F) # See below notes
+write.csv(extra_output_1year,file.path(output,"13_extra_data_items","extra_output_1year.csv"),row.names = F)
+write.csv(extra_output_5year,file.path(output,"13_extra_data_items","extra_output_5year.csv"),row.names = F)
+
+
 
 # HRAs are built on 2018 ACS data for different years. The shapefile used here is for 2023, refreshed for different HRAs but still using 2018 data as a starting place
 
