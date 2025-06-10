@@ -267,7 +267,7 @@ disability <- c(tot_dis_universe_              =    "B18101_001",  # Disability 
 
 # Senior tenure (Tenure by Age of Householder)
 
-tenure <- c(owner_75_84_                       =    "B25007_010",  # Owner aged 75-85
+tenure_age <- c(owner_75_84_                   =    "B25007_010",  # Owner aged 75-85
             owner_85p_                         =    "B25007_011",  # Owner aged 85 plus
             renter_75_84_                      =    "B25007_020",  # Renter aged 75-85
             renter_85p_                        =    "B25007_021")  # Renter aged 85 plus
@@ -516,16 +516,23 @@ extra_5year <-c(tot_household_universe_        =     "B25003_001", # Total house
                 zero_veh_3pworkers_            =     "B08203_026", # Zero-vehicle household with three-plus workers
                 rent_age_75_84_                =     "B25007_020", # Renters age 75 to 84
                 rent_age_85p_                  =     "B25007_021", # Renters age 85-plus
-                #dis_employ_universe_          =     "B18120_001", # Total disability employment universe - civillian noninst. pop 18 to 64
-                #dis_employed_18_64_           =     "B18120_004", # Employed with a disability
-                #dis_unemployed_18_64_         =     "B18120_013", # Unemployed with a disability
-                #dis_notinlaborforce_18_64_    =     "B18120_022", # Not in labor force with a disability
-                rent_50p_percent_              =     "B25070_010" # Over 50 percent paid in rent, "severely" rent-burdened
+
+                rent_50p_percent_              =     "B25070_010", # Over 50 percent paid in rent, "severely" rent-burdened
+                
+                renter_75_84_                  =     "B25007_020", # Renter, age of householder is 75-84
+                renter_85p_                    =     "B25007_021"  # Renter, age of householder is 85 plus
 )
+
+extra_epc_hra <-  c(renter_75_84_              =     "B25007_020", # Renter, age of householder is 75-84
+                renter_85p_                    =     "B25007_021", # Renter, age of householder is 85 plus
+                owner_75_84_                   =     "B25007_010", # Owner, age of householder is 75-84
+                owner_85p_                     =     "B25007_011"  # Owner, age of householder is 85 plus
+)
+
                                                
 # Compile all the variables for use with county table (used for most of analyses). Some variables not used here but used later. 
 
-total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability,tenure,vehicles,lep,non_lep,
+total_acs_variables <- c(rent_burden,low_income_families,med_dis_earnings,disability,tenure_age,vehicles,lep,non_lep,
                          race_acs,med_inc_race,hholder_race)
 
 # Create functions for extracting data, including ACS and decennial data functions by county, place, and tract/block group
@@ -738,7 +745,7 @@ senior_tenure_bay <- working_bay %>%
             share_senior_renter=round(100*(renter_75_84_E+renter_85p_E)/(renter_75_84_E+renter_85p_E+owner_75_84_E+owner_85p_E)))
 
 acs_year=2022 # As appropriate, replace_year
-senior_tenure_place <- get_historical_place_acs(acs_year,tenure) %>% 
+senior_tenure_place <- get_historical_place_acs(acs_year,tenure_age) %>% 
   group_by(geography) %>% 
   summarize(owner_75_84_E=sum(owner_75_84_E),owner_85p_E=sum(owner_85p_E),renter_75_84_E=sum(renter_75_84_E),
             renter_85p_E=sum(renter_85p_E),.groups = "drop") %>% 
@@ -1128,12 +1135,20 @@ share_hra_final_2018 <- left_join(share_hra_non_disability_data,share_hra_disabi
 
 # Extra variables for region and other geographies, as needed
 # First run the ACS 1-year dataset and then the 5-year one
+# Use multiple calls and then join due to too many variables being called and not all being downloaded
 
-acs_years <- c(2010) # As appropriate, replace_year. 
-extra_output_1year <- map_dfr(acs_years,~ get_acs_county (.x,"acs1",extra_1year))
+acs_years <- c(2010,2022) # As appropriate, replace_year. 
+extra_output_1year <- map_dfr(acs_years,~ get_acs_county (.x,"acs1",c(extra_1year,disability,med_dis_earnings))) %>% 
+  mutate(med_dis_earnings_x_dis_worker=med_dis_earnings_E*dis_worker_E,
+         med_non_dis_earning_x_non_dis_worker=med_non_dis_earnings_E*non_dis_worker_E) %>% 
+  relocate(year,.after = NAME)
 
 acs_years <- c(2010,2018,2022) # As appropriate, replace_year. 
-extra_output_5year <- map_dfr(acs_years,~ get_acs_county (.x,"acs5",c(extra_5year,lep,non_lep))) %>% 
+
+extra_output5_temp1 <- map_dfr(acs_years,~ get_acs_county (.x,"acs5",c(extra_5year,lep,non_lep,vehicles))) 
+extra_output5_temp2 <- map_dfr(acs_years,~ get_acs_county (.x,"acs5",c(older_adult,tenure_age))) 
+
+extra_output_5year <- left_join(extra_output5_temp1,extra_output5_temp2,by=c("NAME","year"))%>% 
   mutate(single_parent_families=male_single_parent_E+female_single_parent_E,
          black_single_parent=black_male_par_povty_E+black_male_par_nopovty_E+black_female_par_povty_E+black_female_par_nopovty_E,
          black_families_w_children=black_single_parent+black_married_par_povty_E+black_married_par_nopovty_E,
@@ -1185,27 +1200,54 @@ extra_output_5year <- map_dfr(acs_years,~ get_acs_county (.x,"acs5",c(extra_5yea
          asian_pacific_lep_65p=asian_notwell_65p_E+asian_notatall_65p_E,
          other_lep_65p=indo_notwell_65p_E+indo_notatall_65p_E+other_notwell_65p_E+other_notatall_65p_E,
          
-         total_zero_veh_hhs=zero_renter_all+zero_owner_all,
+         total_zero_veh_hhs=zero_renter_all_E+zero_owner_all_E,
          
          zero_vehicle_no_workers            =  zero_veh_noworkers_E,   
          zero_vehicle_one_worker            =  zero_veh_oneworker_E,   
          zero_vehicle_two_workers           =  zero_veh_twoworkers_E, 
          zero_vehicle_3plus_workers         =  zero_veh_3pworkers_E,   
          
-  )
+         older_adult_population             =  male_75_79_E+male_80_84_E+male_85p_E+female_75_79_E+female_80_84_E+female_85p_E,
+         
+         older_renter_hhs                   =  renter_75_84_E+renter_85p_E
+  ) %>% 
+  relocate(year,.after = NAME)
 
-%>% 
-  mutate(med_dis_earnings_x_dis_worker=med_dis_earnings_E*dis_worker_E,
-         med_non_dis_earning_x_non_dis_worker=med_non_dis_earnings_E*non_dis_worker_E) %>% 
-  group_by(year) %>% 
+# Now bring in tracts and block groups for extra EPC/HRA summaries
+
+acs_year <- 2022 # As appropriate, replace_year
+
+extra_epc_2022_output <- get_historical_tract_bg_acs(acs_year,extra_epc_hra,"tract") %>% left_join(.,epc_2022 %>% select(-County.FIPS),by=c("GEOID"="Geographic.ID")) %>% 
+  mutate(Equity.Priority.Community.PBA.2050.Plus=if_else(is.na(Equity.Priority.Community.PBA.2050.Plus),0,Equity.Priority.Community.PBA.2050.Plus)) %>% 
+  relocate(Equity.Priority.Community.PBA.2050.Plus,.after = "NAME") %>% 
+  filter(Equity.Priority.Community.PBA.2050.Plus==1) %>% 
+  select(-c(GEOID,Equity.Priority.Community.PBA.2050.Plus,year)) %>% 
   select(where(is.numeric)) %>%                   
-  summarize(across(everything(), sum),.groups = "drop") %>%   
-  select(-c(med_dis_earnings_E,med_non_dis_earnings_E)) %>% 
-  mutate(geography = "Bay_Area") %>%             
-  relocate(geography, .before = everything()) %>% 
-  mutate(weighted_med_non_dis_earnings=round(med_non_dis_earning_x_non_dis_worker/non_dis_worker_E),
-         weighted_med_dis_earnings=round(med_dis_earnings_x_dis_worker/dis_worker_E),
-  ) 
+  summarize(across(everything(), sum), .groups = "drop") %>%
+  mutate(geography="EPC_2022") %>% 
+  relocate(geography,.before = everything()) %>% 
+  mutate(older_renter_hhs =  renter_75_84_E+renter_85p_E,
+         older_total_hhs=older_renter_hhs+owner_75_84_E+owner_85p_E)
+
+extra_tracts_2022 <- get_historical_tract_bg_acs(acs_year,extra_epc_hra,"tract") %>% 
+  left_join(.,hra_tracts %>% select(-c(fipco,blkgp_geoi)),by=c("GEOID"="tract_geoi")) %>% 
+  mutate(hra_status=if_else(is.na(oppcat),0,1)) %>% 
+  relocate(c(hra_status,oppcat),.after = "NAME")
+
+extra_bgs_2022 <- get_historical_tract_bg_acs(acs_year,extra_epc_hra,"block group") %>%  
+  left_join(.,hra_bgs %>% select(-c(fipco,tract_geoi)),by=c("GEOID"="blkgp_geoi")) %>% 
+  mutate(hra_status=if_else(is.na(oppcat),0,1)) %>% 
+  relocate(c(hra_status,oppcat),.after = "NAME")
+  
+extra_hra_2022_output <- bind_rows(extra_tracts_2022,extra_bgs_2022) %>% 
+  filter(hra_status==1) %>% 
+  select(-c(GEOID,hra_status,oppcat,year)) %>% 
+  select(where(is.numeric)) %>%                   
+  summarize(across(everything(), sum), .groups = "drop") %>%
+  mutate(geography="HRA_2022") %>% 
+  relocate(geography,.before = everything()) %>% 
+  mutate(older_renter_hhs =  renter_75_84_E+renter_85p_E,
+         older_total_hhs=older_renter_hhs+owner_75_84_E+owner_85p_E)
 
 ## Export CSVs to appropriate project folders
 
@@ -1226,6 +1268,8 @@ write.csv(share_epc_2022,file.path(output,"12_share_population_by_demographic","
 write.csv(share_hra_final_2018,file.path(output,"12_share_population_by_demographic","share_hra_2023.csv"),row.names = F) # See below notes
 write.csv(extra_output_1year,file.path(output,"13_extra_data_items","extra_output_1year.csv"),row.names = F)
 write.csv(extra_output_5year,file.path(output,"13_extra_data_items","extra_output_5year.csv"),row.names = F)
+write.csv(extra_epc_2022_output,file.path(output,"13_extra_data_items","extra_epc_2022_output.csv"),row.names = F)
+write.csv(extra_hra_2022_output,file.path(output,"13_extra_data_items","extra_hra_2022_output.csv"),row.names = F)
 
 
 
