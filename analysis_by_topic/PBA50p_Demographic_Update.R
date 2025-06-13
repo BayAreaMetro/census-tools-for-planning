@@ -40,6 +40,10 @@ library(sf)
 
 options(scipen = 999)
 
+# Load 2023 5-year tables into a file for review
+
+acs_2023_table_list <- load_variables("2023","acs5")
+
 # Set file directories for input and output, identify locations for epc/hra file inputs too
 
 userprofile        <- gsub("\\\\","/", Sys.getenv("USERPROFILE"))
@@ -1146,7 +1150,7 @@ extra_output_1year <- map_dfr(acs_years,~ get_acs_county (.x,"acs1",c(extra_1yea
 acs_years <- c(2010,2018,2022) # As appropriate, replace_year. 
 
 extra_output5_temp1 <- map_dfr(acs_years,~ get_acs_county (.x,"acs5",c(extra_5year,lep,non_lep,vehicles))) 
-extra_output5_temp2 <- map_dfr(acs_years,~ get_acs_county (.x,"acs5",c(older_adult,tenure_age))) 
+extra_output5_temp2 <- map_dfr(acs_years,~ get_acs_county (.x,"acs5",c(low_income_families,older_adult,tenure_age))) 
 
 extra_output_5year <- left_join(extra_output5_temp1,extra_output5_temp2,by=c("NAME","year"))%>% 
   mutate(single_parent_families=male_single_parent_E+female_single_parent_E,
