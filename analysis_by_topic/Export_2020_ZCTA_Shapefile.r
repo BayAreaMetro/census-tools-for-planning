@@ -17,7 +17,7 @@ zcta_sf <- get_acs(
 
 # Remove attributes and only keep the geometry for later use
 zcta_geom <- zcta_sf %>%
-  select(GEOID, geometry)
+  select(GEOID, geometry) 
 
 # Define output path
 output_path <- "M:/Data/Census/Geography/2020_ZCTAs"
