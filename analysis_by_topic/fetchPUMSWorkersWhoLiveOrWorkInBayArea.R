@@ -30,7 +30,7 @@ argparser <- arg_parser(USAGE, hide.opts=TRUE)
 argparser <- add_argument(parser=argparser, arg="year",    help="Survey year", type="numeric")
 # parse the command line arguments
 argv <- parse_args(argparser)
-stopifnot(argv$year %in% c(2015,2022,2023)) # we only support these right now
+stopifnot(argv$year %in% c(2015,2022,2023,2024)) # we only support these right now
 
 # read PUMA
 if (argv$year >= 2022) {
