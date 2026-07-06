@@ -92,7 +92,7 @@ if (argv$survey == "acs5") {
     if (argv$year < 2022) {
         stop("acs5 before 2022 is not supported by this script")
     }
-    if (argv$year == 2022) {
+    else if (argv$year == 2022) {
         # handle both PUMA10 and PUMA20
         hbayarea <- left_join(hcalif,  equivalence_10, by=c("PUMA10"="PUMARC"), relationship="many-to-one")
         hbayarea <- left_join(hbayarea,equivalence_20, by=c("PUMA20"="PUMARC"), relationship="many-to-one", suffix=c("","_20"))
@@ -117,8 +117,13 @@ if (argv$survey == "acs5") {
         select(-County_Name_20, -COUNTY_20, -PUMA_Name_20) %>%
         filter(!is.na(COUNTY))
     }
-    if (argv$year > 2022) {
-        stop("acs5 after 2022 is not *yet* supported by this script")
+    else if (argv$year >= 2024) {
+        # PUMA20
+        hbayarea <- left_join(hcalif,equivalence_20, by=c("PUMA"="PUMARC"), relationship="many-to-one")
+        pbayarea <- left_join(pcalif,equivalence_20, by=c("PUMA"="PUMARC"), relationship="many-to-one")
+    }
+    else {
+        stop("acs5 for the given year *yet* supported by this script")
     }
 }
 # acs1 2021 uses PUMA (which is PUMA10)
